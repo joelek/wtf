@@ -1,0 +1,26 @@
+{
+	"bin": {
+		"wtf": "./dist/cli/index.js"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@types/node": "^16.7",
+		"typescript": "^4.4"
+	},
+	"license": "MIT",
+	"main": "./dist/lib/index.js",
+	"name": "@joelek/wtf",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/joelek/wtf.git"
+	},
+	"scripts": {
+		"build": "npm run compile && npm run package",
+		"clean": "rm -rf ./build/ ./node_modules/",
+		"compile": "rm -rf ./build/* && npx tsc --build",
+		"package": "rm -rf ./dist/* && cp -r ./build/* ./dist/",
+		"preversion": "npm run build && git add ./",
+		"postversion": "git push && git push --tags"
+	},
+	"version": "0.0.0"
+}

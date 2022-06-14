@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"composite": true,
+		"module": "commonjs",
+		"outDir": "./build/",
+		"rootDir": "./source/",
+		"strict": true,
+		"target": "es6"
+	},
+	"include": [],
+	"references": [
+		{
+			"path": "./source/cli/"
+		},
+		{
+			"path": "./source/lib/"
+		}
+	]
+}
