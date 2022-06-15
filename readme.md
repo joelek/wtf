@@ -53,5 +53,3 @@ npm install joelek/wtf#master
 NB: This project targets TypeScript 4 in strict mode.
 
 ## Roadmap
-
-* Create helper lib for writing JavaScript and TypeScript tests.
