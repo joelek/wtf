@@ -12,7 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const lib = require("../lib");
 function run() {
-    var _a;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         let options = {};
         let badArgumentCount = 0;
@@ -25,6 +25,15 @@ function run() {
                 options.paths = paths;
                 continue;
             }
+            if ((parts = /^--runner=(.+):(.+)$/.exec(arg)) != null) {
+                let suffix = parts[1];
+                let runtime = parts[2];
+                let runner = new lib.runner.CustomRunner(suffix, runtime);
+                let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : [];
+                runners.push(runner);
+                options.runners = runners;
+                continue;
+            }
             badArgumentCount += 1;
             console.log(`Unrecognized argument "${arg}"!`);
         }
@@ -33,7 +42,8 @@ function run() {
         }
         else {
             console.log(`Arguments:`);
-            console.log(`--path=<string> Include specified path when scanning for test subjects.`);
+            console.log(`--path=<path> Include the specified path when scanning for test subjects.`);
+            console.log(`--runner=<suffix>:<runtime> Launch the specified runtime for every test subject that matches the specified suffix.`);
             return badArgumentCount;
         }
     });

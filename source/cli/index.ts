@@ -14,6 +14,15 @@ async function run(): Promise<number> {
 			options.paths = paths;
 			continue;
 		}
+		if ((parts = /^--runner=(.+):(.+)$/.exec(arg)) != null) {
+			let suffix = parts[1];
+			let runtime = parts[2];
+			let runner = new lib.runner.CustomRunner(suffix, runtime);
+			let runners = options.runners ?? [];
+			runners.push(runner);
+			options.runners = runners;
+			continue;
+		}
 		badArgumentCount += 1;
 		console.log(`Unrecognized argument "${arg}"!`);
 	}
@@ -21,7 +30,8 @@ async function run(): Promise<number> {
 		return lib.runner.run(options);
 	} else {
 		console.log(`Arguments:`);
-		console.log(`--path=<string> Include specified path when scanning for test subjects.`);
+		console.log(`--path=<path> Include the specified path when scanning for test subjects.`);
+		console.log(`--runner=<suffix>:<runtime> Launch the specified runtime for every test subject that matches the specified suffix.`);
 		return badArgumentCount;
 	}
 };

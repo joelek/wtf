@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectory = exports.scanFile = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.spawn = void 0;
+exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectory = exports.scanFile = exports.CustomRunner = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.spawn = void 0;
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
@@ -60,6 +60,20 @@ class TypeScriptRunner {
     }
 }
 exports.TypeScriptRunner = TypeScriptRunner;
+;
+class CustomRunner {
+    constructor(suffix, runtime) {
+        this.suffix = suffix;
+        this.runtime = runtime;
+    }
+    matches(path) {
+        return path.endsWith(this.suffix);
+    }
+    run(path) {
+        return spawn(this.runtime, [path]);
+    }
+}
+exports.CustomRunner = CustomRunner;
 ;
 function scanFile(path, runners) {
     for (let runner of runners) {

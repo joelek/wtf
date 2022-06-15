@@ -52,6 +52,24 @@ export class TypeScriptRunner implements Runner {
 	}
 };
 
+export class CustomRunner implements Runner {
+	private suffix: string;
+	private runtime: string;
+
+	constructor(suffix: string, runtime: string) {
+		this.suffix = suffix;
+		this.runtime = runtime;
+	}
+
+	matches(path: string): boolean {
+		return path.endsWith(this.suffix);
+	}
+
+	run(path: string): Promise<number | undefined> {
+		return spawn(this.runtime, [path]);
+	}
+};
+
 export type Subject = {
 	runner: Runner;
 	path: string;

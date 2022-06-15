@@ -13,6 +13,13 @@ export declare class TypeScriptRunner implements Runner {
     matches(path: string): boolean;
     run(path: string): Promise<number | undefined>;
 }
+export declare class CustomRunner implements Runner {
+    private suffix;
+    private runtime;
+    constructor(suffix: string, runtime: string);
+    matches(path: string): boolean;
+    run(path: string): Promise<number | undefined>;
+}
 export declare type Subject = {
     runner: Runner;
     path: string;
