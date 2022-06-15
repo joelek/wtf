@@ -115,7 +115,7 @@ export function scanPath(path: string, runners: Array<Runner>): Array<Subject> {
 			return scanFile(path, runners);
 		}
 	} else {
-		console.log(`Path "${path}" does not exist!`);
+		throw `Path "${path}" does not exist!`;
 	}
 	return [];
 };
