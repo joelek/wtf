@@ -27,7 +27,9 @@ async function run(): Promise<number> {
 		console.log(`Unrecognized argument "${arg}"!`);
 	}
 	if (badArgumentCount === 0) {
-		return lib.runner.run(options);
+		let log = await lib.runner.run(options);
+		console.log(JSON.stringify(log, null, "\t"));
+		return log.status;
 	} else {
 		console.log(`Arguments:`);
 		console.log(`--path=<path> Include the specified path when scanning for test subjects.`);
@@ -36,4 +38,4 @@ async function run(): Promise<number> {
 	}
 };
 
-run().catch(() => undefined).then((status) => process.exit(status));
+run().then(process.exit).catch(console.log);

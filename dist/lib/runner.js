@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectory = exports.scanFile = exports.CustomRunner = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.spawn = void 0;
+exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectory = exports.scanFile = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.CustomRunner = exports.spawn = void 0;
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
@@ -17,49 +17,40 @@ function spawn(command, parameters) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             let stringParameters = parameters.map((parameter) => JSON.stringify(parameter)).join(" ");
-            console.log(`Running ${command} with parameters ${stringParameters}...`);
+            process.stderr.write(`Running ${command} with parameters ${stringParameters}...\n`);
             let childProcess = libcp.spawn(command, parameters, { shell: true });
-            childProcess.stdout.pipe(process.stdout);
-            childProcess.stderr.pipe(process.stderr);
-            childProcess.on("error", (error) => {
-                console.log(error);
-                resolve(undefined);
+            let stdoutChunks = [];
+            let stderrChunks = [];
+            childProcess.stdout.on("data", (chunk) => {
+                stdoutChunks.push(chunk);
             });
-            childProcess.on("exit", (code, signal) => {
-                if (code == null) {
-                    resolve(undefined);
-                }
-                else {
-                    resolve(code);
-                }
+            childProcess.stderr.on("data", (chunk) => {
+                stderrChunks.push(chunk);
+            });
+            childProcess.on("error", (error) => {
+                let stdout = Buffer.concat(stdoutChunks);
+                let stderr = Buffer.concat(stderrChunks);
+                resolve({
+                    stdout,
+                    stderr,
+                    error
+                });
+            });
+            childProcess.on("exit", (code) => {
+                let stdout = Buffer.concat(stdoutChunks);
+                let stderr = Buffer.concat(stderrChunks);
+                let status = code != null ? code : undefined;
+                resolve({
+                    stdout,
+                    stderr,
+                    status
+                });
             });
         });
     });
 }
 exports.spawn = spawn;
 ;
-;
-class JavaScriptRunner {
-    constructor() { }
-    matches(path) {
-        return path.endsWith(".test.js");
-    }
-    run(path) {
-        return spawn("node", [path]);
-    }
-}
-exports.JavaScriptRunner = JavaScriptRunner;
-;
-class TypeScriptRunner {
-    constructor() { }
-    matches(path) {
-        return path.endsWith(".test.ts");
-    }
-    run(path) {
-        return spawn("ts-node", [path]);
-    }
-}
-exports.TypeScriptRunner = TypeScriptRunner;
 ;
 class CustomRunner {
     constructor(suffix, runtime) {
@@ -70,10 +61,39 @@ class CustomRunner {
         return path.endsWith(this.suffix);
     }
     run(path) {
-        return spawn(this.runtime, [path]);
+        return __awaiter(this, void 0, void 0, function* () {
+            let runtime = this.runtime;
+            let outcome = yield spawn(runtime, [path]);
+            let stdout = outcome.stdout.toString();
+            let stderr = outcome.stderr.toString();
+            let error = outcome.error;
+            let status = outcome.status;
+            return {
+                path,
+                runtime,
+                stdout,
+                stderr,
+                error,
+                status
+            };
+        });
     }
 }
 exports.CustomRunner = CustomRunner;
+;
+class JavaScriptRunner extends CustomRunner {
+    constructor() {
+        super(".test.js", "node");
+    }
+}
+exports.JavaScriptRunner = JavaScriptRunner;
+;
+class TypeScriptRunner extends CustomRunner {
+    constructor() {
+        super(".test.ts", "ts-node");
+    }
+}
+exports.TypeScriptRunner = TypeScriptRunner;
 ;
 function scanFile(path, runners) {
     for (let runner of runners) {
@@ -118,7 +138,7 @@ function scanPath(path, runners) {
         }
     }
     else {
-        console.log(`Path "${path}" does not exist!`);
+        throw `Path "${path}" does not exist!`;
     }
     return [];
 }
@@ -140,7 +160,7 @@ function createDefaultRunners() {
 exports.createDefaultRunners = createDefaultRunners;
 ;
 function run(options) {
-    var _a, _b, _c;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         let paths = (_a = options.paths) !== null && _a !== void 0 ? _a : createDefaultPaths();
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
@@ -148,22 +168,19 @@ function run(options) {
         for (let path of paths) {
             subjects.push(...scanPath(path, runners));
         }
-        let outcomes = [];
+        let suites = [];
+        let status = 0;
         for (let subject of subjects) {
-            let status = yield subject.runner.run(subject.path);
-            outcomes.push({
-                subject,
-                status
-            });
-        }
-        let failures = 0;
-        for (let outcome of outcomes) {
-            if (outcome.status !== 0) {
-                console.log(`Failure: "${outcome.subject.path}" exited with status (${(_c = outcome.status) !== null && _c !== void 0 ? _c : ""})`);
-                failures += 1;
+            let runLog = yield subject.runner.run(subject.path);
+            suites.push(runLog);
+            if (runLog.status !== 0) {
+                status += 1;
             }
         }
-        return failures;
+        return {
+            suites,
+            status
+        };
     });
 }
 exports.run = run;

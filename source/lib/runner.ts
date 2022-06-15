@@ -2,54 +2,60 @@ import * as libcp from "child_process";
 import * as libfs from "fs";
 import * as libpath from "path";
 
-export async function spawn(command: string, parameters: Array<string>): Promise<number | undefined> {
+export type SpawnOutcome = {
+	stdout: Buffer;
+	stderr: Buffer;
+	error?: Error;
+	status?: number;
+};
+
+export async function spawn(command: string, parameters: Array<string>): Promise<SpawnOutcome> {
 	return new Promise((resolve, reject) => {
 		let stringParameters = parameters.map((parameter) => JSON.stringify(parameter)).join(" ");
-		console.log(`Running ${command} with parameters ${stringParameters}...`);
+		process.stderr.write(`Running ${command} with parameters ${stringParameters}...\n`);
 		let childProcess = libcp.spawn(command, parameters, { shell: true });
-		childProcess.stdout.pipe(process.stdout);
-		childProcess.stderr.pipe(process.stderr);
-		childProcess.on("error", (error) => {
-			console.log(error);
-			resolve(undefined);
+		let stdoutChunks = [] as Array<Buffer>;
+		let stderrChunks = [] as Array<Buffer>;
+		childProcess.stdout.on("data", (chunk) => {
+			stdoutChunks.push(chunk);
 		});
-		childProcess.on("exit", (code, signal) => {
-			if (code == null) {
-				resolve(undefined);
-			} else {
-				resolve(code);
-			}
+		childProcess.stderr.on("data", (chunk) => {
+			stderrChunks.push(chunk);
+		});
+		childProcess.on("error", (error) => {
+			let stdout = Buffer.concat(stdoutChunks);
+			let stderr = Buffer.concat(stderrChunks);
+			resolve({
+				stdout,
+				stderr,
+				error
+			});
+		});
+		childProcess.on("exit", (code) => {
+			let stdout = Buffer.concat(stdoutChunks);
+			let stderr = Buffer.concat(stderrChunks);
+			let status = code != null ? code : undefined;
+			resolve({
+				stdout,
+				stderr,
+				status
+			});
 		});
 	});
 };
 
+export type RunLog = {
+	path: string;
+	runtime: string;
+	stdout: string;
+	stderr: string;
+	error?: Error;
+	status?: number;
+};
+
 export interface Runner {
 	matches(path: string): boolean;
-	run(path: string): Promise<number | undefined>;
-};
-
-export class JavaScriptRunner implements Runner {
-	constructor() {}
-
-	matches(path: string): boolean {
-		return path.endsWith(".test.js");
-	}
-
-	run(path: string): Promise<number | undefined> {
-		return spawn("node", [path]);
-	}
-};
-
-export class TypeScriptRunner implements Runner {
-	constructor() {}
-
-	matches(path: string): boolean {
-		return path.endsWith(".test.ts");
-	}
-
-	run(path: string): Promise<number | undefined> {
-		return spawn("ts-node", [path]);
-	}
+	run(path: string): Promise<RunLog>;
 };
 
 export class CustomRunner implements Runner {
@@ -65,8 +71,33 @@ export class CustomRunner implements Runner {
 		return path.endsWith(this.suffix);
 	}
 
-	run(path: string): Promise<number | undefined> {
-		return spawn(this.runtime, [path]);
+	async run(path: string): Promise<RunLog> {
+		let runtime = this.runtime;
+		let outcome = await spawn(runtime, [path]);
+		let stdout = outcome.stdout.toString();
+		let stderr = outcome.stderr.toString();
+		let error = outcome.error;
+		let status = outcome.status;
+		return {
+			path,
+			runtime,
+			stdout,
+			stderr,
+			error,
+			status
+		};
+	}
+};
+
+export class JavaScriptRunner extends CustomRunner {
+	constructor() {
+		super(".test.js", "node");
+	}
+};
+
+export class TypeScriptRunner  extends CustomRunner {
+	constructor() {
+		super(".test.ts", "ts-node");
 	}
 };
 
@@ -138,32 +169,29 @@ export function createDefaultRunners(): Array<Runner> {
 	];
 };
 
-export type Outcome = {
-	subject: Subject;
-	status?: number;
+export type Log = {
+	suites: Array<RunLog>;
+	status: number;
 };
 
-export async function run(options: Options): Promise<number> {
+export async function run(options: Options): Promise<Log> {
 	let paths = options.paths ?? createDefaultPaths();
 	let runners = options.runners ?? createDefaultRunners();
 	let subjects = [] as Array<Subject>;
 	for (let path of paths) {
 		subjects.push(...scanPath(path, runners));
 	}
-	let outcomes = [] as Array<Outcome>;
+	let suites = [] as Array<RunLog>;
+	let status = 0;
 	for (let subject of subjects) {
-		let status = await subject.runner.run(subject.path);
-		outcomes.push({
-			subject,
-			status
-		});
-	}
-	let failures = 0;
-	for (let outcome of outcomes) {
-		if (outcome.status !== 0) {
-			console.log(`Failure: "${outcome.subject.path}" exited with status (${outcome.status ?? ""})`);
-			failures += 1;
+		let runLog = await subject.runner.run(subject.path);
+		suites.push(runLog);
+		if (runLog.status !== 0) {
+			status += 1;
 		}
 	}
-	return failures;
+	return {
+		suites,
+		status
+	};
 };
