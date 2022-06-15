@@ -1,8 +1,26 @@
 # @joelek/wtf
 
-## Background
+Test runner and testing framework for projects built using TypeScript or JavaScript.
+
+```
+[npx] wtf --runner=.test.js:node --path=./source/
+```
+
+```ts
+import * as wtf from "@joelek/wtf";
+
+wtf.createSuite("MySuite", async (suite) => {
+	suite.defineTest(`It should not break!`, async () => {
+		// ...
+	});
+});
+```
 
 ## Features
+
+### Test runner
+
+### Testing framework
 
 ## Sponsorship
 
