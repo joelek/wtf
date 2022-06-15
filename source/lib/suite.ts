@@ -1,6 +1,6 @@
 export type TestCallback = () => Promise<void>;
 
-export class Test {
+export class TestCase {
 	private description: string;
 	private callback: TestCallback;
 
@@ -14,31 +14,31 @@ export class Test {
 			await this.callback();
 			return true;
 		} catch (error) {
-			console.log(`Failure: "${this.description}" raised an error.`);
+			console.log(`Case "${this.description}" raised an error:`);
 			console.log(error);
 			return false;
 		}
 	}
 };
 
-export class Suite {
+export class TestSuite {
 	private name: string;
-	private tests: Array<Test>;
+	private testCases: Array<TestCase>;
 
 	constructor(name: string) {
 		this.name = name;
-		this.tests = [];
+		this.testCases = [];
 	}
 
-	defineTest(description: string, callback: TestCallback): void {
-		let test = new Test(description, callback);
-		this.tests.push(test);
+	defineTestCase(description: string, callback: TestCallback): void {
+		let testCase = new TestCase(description, callback);
+		this.testCases.push(testCase);
 	}
 
 	async run(): Promise<number> {
 		let failures = 0;
-		for (let test of this.tests) {
-			let outcome = await test.run();
+		for (let testCase of this.testCases) {
+			let outcome = await testCase.run();
 			if (!outcome) {
 				failures += 1;
 			}
@@ -47,8 +47,8 @@ export class Suite {
 	}
 };
 
-export async function createSuite(name: string, callback: (suite: Suite) => Promise<void>): Promise<void> {
-	let suite = new Suite(name);
+export async function createTestSuite(name: string, callback: (suite: TestSuite) => Promise<void>): Promise<void> {
+	let suite = new TestSuite(name);
 	await callback(suite);
 	let status = await suite.run();
 	process.exit(status);

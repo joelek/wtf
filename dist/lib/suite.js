@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSuite = exports.Suite = exports.Test = void 0;
-class Test {
+exports.createTestSuite = exports.TestSuite = exports.TestCase = void 0;
+class TestCase {
     constructor(description, callback) {
         this.description = description;
         this.callback = callback;
@@ -22,29 +22,29 @@ class Test {
                 return true;
             }
             catch (error) {
-                console.log(`Failure: "${this.description}" raised an error.`);
+                console.log(`Case "${this.description}" raised an error:`);
                 console.log(error);
                 return false;
             }
         });
     }
 }
-exports.Test = Test;
+exports.TestCase = TestCase;
 ;
-class Suite {
+class TestSuite {
     constructor(name) {
         this.name = name;
-        this.tests = [];
+        this.testCases = [];
     }
-    defineTest(description, callback) {
-        let test = new Test(description, callback);
-        this.tests.push(test);
+    defineTestCase(description, callback) {
+        let testCase = new TestCase(description, callback);
+        this.testCases.push(testCase);
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
             let failures = 0;
-            for (let test of this.tests) {
-                let outcome = yield test.run();
+            for (let testCase of this.testCases) {
+                let outcome = yield testCase.run();
                 if (!outcome) {
                     failures += 1;
                 }
@@ -53,15 +53,15 @@ class Suite {
         });
     }
 }
-exports.Suite = Suite;
+exports.TestSuite = TestSuite;
 ;
-function createSuite(name, callback) {
+function createTestSuite(name, callback) {
     return __awaiter(this, void 0, void 0, function* () {
-        let suite = new Suite(name);
+        let suite = new TestSuite(name);
         yield callback(suite);
         let status = yield suite.run();
         process.exit(status);
     });
 }
-exports.createSuite = createSuite;
+exports.createTestSuite = createTestSuite;
 ;
