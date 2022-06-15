@@ -17,7 +17,9 @@ export declare type Subject = {
     runner: Runner;
     path: string;
 };
+export declare function scanFile(path: string, runners: Array<Runner>): Array<Subject>;
 export declare function scanDirectory(parentPath: string, runners: Array<Runner>): Array<Subject>;
+export declare function scanPath(path: string, runners: Array<Runner>): Array<Subject>;
 export declare type Options = {
     paths?: Array<string>;
     runners?: Array<Runner>;

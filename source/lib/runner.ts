@@ -57,6 +57,19 @@ export type Subject = {
 	path: string;
 };
 
+export function scanFile(path: string, runners: Array<Runner>): Array<Subject> {
+	for (let runner of runners) {
+		if (runner.matches(path)) {
+			let subject = {
+				runner,
+				path
+			};
+			return [subject];
+		}
+	}
+	return [];
+};
+
 export function scanDirectory(parentPath: string, runners: Array<Runner>): Array<Subject> {
 	let subjects = [] as Array<Subject>;
 	let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
@@ -67,19 +80,26 @@ export function scanDirectory(parentPath: string, runners: Array<Runner>): Array
 			continue;
 		}
 		if (entry.isFile()) {
-			for (let runner of runners) {
-				if (runner.matches(entry.name)) {
-					subjects.push({
-						runner,
-						path
-					});
-					break;
-				}
-			}
+			subjects.push(...scanFile(path, runners));
 			continue;
 		}
 	}
 	return subjects;
+};
+
+export function scanPath(path: string, runners: Array<Runner>): Array<Subject> {
+	if (libfs.existsSync(path)) {
+		let stats = libfs.statSync(path);
+		if (stats.isDirectory()) {
+			return scanDirectory(path, runners);
+		}
+		if (stats.isFile()) {
+			return scanFile(path, runners);
+		}
+	} else {
+		console.log(`Path "${path}" does not exist!`);
+	}
+	return [];
 };
 
 export type Options = {
@@ -110,23 +130,7 @@ export async function run(options: Options): Promise<number> {
 	let runners = options.runners ?? createDefaultRunners();
 	let subjects = [] as Array<Subject>;
 	for (let path of paths) {
-		let stats = libfs.statSync(path);
-		if (stats.isDirectory()) {
-			subjects.push(...scanDirectory(path, runners));
-			continue;
-		}
-		if (stats.isFile()) {
-			for (let runner of runners) {
-				if (runner.matches(path)) {
-					subjects.push({
-						runner,
-						path
-					});
-					break;
-				}
-			}
-			continue;
-		}
+		subjects.push(...scanPath(path, runners));
 	}
 	let outcomes = [] as Array<Outcome>;
 	for (let subject of subjects) {

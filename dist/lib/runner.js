@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanDirectory = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.spawn = void 0;
+exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectory = exports.scanFile = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.spawn = void 0;
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
@@ -61,6 +61,20 @@ class TypeScriptRunner {
 }
 exports.TypeScriptRunner = TypeScriptRunner;
 ;
+function scanFile(path, runners) {
+    for (let runner of runners) {
+        if (runner.matches(path)) {
+            let subject = {
+                runner,
+                path
+            };
+            return [subject];
+        }
+    }
+    return [];
+}
+exports.scanFile = scanFile;
+;
 function scanDirectory(parentPath, runners) {
     let subjects = [];
     let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
@@ -71,21 +85,30 @@ function scanDirectory(parentPath, runners) {
             continue;
         }
         if (entry.isFile()) {
-            for (let runner of runners) {
-                if (runner.matches(entry.name)) {
-                    subjects.push({
-                        runner,
-                        path
-                    });
-                    break;
-                }
-            }
+            subjects.push(...scanFile(path, runners));
             continue;
         }
     }
     return subjects;
 }
 exports.scanDirectory = scanDirectory;
+;
+function scanPath(path, runners) {
+    if (libfs.existsSync(path)) {
+        let stats = libfs.statSync(path);
+        if (stats.isDirectory()) {
+            return scanDirectory(path, runners);
+        }
+        if (stats.isFile()) {
+            return scanFile(path, runners);
+        }
+    }
+    else {
+        console.log(`Path "${path}" does not exist!`);
+    }
+    return [];
+}
+exports.scanPath = scanPath;
 ;
 function createDefaultPaths() {
     return [
@@ -109,23 +132,7 @@ function run(options) {
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
         let subjects = [];
         for (let path of paths) {
-            let stats = libfs.statSync(path);
-            if (stats.isDirectory()) {
-                subjects.push(...scanDirectory(path, runners));
-                continue;
-            }
-            if (stats.isFile()) {
-                for (let runner of runners) {
-                    if (runner.matches(path)) {
-                        subjects.push({
-                            runner,
-                            path
-                        });
-                        break;
-                    }
-                }
-                continue;
-            }
+            subjects.push(...scanPath(path, runners));
         }
         let outcomes = [];
         for (let subject of subjects) {
