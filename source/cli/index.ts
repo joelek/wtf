@@ -72,4 +72,4 @@ async function run(): Promise<number> {
 	}
 };
 
-run().then(process.exit).catch(console.error);
+run().then(process.exit);

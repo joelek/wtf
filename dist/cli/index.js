@@ -84,4 +84,4 @@ function run() {
     });
 }
 ;
-run().then(process.exit).catch(console.error);
+run().then(process.exit);
