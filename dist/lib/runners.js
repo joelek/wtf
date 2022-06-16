@@ -181,7 +181,7 @@ function run(options) {
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
         let runnables = [];
         for (let path of paths) {
-            runnables.push(...scanPath(path, runners, logger));
+            runnables.push(...scanPath(libpath.normalize(path), runners, logger));
         }
         let reports = [];
         let status = 0;

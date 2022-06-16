@@ -183,7 +183,7 @@ export async function run(options: Options): Promise<number> {
 	let runners = options.runners ?? createDefaultRunners();
 	let runnables = [] as Array<Runnable>;
 	for (let path of paths) {
-		runnables.push(...scanPath(path, runners, logger));
+		runnables.push(...scanPath(libpath.normalize(path), runners, logger));
 	}
 	let reports = [] as Array<RunReport>;
 	let status = 0;
