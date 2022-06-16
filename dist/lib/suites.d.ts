@@ -6,10 +6,10 @@ export declare class TestCase {
     run(): Promise<boolean>;
 }
 export declare class TestSuite {
-    private name;
+    private description;
     private testCases;
-    constructor(name: string);
+    constructor(description: string);
     defineTestCase(description: string, callback: TestCallback): void;
     run(): Promise<number>;
 }
-export declare function createTestSuite(name: string, callback: (suite: TestSuite) => Promise<void>): Promise<void>;
+export declare function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void>;

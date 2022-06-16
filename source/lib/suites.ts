@@ -22,11 +22,11 @@ export class TestCase {
 };
 
 export class TestSuite {
-	private name: string;
+	private description: string;
 	private testCases: Array<TestCase>;
 
-	constructor(name: string) {
-		this.name = name;
+	constructor(description: string) {
+		this.description = description;
 		this.testCases = [];
 	}
 
@@ -47,8 +47,8 @@ export class TestSuite {
 	}
 };
 
-export async function createTestSuite(name: string, callback: (suite: TestSuite) => Promise<void>): Promise<void> {
-	let suite = new TestSuite(name);
+export async function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void> {
+	let suite = new TestSuite(description);
 	await callback(suite);
 	let status = await suite.run();
 	process.exit(status);

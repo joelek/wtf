@@ -32,8 +32,8 @@ class TestCase {
 exports.TestCase = TestCase;
 ;
 class TestSuite {
-    constructor(name) {
-        this.name = name;
+    constructor(description) {
+        this.description = description;
         this.testCases = [];
     }
     defineTestCase(description, callback) {
@@ -55,9 +55,9 @@ class TestSuite {
 }
 exports.TestSuite = TestSuite;
 ;
-function createTestSuite(name, callback) {
+function createTestSuite(description, callback) {
     return __awaiter(this, void 0, void 0, function* () {
-        let suite = new TestSuite(name);
+        let suite = new TestSuite(description);
         yield callback(suite);
         let status = yield suite.run();
         process.exit(status);
