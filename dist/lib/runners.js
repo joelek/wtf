@@ -107,7 +107,7 @@ class TypeScriptRunner extends CustomRunner {
 }
 exports.TypeScriptRunner = TypeScriptRunner;
 ;
-function scanFilePath(path, runners) {
+function scanFilePath(path, runners, logger) {
     for (let runner of runners) {
         if (runner.matches(path)) {
             let runnable = {
@@ -121,17 +121,17 @@ function scanFilePath(path, runners) {
 }
 exports.scanFilePath = scanFilePath;
 ;
-function scanDirectoryPath(parentPath, runners) {
+function scanDirectoryPath(parentPath, runners, logger) {
     let runnables = [];
     let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
     for (let entry of entries) {
         let path = libpath.join(parentPath, entry.name);
         if (entry.isDirectory()) {
-            runnables.push(...scanDirectoryPath(path, runners));
+            runnables.push(...scanDirectoryPath(path, runners, logger));
             continue;
         }
         if (entry.isFile()) {
-            runnables.push(...scanFilePath(path, runners));
+            runnables.push(...scanFilePath(path, runners, logger));
             continue;
         }
     }
@@ -144,14 +144,14 @@ function scanPath(path, runners, logger) {
     if (libfs.existsSync(path)) {
         let stats = libfs.statSync(path);
         if (stats.isDirectory()) {
-            return scanDirectoryPath(path, runners);
+            return scanDirectoryPath(path, runners, logger);
         }
         if (stats.isFile()) {
-            return scanFilePath(path, runners);
+            return scanFilePath(path, runners, logger);
         }
     }
     else {
-        throw `Path "${path}" does not exist!`;
+        logger === null || logger === void 0 ? void 0 : logger.log(`Path "${path}" does not exist!\n`);
     }
     return [];
 }
@@ -173,13 +173,15 @@ function createDefaultRunners() {
 exports.createDefaultRunners = createDefaultRunners;
 ;
 function run(options) {
-    var _a, _b, _c;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
+        let logger = options.logger;
         let paths = (_a = options.paths) !== null && _a !== void 0 ? _a : createDefaultPaths();
+        let reporter = options.reporter;
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
         let runnables = [];
         for (let path of paths) {
-            runnables.push(...scanPath(path, runners));
+            runnables.push(...scanPath(path, runners, logger));
         }
         let reports = [];
         let status = 0;
@@ -190,7 +192,7 @@ function run(options) {
                 status += 1;
             }
         }
-        (_c = options.reporter) === null || _c === void 0 ? void 0 : _c.report({
+        reporter === null || reporter === void 0 ? void 0 : reporter.report({
             reports,
             status
         });

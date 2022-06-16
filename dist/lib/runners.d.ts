@@ -30,8 +30,8 @@ export declare type Runnable = {
     runner: Runner;
     path: string;
 };
-export declare function scanFilePath(path: string, runners: Array<Runner>): Array<Runnable>;
-export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>): Array<Runnable>;
+export declare function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
+export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
 export declare function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
 export declare type Options = {
     logger?: Logger;

@@ -110,7 +110,7 @@ export type Runnable = {
 	path: string;
 };
 
-export function scanFilePath(path: string, runners: Array<Runner>): Array<Runnable> {
+export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable> {
 	for (let runner of runners) {
 		if (runner.matches(path)) {
 			let runnable = {
@@ -123,17 +123,17 @@ export function scanFilePath(path: string, runners: Array<Runner>): Array<Runnab
 	return [];
 };
 
-export function scanDirectoryPath(parentPath: string, runners: Array<Runner>): Array<Runnable> {
+export function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Runnable> {
 	let runnables = [] as Array<Runnable>;
 	let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
 	for (let entry of entries) {
 		let path = libpath.join(parentPath, entry.name);
 		if (entry.isDirectory()) {
-			runnables.push(...scanDirectoryPath(path, runners));
+			runnables.push(...scanDirectoryPath(path, runners, logger));
 			continue;
 		}
 		if (entry.isFile()) {
-			runnables.push(...scanFilePath(path, runners));
+			runnables.push(...scanFilePath(path, runners, logger));
 			continue;
 		}
 	}
@@ -145,13 +145,13 @@ export function scanPath(path: string, runners: Array<Runner>, logger?: Logger):
 	if (libfs.existsSync(path)) {
 		let stats = libfs.statSync(path);
 		if (stats.isDirectory()) {
-			return scanDirectoryPath(path, runners);
+			return scanDirectoryPath(path, runners, logger);
 		}
 		if (stats.isFile()) {
-			return scanFilePath(path, runners);
+			return scanFilePath(path, runners, logger);
 		}
 	} else {
-		throw `Path "${path}" does not exist!`;
+		logger?.log(`Path "${path}" does not exist!\n`);
 	}
 	return [];
 };
@@ -177,11 +177,13 @@ export function createDefaultRunners(): Array<Runner> {
 };
 
 export async function run(options: Options): Promise<number> {
+	let logger = options.logger;
 	let paths = options.paths ?? createDefaultPaths();
+	let reporter = options.reporter;
 	let runners = options.runners ?? createDefaultRunners();
 	let runnables = [] as Array<Runnable>;
 	for (let path of paths) {
-		runnables.push(...scanPath(path, runners));
+		runnables.push(...scanPath(path, runners, logger));
 	}
 	let reports = [] as Array<RunReport>;
 	let status = 0;
@@ -192,7 +194,7 @@ export async function run(options: Options): Promise<number> {
 			status += 1;
 		}
 	}
-	options.reporter?.report({
+	reporter?.report({
 		reports,
 		status
 	});
