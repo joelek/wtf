@@ -10,10 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const version_json_1 = require("../version.json");
 const lib = require("../lib");
 function run() {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(`wtf v${version_json_1.version}`);
         let options = {};
         let unrecognizedArgumentCount = 0;
         for (let arg of process.argv.slice(2)) {

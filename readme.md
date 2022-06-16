@@ -54,5 +54,4 @@ NB: This project targets TypeScript 4 in strict mode.
 
 ## Roadmap
 
-* Display version to user somewhere.
 * Make JSON output optional.

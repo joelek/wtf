@@ -15,7 +15,8 @@
 		"url": "https://github.com/joelek/wtf.git"
 	},
 	"scripts": {
-		"build": "npm run compile && npm run package",
+		"versiongen": "node -p \"JSON.stringify({ version: require('./package.json').version }, null, '\t')\" > source/version.json",
+		"build": "npm run versiongen && npm run compile && npm run package",
 		"clean": "rm -rf ./build/ ./node_modules/",
 		"compile": "rm -rf ./build/* && npx tsc --build",
 		"package": "rm -rf ./dist/* && cp -r ./build/* ./dist/",
