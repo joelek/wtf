@@ -78,6 +78,7 @@ class CustomRunner {
             let stderr = result.stderr.toString();
             let error = result.error == null ? undefined : serializeError(result.error);
             let status = result.status;
+            console.log(`Completed with status (${status !== null && status !== void 0 ? status : ""}).`);
             return {
                 command,
                 path,
@@ -138,6 +139,7 @@ function scanDirectoryPath(parentPath, runners) {
 exports.scanDirectoryPath = scanDirectoryPath;
 ;
 function scanPath(path, runners) {
+    console.log(`Scanning "${path}" for files...`);
     if (libfs.existsSync(path)) {
         let stats = libfs.statSync(path);
         if (stats.isDirectory()) {

@@ -56,4 +56,3 @@ NB: This project targets TypeScript 4 in strict mode.
 
 * Display version to user somewhere.
 * Make JSON output optional.
-* Log events in real time.

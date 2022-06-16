@@ -93,6 +93,7 @@ export class CustomRunner implements Runner {
 		let stderr = result.stderr.toString();
 		let error = result.error == null ? undefined : serializeError(result.error);
 		let status = result.status;
+		console.log(`Completed with status (${status ?? ""}).`);
 		return {
 			command,
 			path,
@@ -152,6 +153,7 @@ export function scanDirectoryPath(parentPath: string, runners: Array<Runner>): A
 };
 
 export function scanPath(path: string, runners: Array<Runner>): Array<Runnable> {
+	console.log(`Scanning "${path}" for files...`);
 	if (libfs.existsSync(path)) {
 		let stats = libfs.statSync(path);
 		if (stats.isDirectory()) {
