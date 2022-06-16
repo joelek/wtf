@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { version } from "../version.json";
+import * as app from "../app.json";
 import * as lib from "../lib";
 
 async function run(): Promise<number> {
-	console.log(`wtf v${version}`);
+	console.log(`${app.name} v${app.version}`);
 	let options: lib.runners.Options = {};
 	let unrecognizedArgumentCount = 0;
 	for (let arg of process.argv.slice(2)) {

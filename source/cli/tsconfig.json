@@ -7,7 +7,7 @@
 	"extends": "../../tsconfig.json",
 	"include": [
 		"./",
-		"../version.json"
+		"../app.json"
 	],
 	"references": [
 		{
