@@ -13,3 +13,5 @@ export declare class StdoutLogger extends WriteStreamLogger {
 export declare class StderrLogger extends WriteStreamLogger {
     constructor();
 }
+export declare const stdout: StdoutLogger;
+export declare const stderr: StderrLogger;

@@ -12,14 +12,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const app = require("../app.json");
 const lib = require("../lib");
-const stdout = new lib.loggers.StdoutLogger();
-const stderr = new lib.loggers.StderrLogger();
 function getLogger(target) {
     if (target === "stdout") {
-        return stdout;
+        return lib.loggers.stdout;
     }
     if (target === "stderr") {
-        return stderr;
+        return lib.loggers.stderr;
     }
 }
 ;
@@ -27,7 +25,7 @@ function run() {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         let options = {
-            logger: stdout
+            logger: lib.loggers.stdout
         };
         let unrecognizedArguments = [];
         for (let arg of process.argv.slice(2)) {
@@ -71,14 +69,15 @@ function run() {
             return status;
         }
         else {
+            let logger = lib.loggers.stderr;
             for (let unrecognizedArgument of unrecognizedArguments) {
-                stderr.log(`Unrecognized argument "${unrecognizedArgument}"!\n`);
+                logger.log(`Unrecognized argument "${unrecognizedArgument}"!\n`);
             }
-            stderr.log(`Arguments:\n`);
-            stderr.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
-            stderr.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
-            stderr.log(`\t--reporter=<target>:<reporter> Report to the specified target ("stdout" or "stderr") using the specified reporter ("json").\n`);
-            stderr.log(`\t--runner=<suffix>:<command> Launch the specified command for every filename that ends with the specified suffix.\n`);
+            logger.log(`Arguments:\n`);
+            logger.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
+            logger.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
+            logger.log(`\t--reporter=<target>:<reporter> Report to the specified target ("stdout" or "stderr") using the specified reporter ("json").\n`);
+            logger.log(`\t--runner=<suffix>:<command> Launch the specified command for every filename that ends with the specified suffix.\n`);
             return unrecognizedArguments.length;
         }
     });

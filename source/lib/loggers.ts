@@ -25,3 +25,6 @@ export class StderrLogger extends WriteStreamLogger {
 		super(process.stderr);
 	}
 };
+
+export const stdout = new StdoutLogger();
+export const stderr = new StderrLogger();

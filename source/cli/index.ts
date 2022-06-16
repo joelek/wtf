@@ -3,21 +3,18 @@
 import * as app from "../app.json";
 import * as lib from "../lib";
 
-const stdout = new lib.loggers.StdoutLogger();
-const stderr = new lib.loggers.StderrLogger();
-
 function getLogger(target: string): lib.loggers.Logger | undefined {
 	if (target === "stdout") {
-		return stdout;
+		return lib.loggers.stdout;
 	}
 	if (target === "stderr") {
-		return stderr;
+		return lib.loggers.stderr;
 	}
 };
 
 async function run(): Promise<number> {
 	let options: lib.runners.Options = {
-		logger: stdout
+		logger: lib.loggers.stdout
 	};
 	let unrecognizedArguments = [] as Array<string>;
 	for (let arg of process.argv.slice(2)) {
@@ -60,14 +57,15 @@ async function run(): Promise<number> {
 		let status = await lib.runners.run(options);
 		return status;
 	} else {
+		let logger = lib.loggers.stderr;
 		for (let unrecognizedArgument of unrecognizedArguments) {
-			stderr.log(`Unrecognized argument "${unrecognizedArgument}"!\n`);
+			logger.log(`Unrecognized argument "${unrecognizedArgument}"!\n`);
 		}
-		stderr.log(`Arguments:\n`);
-		stderr.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
-		stderr.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
-		stderr.log(`\t--reporter=<target>:<reporter> Report to the specified target ("stdout" or "stderr") using the specified reporter ("json").\n`);
-		stderr.log(`\t--runner=<suffix>:<command> Launch the specified command for every filename that ends with the specified suffix.\n`);
+		logger.log(`Arguments:\n`);
+		logger.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
+		logger.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
+		logger.log(`\t--reporter=<target>:<reporter> Report to the specified target ("stdout" or "stderr") using the specified reporter ("json").\n`);
+		logger.log(`\t--runner=<suffix>:<command> Launch the specified command for every filename that ends with the specified suffix.\n`);
 		return unrecognizedArguments.length;
 	}
 };
