@@ -1,3 +1,3 @@
-export * as runner from "./runner";
-export * as suite from "./suite";
-export { createTestSuite } from "./suite";
+export * as runners from "./runners";
+export * as suites from "./suites";
+export { createTestSuite } from "./suites";
