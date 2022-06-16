@@ -3,7 +3,11 @@
 Test runner and testing framework for projects built using TypeScript or JavaScript.
 
 ```
-[npx] wtf --runner=.test.js:node --path=./source/
+[npx] wtf \
+	--logger=stdout \
+	--path=./source/ \
+	--reporter=stderr:json \
+	--runner=.test.js:node
 ```
 
 ```ts
@@ -53,5 +57,3 @@ npm install joelek/wtf#master
 NB: This project targets TypeScript 4 in strict mode.
 
 ## Roadmap
-
-* Make JSON output optional.

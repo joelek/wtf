@@ -13,19 +13,19 @@ exports.run = exports.createDefaultRunners = exports.createDefaultPaths = export
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
-function spawn(command, parameters) {
+function spawn(command, parameters, logger) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             let childProcess = libcp.spawn(command, parameters, { shell: true });
             let stdoutChunks = [];
             let stderrChunks = [];
-            childProcess.stdout.pipe(process.stdout);
-            childProcess.stderr.pipe(process.stdout); // This is intentional.
             childProcess.stdout.on("data", (chunk) => {
                 stdoutChunks.push(chunk);
+                logger === null || logger === void 0 ? void 0 : logger.log(chunk);
             });
             childProcess.stderr.on("data", (chunk) => {
                 stderrChunks.push(chunk);
+                logger === null || logger === void 0 ? void 0 : logger.log(chunk);
             });
             childProcess.on("error", (error) => {
                 let stdout = Buffer.concat(stdoutChunks);
@@ -52,10 +52,11 @@ function spawn(command, parameters) {
 exports.spawn = spawn;
 ;
 function serializeError(error) {
+    let { name, message, stack } = Object.assign({}, error);
     return {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
+        name,
+        message,
+        stack
     };
 }
 exports.serializeError = serializeError;
@@ -69,16 +70,16 @@ class CustomRunner {
     matches(path) {
         return path.endsWith(this.suffix);
     }
-    run(path) {
+    run(path, logger) {
         return __awaiter(this, void 0, void 0, function* () {
             let command = this.command;
-            console.log(`Running ${command} "${path}"...`);
-            let result = yield spawn(command, [path]);
+            logger === null || logger === void 0 ? void 0 : logger.log(`Running ${command} "${path}"...\n`);
+            let result = yield spawn(command, [path], logger);
             let stdout = result.stdout.toString();
             let stderr = result.stderr.toString();
             let error = result.error == null ? undefined : serializeError(result.error);
             let status = result.status;
-            console.log(`Completed with status (${status !== null && status !== void 0 ? status : ""}).`);
+            logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status (${status !== null && status !== void 0 ? status : ""}).\n`);
             return {
                 command,
                 path,
@@ -138,8 +139,8 @@ function scanDirectoryPath(parentPath, runners) {
 }
 exports.scanDirectoryPath = scanDirectoryPath;
 ;
-function scanPath(path, runners) {
-    console.log(`Scanning "${path}" for files...`);
+function scanPath(path, runners, logger) {
+    logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for files...\n`);
     if (libfs.existsSync(path)) {
         let stats = libfs.statSync(path);
         if (stats.isDirectory()) {
@@ -172,7 +173,7 @@ function createDefaultRunners() {
 exports.createDefaultRunners = createDefaultRunners;
 ;
 function run(options) {
-    var _a, _b;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         let paths = (_a = options.paths) !== null && _a !== void 0 ? _a : createDefaultPaths();
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
@@ -180,19 +181,20 @@ function run(options) {
         for (let path of paths) {
             runnables.push(...scanPath(path, runners));
         }
-        let logs = [];
+        let reports = [];
         let status = 0;
         for (let runnable of runnables) {
-            let log = yield runnable.runner.run(runnable.path);
-            logs.push(log);
-            if (log.status !== 0) {
+            let report = yield runnable.runner.run(runnable.path, options.logger);
+            reports.push(report);
+            if (report.status !== 0) {
                 status += 1;
             }
         }
-        return {
-            logs,
+        (_c = options.reporter) === null || _c === void 0 ? void 0 : _c.report({
+            reports,
             status
-        };
+        });
+        return status;
     });
 }
 exports.run = run;

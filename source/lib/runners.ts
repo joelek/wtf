@@ -1,6 +1,8 @@
 import * as libcp from "child_process";
 import * as libfs from "fs";
 import * as libpath from "path";
+import { Logger } from "./loggers";
+import { RunReport as RunReport, Report, Reporter } from "./reporters";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -9,18 +11,18 @@ export type SpawnResult = {
 	status?: number;
 };
 
-export async function spawn(command: string, parameters: Array<string>): Promise<SpawnResult> {
+export async function spawn(command: string, parameters: Array<string>, logger?: Logger): Promise<SpawnResult> {
 	return new Promise((resolve, reject) => {
 		let childProcess = libcp.spawn(command, parameters, { shell: true });
 		let stdoutChunks = [] as Array<Buffer>;
 		let stderrChunks = [] as Array<Buffer>;
-		childProcess.stdout.pipe(process.stdout);
-		childProcess.stderr.pipe(process.stdout); // This is intentional.
 		childProcess.stdout.on("data", (chunk) => {
 			stdoutChunks.push(chunk);
+			logger?.log(chunk);
 		});
 		childProcess.stderr.on("data", (chunk) => {
 			stderrChunks.push(chunk);
+			logger?.log(chunk);
 		});
 		childProcess.on("error", (error) => {
 			let stdout = Buffer.concat(stdoutChunks);
@@ -44,32 +46,18 @@ export async function spawn(command: string, parameters: Array<string>): Promise
 	});
 };
 
-export type SerializedError = {
-	name: string;
-	message: string;
-	stack?: string;
-};
-
-export function serializeError(error: Error): SerializedError {
+export function serializeError(error: Error): Error {
+	let { name, message, stack } = { ...error };
 	return {
-		name: error.name,
-		message: error.message,
-		stack: error.stack
+		name,
+		message,
+		stack
 	};
-};
-
-export type Log = {
-	command: string;
-	path: string;
-	stdout: string;
-	stderr: string;
-	error?: SerializedError;
-	status?: number;
 };
 
 export interface Runner {
 	matches(path: string): boolean;
-	run(path: string): Promise<Log>;
+	run(path: string, logger?: Logger): Promise<RunReport>;
 };
 
 export class CustomRunner implements Runner {
@@ -85,15 +73,15 @@ export class CustomRunner implements Runner {
 		return path.endsWith(this.suffix);
 	}
 
-	async run(path: string): Promise<Log> {
+	async run(path: string, logger?: Logger): Promise<RunReport> {
 		let command = this.command;
-		console.log(`Running ${command} "${path}"...`);
-		let result = await spawn(command, [path]);
+		logger?.log(`Running ${command} "${path}"...\n`);
+		let result = await spawn(command, [path], logger);
 		let stdout = result.stdout.toString();
 		let stderr = result.stderr.toString();
 		let error = result.error == null ? undefined : serializeError(result.error);
 		let status = result.status;
-		console.log(`Completed with status (${status ?? ""}).`);
+		logger?.log(`Completed with status (${status ?? ""}).\n`);
 		return {
 			command,
 			path,
@@ -152,8 +140,8 @@ export function scanDirectoryPath(parentPath: string, runners: Array<Runner>): A
 	return runnables;
 };
 
-export function scanPath(path: string, runners: Array<Runner>): Array<Runnable> {
-	console.log(`Scanning "${path}" for files...`);
+export function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable> {
+	logger?.log(`Scanning "${path}" for files...\n`);
 	if (libfs.existsSync(path)) {
 		let stats = libfs.statSync(path);
 		if (stats.isDirectory()) {
@@ -169,7 +157,9 @@ export function scanPath(path: string, runners: Array<Runner>): Array<Runnable> 
 };
 
 export type Options = {
+	logger?: Logger;
 	paths?: Array<string>;
+	reporter?: Reporter;
 	runners?: Array<Runner>;
 };
 
@@ -186,29 +176,25 @@ export function createDefaultRunners(): Array<Runner> {
 	];
 };
 
-export type RunResult = {
-	logs: Array<Log>;
-	status: number;
-};
-
-export async function run(options: Options): Promise<RunResult> {
+export async function run(options: Options): Promise<number> {
 	let paths = options.paths ?? createDefaultPaths();
 	let runners = options.runners ?? createDefaultRunners();
 	let runnables = [] as Array<Runnable>;
 	for (let path of paths) {
 		runnables.push(...scanPath(path, runners));
 	}
-	let logs = [] as Array<Log>;
+	let reports = [] as Array<RunReport>;
 	let status = 0;
 	for (let runnable of runnables) {
-		let log = await runnable.runner.run(runnable.path);
-		logs.push(log);
-		if (log.status !== 0) {
+		let report = await runnable.runner.run(runnable.path, options.logger);
+		reports.push(report);
+		if (report.status !== 0) {
 			status += 1;
 		}
 	}
-	return {
-		logs,
+	options.reporter?.report({
+		reports,
 		status
-	};
+	});
+	return status;
 };
