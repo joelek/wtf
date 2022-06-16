@@ -19,6 +19,8 @@ function spawn(command, parameters) {
             let childProcess = libcp.spawn(command, parameters, { shell: true });
             let stdoutChunks = [];
             let stderrChunks = [];
+            childProcess.stdout.pipe(process.stdout);
+            childProcess.stderr.pipe(process.stdout); // This is intentional.
             childProcess.stdout.on("data", (chunk) => {
                 stdoutChunks.push(chunk);
             });

@@ -14,6 +14,8 @@ export async function spawn(command: string, parameters: Array<string>): Promise
 		let childProcess = libcp.spawn(command, parameters, { shell: true });
 		let stdoutChunks = [] as Array<Buffer>;
 		let stderrChunks = [] as Array<Buffer>;
+		childProcess.stdout.pipe(process.stdout);
+		childProcess.stderr.pipe(process.stdout); // This is intentional.
 		childProcess.stdout.on("data", (chunk) => {
 			stdoutChunks.push(chunk);
 		});
