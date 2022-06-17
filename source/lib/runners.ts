@@ -86,7 +86,7 @@ export class CustomRunner implements Runner {
 
 	async run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
 		let command = this.command;
-		logger?.log(`Running ${command} "${path}"...\n`);
+		logger?.log(`Spawning ${command} "${path}"...\n`);
 		let result = await spawn(command, [path], logger, environment);
 		let stdout = parseIfPossible(result.stdout.toString());
 		let stderr = parseIfPossible(result.stderr.toString());

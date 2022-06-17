@@ -78,7 +78,7 @@ class CustomRunner {
     run(path, logger, environment) {
         return __awaiter(this, void 0, void 0, function* () {
             let command = this.command;
-            logger === null || logger === void 0 ? void 0 : logger.log(`Running ${command} "${path}"...\n`);
+            logger === null || logger === void 0 ? void 0 : logger.log(`Spawning ${command} "${path}"...\n`);
             let result = yield spawn(command, [path], logger, environment);
             let stdout = parseIfPossible(result.stdout.toString());
             let stderr = parseIfPossible(result.stderr.toString());
