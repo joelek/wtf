@@ -6,7 +6,6 @@ import * as reporters from "./reporters";
 import { SerializedError } from "./errors";
 import { JSON } from "./json";
 import { Logger } from "./loggers";
-import { Reporter } from "./reporters";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 
 export type SpawnResult = {
