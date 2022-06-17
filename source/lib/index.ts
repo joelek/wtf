@@ -1,4 +1,5 @@
 export * as errors from "./errors";
+export * as json from "./json";
 export * as loggers from "./loggers";
 export * as reporters from "./reporters";
 export * as runners from "./runners";

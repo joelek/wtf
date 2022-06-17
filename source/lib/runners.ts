@@ -2,8 +2,9 @@ import * as libcp from "child_process";
 import * as libfs from "fs";
 import * as libpath from "path";
 import { SerializedError } from "./errors";
+import { JSON } from "./json";
 import { Logger } from "./loggers";
-import { Reporter, JSON } from "./reporters";
+import { Reporter } from "./reporters";
 
 export type SpawnResult = {
 	stdout: Buffer;

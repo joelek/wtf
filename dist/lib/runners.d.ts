@@ -1,6 +1,7 @@
 /// <reference types="node" />
+import { JSON } from "./json";
 import { Logger } from "./loggers";
-import { Reporter, JSON } from "./reporters";
+import { Reporter } from "./reporters";
 export declare type SpawnResult = {
     stdout: Buffer;
     stderr: Buffer;

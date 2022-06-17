@@ -1,11 +1,8 @@
+import { JSON } from "./json";
 import { Logger } from "./loggers";
 
 export interface Reporter<A> {
 	report(report: A): void;
-};
-
-export type JSON = boolean | null | number | string | undefined | JSON[] | {
-	[key: string]: JSON;
 };
 
 export class JSONReporter implements Reporter<JSON> {
@@ -16,7 +13,7 @@ export class JSONReporter implements Reporter<JSON> {
 	}
 
 	report(report: JSON): void {
-		this.logger?.log(globalThis.JSON.stringify(report != null ? report : null, null, "\t") + "\n");
+		this.logger?.log(JSON.serialize(report) + "\n");
 	}
 };
 
