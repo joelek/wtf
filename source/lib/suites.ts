@@ -1,7 +1,8 @@
 import * as loggers from "./loggers";
 import { SerializedError } from "./errors";
 import { JSON } from "./json";
-import { JSONReporter } from "./reporters";
+import { LOGGER_KEY, REPORTER_KEY } from "./env";
+import { reporters } from ".";
 
 export type TestCallback = () => Promise<void>;
 
@@ -73,11 +74,11 @@ export class TestSuite {
 };
 
 export async function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void> {
+	let logger = loggers.getLogger(process.env[LOGGER_KEY]);
+	let reporter = reporters.getReporter(process.env[REPORTER_KEY]);
 	let suite = new TestSuite(description);
 	await callback(suite);
 	let report = await suite.run();
-	let logger = loggers.stderr;
-	let reporter = new JSONReporter(logger);
-	reporter.report(report);
+	reporter?.report(report);
 	process.exit(report.status);
 };

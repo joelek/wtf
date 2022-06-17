@@ -13,7 +13,8 @@ exports.createTestSuite = exports.TestSuite = exports.TestCase = void 0;
 const loggers = require("./loggers");
 const errors_1 = require("./errors");
 const json_1 = require("./json");
-const reporters_1 = require("./reporters");
+const env_1 = require("./env");
+const _1 = require(".");
 class TestCase {
     constructor(description, callback) {
         this.description = description;
@@ -71,12 +72,12 @@ exports.TestSuite = TestSuite;
 ;
 function createTestSuite(description, callback) {
     return __awaiter(this, void 0, void 0, function* () {
+        let logger = loggers.getLogger(process.env[env_1.LOGGER_KEY]);
+        let reporter = _1.reporters.getReporter(process.env[env_1.REPORTER_KEY]);
         let suite = new TestSuite(description);
         yield callback(suite);
         let report = yield suite.run();
-        let logger = loggers.stderr;
-        let reporter = new reporters_1.JSONReporter(logger);
-        reporter.report(report);
+        reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         process.exit(report.status);
     });
 }
