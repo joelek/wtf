@@ -6,7 +6,7 @@ Test runner and testing framework for projects built using TypeScript or JavaScr
 [npx] wtf \
 	--logger=stdout \
 	--path=./source/ \
-	--reporter=stderr:json \
+	--reporter=stderr \
 	--runner=.test.js:node
 ```
 

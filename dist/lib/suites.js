@@ -22,6 +22,7 @@ class TestCase {
                 return true;
             }
             catch (error) {
+                // todo, use loggers
                 console.log(`Case "${this.description}" raised an error:`);
                 console.log(error);
                 return false;

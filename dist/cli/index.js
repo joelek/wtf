@@ -43,13 +43,11 @@ function run() {
                 options.paths = paths;
                 continue;
             }
-            if ((parts = /^--reporter=(.*):(.*)$/.exec(arg)) != null) {
+            if ((parts = /^--reporter=(.*)$/.exec(arg)) != null) {
                 let target = parts[1];
-                let reporter = parts[2];
                 let logger = getLogger(target);
-                if (reporter === "json") {
-                    options.reporter = new lib.reporters.JSONReporter(logger);
-                }
+                let reporter = new lib.reporters.JSONReporter(logger);
+                options.reporter = reporter;
                 continue;
             }
             if ((parts = /^--runner=(.*):(.*)$/.exec(arg)) != null) {
@@ -76,7 +74,7 @@ function run() {
             logger.log(`Arguments:\n`);
             logger.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
             logger.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
-            logger.log(`\t--reporter=<target>:<reporter> Report to the specified target ("stdout" or "stderr") using the specified reporter ("json").\n`);
+            logger.log(`\t--reporter=<target> Report to the specified target ("stdout" or "stderr").\n`);
             logger.log(`\t--runner=<suffix>:<command> Launch the specified command for every filename that ends with the specified suffix.\n`);
             return unrecognizedArguments.length;
         }
