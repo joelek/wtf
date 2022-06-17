@@ -13,6 +13,8 @@ exports.run = exports.createDefaultRunners = exports.createDefaultPaths = export
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
+const loggers = require("./loggers");
+const reporters = require("./reporters");
 const errors_1 = require("./errors");
 const json_1 = require("./json");
 function spawn(command, parameters, logger) {
@@ -177,9 +179,9 @@ exports.createDefaultRunners = createDefaultRunners;
 function run(options) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        let logger = options.logger;
+        let logger = loggers.getLogger(options.logger);
         let paths = (_a = options.paths) !== null && _a !== void 0 ? _a : createDefaultPaths();
-        let reporter = options.reporter;
+        let reporter = reporters.getReporter(options.reporter);
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
         let runnables = [];
         for (let path of paths) {
@@ -188,7 +190,7 @@ function run(options) {
         let reports = [];
         let status = 0;
         for (let runnable of runnables) {
-            let report = yield runnable.runner.run(runnable.path, options.logger);
+            let report = yield runnable.runner.run(runnable.path, logger);
             reports.push(report);
             if (report.status !== 0) {
                 status += 1;

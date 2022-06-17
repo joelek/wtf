@@ -8,3 +8,4 @@ export declare class JSONReporter implements Reporter<JSON> {
     constructor(logger?: Logger);
     report(report: JSON): void;
 }
+export declare function getReporter(target: string | undefined): Reporter<any> | undefined;

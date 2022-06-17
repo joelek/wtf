@@ -15,3 +15,4 @@ export declare class StderrLogger extends WriteStreamLogger {
 }
 export declare const stdout: StdoutLogger;
 export declare const stderr: StderrLogger;
+export declare function getLogger(target: string | undefined): Logger | undefined;

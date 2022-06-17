@@ -12,28 +12,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const app = require("../app.json");
 const lib = require("../lib");
-function getLogger(target) {
-    if (target === "stdout") {
-        return lib.loggers.stdout;
-    }
-    if (target === "stderr") {
-        return lib.loggers.stderr;
-    }
-}
-;
 function run() {
-    var _a, _b, _c;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         let options = {
-            logger: lib.loggers.stdout
+            logger: "stdout",
+            reporter: undefined
         };
         let unrecognizedArguments = [];
         for (let arg of process.argv.slice(2)) {
             let parts = null;
             if ((parts = /^--logger=(.*)$/.exec(arg)) != null) {
                 let target = parts[1];
-                let logger = getLogger(target);
-                options.logger = logger;
+                options.logger = target;
                 continue;
             }
             if ((parts = /^--path=(.*)$/.exec(arg)) != null) {
@@ -45,9 +36,7 @@ function run() {
             }
             if ((parts = /^--reporter=(.*)$/.exec(arg)) != null) {
                 let target = parts[1];
-                let logger = getLogger(target);
-                let reporter = new lib.reporters.JSONReporter(logger);
-                options.reporter = reporter;
+                options.reporter = target;
                 continue;
             }
             if ((parts = /^--runner=(.*):(.*)$/.exec(arg)) != null) {

@@ -3,26 +3,17 @@
 import * as app from "../app.json";
 import * as lib from "../lib";
 
-function getLogger(target: string): lib.loggers.Logger | undefined {
-	if (target === "stdout") {
-		return lib.loggers.stdout;
-	}
-	if (target === "stderr") {
-		return lib.loggers.stderr;
-	}
-};
-
 async function run(): Promise<number> {
 	let options: lib.runners.Options = {
-		logger: lib.loggers.stdout
+		logger: "stdout",
+		reporter: undefined
 	};
 	let unrecognizedArguments = [] as Array<string>;
 	for (let arg of process.argv.slice(2)) {
 		let parts: RegExpExecArray | null = null;
 		if ((parts = /^--logger=(.*)$/.exec(arg)) != null) {
 			let target = parts[1];
-			let logger = getLogger(target);
-			options.logger = logger;
+			options.logger = target;
 			continue;
 		}
 		if ((parts = /^--path=(.*)$/.exec(arg)) != null) {
@@ -34,9 +25,7 @@ async function run(): Promise<number> {
 		}
 		if ((parts = /^--reporter=(.*)$/.exec(arg)) != null) {
 			let target = parts[1];
-			let logger = getLogger(target);
-			let reporter = new lib.reporters.JSONReporter(logger);
-			options.reporter = reporter;
+			options.reporter = target;
 			continue;
 		}
 		if ((parts = /^--runner=(.*):(.*)$/.exec(arg)) != null) {

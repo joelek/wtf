@@ -1,7 +1,6 @@
 /// <reference types="node" />
 import { JSON } from "./json";
 import { Logger } from "./loggers";
-import { Reporter } from "./reporters";
 export declare type SpawnResult = {
     stdout: Buffer;
     stderr: Buffer;
@@ -43,9 +42,9 @@ export declare function scanFilePath(path: string, runners: Array<Runner>, logge
 export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
 export declare function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
 export declare type Options = {
-    logger?: Logger;
+    logger?: string;
     paths?: Array<string>;
-    reporter?: Reporter<any>;
+    reporter?: string;
     runners?: Array<Runner>;
 };
 export declare function createDefaultPaths(): Array<string>;

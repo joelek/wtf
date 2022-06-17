@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stderr = exports.stdout = exports.StderrLogger = exports.StdoutLogger = exports.WriteStreamLogger = void 0;
+exports.getLogger = exports.stderr = exports.stdout = exports.StderrLogger = exports.StdoutLogger = exports.WriteStreamLogger = void 0;
 ;
 class WriteStreamLogger {
     constructor(stream) {
@@ -28,3 +28,13 @@ exports.StderrLogger = StderrLogger;
 ;
 exports.stdout = new StdoutLogger();
 exports.stderr = new StderrLogger();
+function getLogger(target) {
+    if (target === "stdout") {
+        return exports.stdout;
+    }
+    if (target === "stderr") {
+        return exports.stderr;
+    }
+}
+exports.getLogger = getLogger;
+;

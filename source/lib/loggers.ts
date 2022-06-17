@@ -28,3 +28,12 @@ export class StderrLogger extends WriteStreamLogger {
 
 export const stdout = new StdoutLogger();
 export const stderr = new StderrLogger();
+
+export function getLogger(target: string | undefined): Logger | undefined {
+	if (target === "stdout") {
+		return stdout;
+	}
+	if (target === "stderr") {
+		return stderr;
+	}
+};

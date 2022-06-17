@@ -1,6 +1,8 @@
 import * as libcp from "child_process";
 import * as libfs from "fs";
 import * as libpath from "path";
+import * as loggers from "./loggers";
+import * as reporters from "./reporters";
 import { SerializedError } from "./errors";
 import { JSON } from "./json";
 import { Logger } from "./loggers";
@@ -166,9 +168,9 @@ export function scanPath(path: string, runners: Array<Runner>, logger?: Logger):
 };
 
 export type Options = {
-	logger?: Logger;
+	logger?: string;
 	paths?: Array<string>;
-	reporter?: Reporter<any>;
+	reporter?: string;
 	runners?: Array<Runner>;
 };
 
@@ -191,9 +193,9 @@ export type Report = {
 };
 
 export async function run(options: Options): Promise<number> {
-	let logger = options.logger;
+	let logger = loggers.getLogger(options.logger);
 	let paths = options.paths ?? createDefaultPaths();
-	let reporter = options.reporter;
+	let reporter = reporters.getReporter(options.reporter);
 	let runners = options.runners ?? createDefaultRunners();
 	let runnables = [] as Array<Runnable>;
 	for (let path of paths) {
@@ -202,7 +204,7 @@ export async function run(options: Options): Promise<number> {
 	let reports = [] as Array<RunReport>;
 	let status = 0;
 	for (let runnable of runnables) {
-		let report = await runnable.runner.run(runnable.path, options.logger);
+		let report = await runnable.runner.run(runnable.path, logger);
 		reports.push(report);
 		if (report.status !== 0) {
 			status += 1;
