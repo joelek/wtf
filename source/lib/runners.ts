@@ -1,8 +1,9 @@
 import * as libcp from "child_process";
 import * as libfs from "fs";
 import * as libpath from "path";
+import { SerializedError } from "./errors";
 import { Logger } from "./loggers";
-import { Reporter } from "./reporters";
+import { Reporter, JSON } from "./reporters";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -46,21 +47,12 @@ export async function spawn(command: string, parameters: Array<string>, logger?:
 	});
 };
 
-export function serializeError(error: Error): Error {
-	let { name, message, stack } = { ...error };
-	return {
-		name,
-		message,
-		stack
-	};
-};
-
 export type RunReport = {
 	command: string;
 	path: string;
 	stdout: string;
 	stderr: string;
-	error?: Error;
+	error?: JSON;
 	status?: number;
 };
 
@@ -88,7 +80,7 @@ export class CustomRunner implements Runner {
 		let result = await spawn(command, [path], logger);
 		let stdout = result.stdout.toString();
 		let stderr = result.stderr.toString();
-		let error = result.error == null ? undefined : serializeError(result.error);
+		let error = result.error == null ? undefined : SerializedError.fromError(result.error);
 		let status = result.status;
 		logger?.log(`Completed with status (${status ?? ""}).\n`);
 		return {

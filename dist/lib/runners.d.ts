@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { Logger } from "./loggers";
-import { Reporter } from "./reporters";
+import { Reporter, JSON } from "./reporters";
 export declare type SpawnResult = {
     stdout: Buffer;
     stderr: Buffer;
@@ -8,13 +8,12 @@ export declare type SpawnResult = {
     status?: number;
 };
 export declare function spawn(command: string, parameters: Array<string>, logger?: Logger): Promise<SpawnResult>;
-export declare function serializeError(error: Error): Error;
 export declare type RunReport = {
     command: string;
     path: string;
     stdout: string;
     stderr: string;
-    error?: Error;
+    error?: JSON;
     status?: number;
 };
 export interface Runner {

@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.CustomRunner = exports.serializeError = exports.spawn = void 0;
+exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.CustomRunner = exports.spawn = void 0;
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
+const errors_1 = require("./errors");
 function spawn(command, parameters, logger) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -51,16 +52,6 @@ function spawn(command, parameters, logger) {
 }
 exports.spawn = spawn;
 ;
-function serializeError(error) {
-    let { name, message, stack } = Object.assign({}, error);
-    return {
-        name,
-        message,
-        stack
-    };
-}
-exports.serializeError = serializeError;
-;
 ;
 class CustomRunner {
     constructor(suffix, command) {
@@ -77,7 +68,7 @@ class CustomRunner {
             let result = yield spawn(command, [path], logger);
             let stdout = result.stdout.toString();
             let stderr = result.stderr.toString();
-            let error = result.error == null ? undefined : serializeError(result.error);
+            let error = result.error == null ? undefined : errors_1.SerializedError.fromError(result.error);
             let status = result.status;
             logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status (${status !== null && status !== void 0 ? status : ""}).\n`);
             return {
