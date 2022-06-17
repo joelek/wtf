@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { Logger } from "./loggers";
-import { RunReport as RunReport, Reporter } from "./reporters";
+import { Reporter } from "./reporters";
 export declare type SpawnResult = {
     stdout: Buffer;
     stderr: Buffer;
@@ -9,6 +9,14 @@ export declare type SpawnResult = {
 };
 export declare function spawn(command: string, parameters: Array<string>, logger?: Logger): Promise<SpawnResult>;
 export declare function serializeError(error: Error): Error;
+export declare type RunReport = {
+    command: string;
+    path: string;
+    stdout: string;
+    stderr: string;
+    error?: Error;
+    status?: number;
+};
 export interface Runner {
     matches(path: string): boolean;
     run(path: string, logger?: Logger): Promise<RunReport>;
@@ -36,9 +44,13 @@ export declare function scanPath(path: string, runners: Array<Runner>, logger?: 
 export declare type Options = {
     logger?: Logger;
     paths?: Array<string>;
-    reporter?: Reporter;
+    reporter?: Reporter<any>;
     runners?: Array<Runner>;
 };
 export declare function createDefaultPaths(): Array<string>;
 export declare function createDefaultRunners(): Array<Runner>;
+export declare type Report = {
+    reports: Array<RunReport>;
+    status: number;
+};
 export declare function run(options: Options): Promise<number>;

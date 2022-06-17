@@ -8,7 +8,7 @@ class JSONReporter {
     }
     report(report) {
         var _a;
-        (_a = this.logger) === null || _a === void 0 ? void 0 : _a.log(JSON.stringify(report, null, "\t") + "\n");
+        (_a = this.logger) === null || _a === void 0 ? void 0 : _a.log(globalThis.JSON.stringify(report != null ? report : null, null, "\t") + "\n");
     }
 }
 exports.JSONReporter = JSONReporter;

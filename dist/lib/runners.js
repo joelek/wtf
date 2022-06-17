@@ -192,10 +192,11 @@ function run(options) {
                 status += 1;
             }
         }
-        reporter === null || reporter === void 0 ? void 0 : reporter.report({
+        let report = {
             reports,
             status
-        });
+        };
+        reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         return status;
     });
 }

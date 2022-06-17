@@ -2,7 +2,7 @@ import * as libcp from "child_process";
 import * as libfs from "fs";
 import * as libpath from "path";
 import { Logger } from "./loggers";
-import { RunReport as RunReport, Report, Reporter } from "./reporters";
+import { Reporter } from "./reporters";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -53,6 +53,15 @@ export function serializeError(error: Error): Error {
 		message,
 		stack
 	};
+};
+
+export type RunReport = {
+	command: string;
+	path: string;
+	stdout: string;
+	stderr: string;
+	error?: Error;
+	status?: number;
 };
 
 export interface Runner {
@@ -159,7 +168,7 @@ export function scanPath(path: string, runners: Array<Runner>, logger?: Logger):
 export type Options = {
 	logger?: Logger;
 	paths?: Array<string>;
-	reporter?: Reporter;
+	reporter?: Reporter<any>;
 	runners?: Array<Runner>;
 };
 
@@ -174,6 +183,11 @@ export function createDefaultRunners(): Array<Runner> {
 		new JavaScriptRunner(),
 		new TypeScriptRunner()
 	];
+};
+
+export type Report = {
+	reports: Array<RunReport>;
+	status: number;
 };
 
 export async function run(options: Options): Promise<number> {
@@ -194,9 +208,10 @@ export async function run(options: Options): Promise<number> {
 			status += 1;
 		}
 	}
-	reporter?.report({
+	let report: Report = {
 		reports,
 		status
-	});
+	};
+	reporter?.report(report);
 	return status;
 };

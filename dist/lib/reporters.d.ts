@@ -1,26 +1,12 @@
 import { Logger } from "./loggers";
-export declare type RunReport = {
-    command: string;
-    path: string;
-    stdout: string;
-    stderr: string;
-    error?: Error;
-    status?: number;
-};
-export declare type Error = {
-    name: string;
-    message: string;
-    stack?: string;
-};
-export declare type Report = {
-    reports: Array<RunReport>;
-    status: number;
-};
-export interface Reporter {
-    report(report: Report): void;
+export interface Reporter<A> {
+    report(report: A): void;
 }
-export declare class JSONReporter implements Reporter {
+export declare type JSON = boolean | null | number | string | undefined | JSON[] | {
+    [key: string]: JSON;
+};
+export declare class JSONReporter implements Reporter<JSON> {
     private logger?;
     constructor(logger?: Logger);
-    report(report: Report): void;
+    report(report: JSON): void;
 }
