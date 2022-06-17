@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONReporter = void 0;
+exports.json = exports.JSONReporter = void 0;
 ;
 class JSONReporter {
     constructor(logger) {
@@ -13,3 +13,4 @@ class JSONReporter {
 }
 exports.JSONReporter = JSONReporter;
 ;
+exports.json = new JSONReporter();

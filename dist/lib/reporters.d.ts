@@ -10,3 +10,4 @@ export declare class JSONReporter implements Reporter<JSON> {
     constructor(logger?: Logger);
     report(report: JSON): void;
 }
+export declare const json: JSONReporter;

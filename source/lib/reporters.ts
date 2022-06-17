@@ -19,3 +19,5 @@ export class JSONReporter implements Reporter<JSON> {
 		this.logger?.log(globalThis.JSON.stringify(report != null ? report : null, null, "\t") + "\n");
 	}
 };
+
+export const json = new JSONReporter();
