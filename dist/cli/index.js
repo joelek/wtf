@@ -62,15 +62,17 @@ function run() {
             unrecognizedArguments.push(arg);
         }
         if (unrecognizedArguments.length === 0) {
-            (_c = options.logger) === null || _c === void 0 ? void 0 : _c.log(`${app.name} v${app.version}\n`);
             let status = yield lib.runners.run(options);
             return status;
         }
         else {
             let logger = lib.loggers.stderr;
+            logger.log(`${app.name} v${app.version}\n`);
+            logger.log(`\n`);
             for (let unrecognizedArgument of unrecognizedArguments) {
                 logger.log(`Unrecognized argument "${unrecognizedArgument}"!\n`);
             }
+            logger.log(`\n`);
             logger.log(`Arguments:\n`);
             logger.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
             logger.log(`\t--path=<path> Include the specified path when scanning for files.\n`);

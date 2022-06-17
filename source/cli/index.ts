@@ -51,14 +51,16 @@ async function run(): Promise<number> {
 		unrecognizedArguments.push(arg);
 	}
 	if (unrecognizedArguments.length === 0) {
-		options.logger?.log(`${app.name} v${app.version}\n`);
 		let status = await lib.runners.run(options);
 		return status;
 	} else {
 		let logger = lib.loggers.stderr;
+		logger.log(`${app.name} v${app.version}\n`);
+		logger.log(`\n`);
 		for (let unrecognizedArgument of unrecognizedArguments) {
 			logger.log(`Unrecognized argument "${unrecognizedArgument}"!\n`);
 		}
+		logger.log(`\n`);
 		logger.log(`Arguments:\n`);
 		logger.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
 		logger.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
