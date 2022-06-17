@@ -84,7 +84,7 @@ class CustomRunner {
             let stderr = parseIfPossible(result.stderr.toString());
             let error = result.error == null ? undefined : errors_1.SerializedError.fromError(result.error);
             let status = result.status;
-            logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${status === 0 ? "success" : "failure"}).\n`);
+            logger === null || logger === void 0 ? void 0 : logger.log(`Spawn returned status ${status !== null && status !== void 0 ? status : ""} (${status === 0 ? "success" : "failure"}).\n`);
             return {
                 command,
                 path,
@@ -201,6 +201,7 @@ function run(options) {
                 status += 1;
             }
         }
+        logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${status === 0 ? "success" : "failure"}).\n`);
         let report = {
             reports,
             status
