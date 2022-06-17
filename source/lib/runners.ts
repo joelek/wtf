@@ -92,7 +92,7 @@ export class CustomRunner implements Runner {
 		let stderr = parseIfPossible(result.stderr.toString());
 		let error = result.error == null ? undefined : SerializedError.fromError(result.error);
 		let status = result.status;
-		logger?.log(`Completed with status (${status ?? ""}).\n`);
+		logger?.log(`Completed with status ${status ?? ""} (${status === 0 ? "success" : "failure"}).\n`);
 		return {
 			command,
 			path,
