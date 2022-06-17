@@ -20,7 +20,7 @@ class TestCase {
         this.description = description;
         this.callback = callback;
     }
-    run() {
+    run(logger) {
         return __awaiter(this, void 0, void 0, function* () {
             let description = this.description;
             try {
@@ -30,7 +30,12 @@ class TestCase {
                 };
             }
             catch (throwable) {
+                logger === null || logger === void 0 ? void 0 : logger.log(`Test "${description}" raised an error!\n`);
                 let error = throwable instanceof Error ? errors_1.SerializedError.fromError(throwable) : json_1.JSON.parse(json_1.JSON.serialize(throwable));
+                let lines = json_1.JSON.serialize(error).split(/\r?\n/);
+                for (let line of lines) {
+                    logger === null || logger === void 0 ? void 0 : logger.log(`\t${line}\n`);
+                }
                 return {
                     description,
                     error
@@ -50,12 +55,12 @@ class TestSuite {
         let testCase = new TestCase(description, callback);
         this.testCases.push(testCase);
     }
-    run() {
+    run(logger) {
         return __awaiter(this, void 0, void 0, function* () {
             let reports = [];
             let status = 0;
             for (let testCase of this.testCases) {
-                let report = yield testCase.run();
+                let report = yield testCase.run(logger);
                 reports.push(report);
                 if (report.error != null) {
                     status += 1;
@@ -76,7 +81,7 @@ function createTestSuite(description, callback) {
         let reporter = _1.reporters.getReporter(process.env[env_1.REPORTER_KEY]);
         let suite = new TestSuite(description);
         yield callback(suite);
-        let report = yield suite.run();
+        let report = yield suite.run(logger);
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         process.exit(report.status);
     });

@@ -1,4 +1,5 @@
 import { JSON } from "./json";
+import { Logger } from "./loggers";
 export declare type TestCallback = () => Promise<void>;
 export declare type TestCaseReport = {
     description: string;
@@ -8,7 +9,7 @@ export declare class TestCase {
     private description;
     private callback;
     constructor(description: string, callback: TestCallback);
-    run(): Promise<TestCaseReport>;
+    run(logger?: Logger): Promise<TestCaseReport>;
 }
 export declare type TestSuiteReport = {
     reports: Array<TestCaseReport>;
@@ -19,6 +20,6 @@ export declare class TestSuite {
     private testCases;
     constructor(description: string);
     defineTestCase(description: string, callback: TestCallback): void;
-    run(): Promise<TestSuiteReport>;
+    run(logger?: Logger): Promise<TestSuiteReport>;
 }
 export declare function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void>;

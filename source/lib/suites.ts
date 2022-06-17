@@ -3,6 +3,7 @@ import { SerializedError } from "./errors";
 import { JSON } from "./json";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { reporters } from ".";
+import { Logger } from "./loggers";
 
 export type TestCallback = () => Promise<void>;
 
@@ -20,7 +21,7 @@ export class TestCase {
 		this.callback = callback;
 	}
 
-	async run(): Promise<TestCaseReport> {
+	async run(logger?: Logger): Promise<TestCaseReport> {
 		let description = this.description;
 		try {
 			await this.callback();
@@ -28,7 +29,12 @@ export class TestCase {
 				description
 			};
 		} catch (throwable) {
+			logger?.log(`Test "${description}" raised an error!\n`);
 			let error = throwable instanceof Error ? SerializedError.fromError(throwable) : JSON.parse(JSON.serialize(throwable as any));
+			let lines = JSON.serialize(error).split(/\r?\n/);
+			for (let line of lines) {
+				logger?.log(`\t${line}\n`);
+			}
 			return {
 				description,
 				error
@@ -56,11 +62,11 @@ export class TestSuite {
 		this.testCases.push(testCase);
 	}
 
-	async run(): Promise<TestSuiteReport> {
+	async run(logger?: Logger): Promise<TestSuiteReport> {
 		let reports = [] as Array<TestCaseReport>;
 		let status = 0;
 		for (let testCase of this.testCases) {
-			let report = await testCase.run();
+			let report = await testCase.run(logger);
 			reports.push(report);
 			if (report.error != null) {
 				status += 1;
@@ -78,7 +84,7 @@ export async function createTestSuite(description: string, callback: (suite: Tes
 	let reporter = reporters.getReporter(process.env[REPORTER_KEY]);
 	let suite = new TestSuite(description);
 	await callback(suite);
-	let report = await suite.run();
+	let report = await suite.run(logger);
 	reporter?.report(report);
 	process.exit(report.status);
 };
