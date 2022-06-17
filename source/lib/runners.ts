@@ -48,11 +48,18 @@ export async function spawn(command: string, parameters: Array<string>, logger?:
 	});
 };
 
+export function parseIfPossible(string: string): JSON {
+	try {
+		return JSON.parse(string);
+	} catch (error) {};
+	return string;
+};
+
 export type RunReport = {
 	command: string;
 	path: string;
-	stdout: string;
-	stderr: string;
+	stdout: JSON;
+	stderr: JSON;
 	error?: JSON;
 	status?: number;
 };
@@ -79,8 +86,8 @@ export class CustomRunner implements Runner {
 		let command = this.command;
 		logger?.log(`Running ${command} "${path}"...\n`);
 		let result = await spawn(command, [path], logger);
-		let stdout = result.stdout.toString();
-		let stderr = result.stderr.toString();
+		let stdout = parseIfPossible(result.stdout.toString());
+		let stderr = parseIfPossible(result.stderr.toString());
 		let error = result.error == null ? undefined : SerializedError.fromError(result.error);
 		let status = result.status;
 		logger?.log(`Completed with status (${status ?? ""}).\n`);

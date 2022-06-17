@@ -9,11 +9,12 @@ export declare type SpawnResult = {
     status?: number;
 };
 export declare function spawn(command: string, parameters: Array<string>, logger?: Logger): Promise<SpawnResult>;
+export declare function parseIfPossible(string: string): JSON;
 export declare type RunReport = {
     command: string;
     path: string;
-    stdout: string;
-    stderr: string;
+    stdout: JSON;
+    stderr: JSON;
     error?: JSON;
     status?: number;
 };

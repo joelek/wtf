@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.CustomRunner = exports.spawn = void 0;
+exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.CustomRunner = exports.parseIfPossible = exports.spawn = void 0;
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
 const errors_1 = require("./errors");
+const json_1 = require("./json");
 function spawn(command, parameters, logger) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -52,6 +53,16 @@ function spawn(command, parameters, logger) {
 }
 exports.spawn = spawn;
 ;
+function parseIfPossible(string) {
+    try {
+        return json_1.JSON.parse(string);
+    }
+    catch (error) { }
+    ;
+    return string;
+}
+exports.parseIfPossible = parseIfPossible;
+;
 ;
 class CustomRunner {
     constructor(suffix, command) {
@@ -66,8 +77,8 @@ class CustomRunner {
             let command = this.command;
             logger === null || logger === void 0 ? void 0 : logger.log(`Running ${command} "${path}"...\n`);
             let result = yield spawn(command, [path], logger);
-            let stdout = result.stdout.toString();
-            let stderr = result.stderr.toString();
+            let stdout = parseIfPossible(result.stdout.toString());
+            let stderr = parseIfPossible(result.stderr.toString());
             let error = result.error == null ? undefined : errors_1.SerializedError.fromError(result.error);
             let status = result.status;
             logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status (${status !== null && status !== void 0 ? status : ""}).\n`);
