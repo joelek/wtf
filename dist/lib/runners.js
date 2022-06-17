@@ -187,10 +187,14 @@ function run(options) {
         for (let path of paths) {
             runnables.push(...scanPath(libpath.normalize(path), runners, logger));
         }
+        let environment = {
+            "WTF_LOGGER": options.logger,
+            "WTF_REPORTER": options.reporter
+        };
         let reports = [];
         let status = 0;
         for (let runnable of runnables) {
-            let report = yield runnable.runner.run(runnable.path, logger);
+            let report = yield runnable.runner.run(runnable.path, logger, environment);
             reports.push(report);
             if (report.status !== 0) {
                 status += 1;

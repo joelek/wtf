@@ -201,10 +201,14 @@ export async function run(options: Options): Promise<number> {
 	for (let path of paths) {
 		runnables.push(...scanPath(libpath.normalize(path), runners, logger));
 	}
+	let environment: Record<string, string | undefined> = {
+		"WTF_LOGGER": options.logger,
+		"WTF_REPORTER": options.reporter
+	};
 	let reports = [] as Array<RunReport>;
 	let status = 0;
 	for (let runnable of runnables) {
-		let report = await runnable.runner.run(runnable.path, logger);
+		let report = await runnable.runner.run(runnable.path, logger, environment);
 		reports.push(report);
 		if (report.status !== 0) {
 			status += 1;
