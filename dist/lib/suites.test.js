@@ -12,17 +12,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const suites = require("./suites");
 const suites_1 = require("./suites");
 (0, suites_1.createTestSuite)("Suite", (suite) => __awaiter(void 0, void 0, void 0, function* () {
-    suite.defineTestCase(`It should return true when a test runs successfully.`, () => __awaiter(void 0, void 0, void 0, function* () {
+    suite.defineTestCase(`It should not capture an error when a test runs successfully.`, () => __awaiter(void 0, void 0, void 0, function* () {
         let testCase = new suites.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { }));
-        let observed = yield testCase.run();
-        if (observed !== true) {
+        let report = yield testCase.run();
+        if (report.error != null) {
             throw "";
         }
     }));
-    suite.defineTestCase(`It should return false when a test runs unsuccessfully.`, () => __awaiter(void 0, void 0, void 0, function* () {
+    suite.defineTestCase(`It should capture an error when a test runs unsuccessfully.`, () => __awaiter(void 0, void 0, void 0, function* () {
         let testCase = new suites.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { throw ""; }));
-        let observed = yield testCase.run();
-        if (observed !== false) {
+        let report = yield testCase.run();
+        if (report.error == null) {
             throw "";
         }
     }));

@@ -10,6 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTestSuite = exports.TestSuite = exports.TestCase = void 0;
+const loggers = require("./loggers");
+const errors_1 = require("./errors");
+const json_1 = require("./json");
+const reporters_1 = require("./reporters");
 class TestCase {
     constructor(description, callback) {
         this.description = description;
@@ -17,15 +21,19 @@ class TestCase {
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
+            let description = this.description;
             try {
                 yield this.callback();
-                return true;
+                return {
+                    description
+                };
             }
-            catch (error) {
-                // todo, use loggers
-                console.log(`Case "${this.description}" raised an error:`);
-                console.log(error);
-                return false;
+            catch (throwable) {
+                let error = throwable instanceof Error ? errors_1.SerializedError.fromError(throwable) : json_1.JSON.parse(json_1.JSON.serialize(throwable));
+                return {
+                    description,
+                    error
+                };
             }
         });
     }
@@ -43,14 +51,19 @@ class TestSuite {
     }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
-            let failures = 0;
+            let reports = [];
+            let status = 0;
             for (let testCase of this.testCases) {
-                let outcome = yield testCase.run();
-                if (!outcome) {
-                    failures += 1;
+                let report = yield testCase.run();
+                reports.push(report);
+                if (report.error != null) {
+                    status += 1;
                 }
             }
-            return failures;
+            return {
+                reports,
+                status
+            };
         });
     }
 }
@@ -60,8 +73,11 @@ function createTestSuite(description, callback) {
     return __awaiter(this, void 0, void 0, function* () {
         let suite = new TestSuite(description);
         yield callback(suite);
-        let status = yield suite.run();
-        process.exit(status);
+        let report = yield suite.run();
+        let logger = loggers.stderr;
+        let reporter = new reporters_1.JSONReporter(logger);
+        reporter.report(report);
+        process.exit(report.status);
     });
 }
 exports.createTestSuite = createTestSuite;

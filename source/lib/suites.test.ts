@@ -2,18 +2,18 @@ import * as suites from "./suites";
 import { createTestSuite } from "./suites";
 
 createTestSuite("Suite", async (suite) => {
-	suite.defineTestCase(`It should return true when a test runs successfully.`, async () => {
+	suite.defineTestCase(`It should not capture an error when a test runs successfully.`, async () => {
 		let testCase = new suites.TestCase("", async () => {});
-		let observed = await testCase.run();
-		if (observed !== true) {
+		let report = await testCase.run();
+		if (report.error != null) {
 			throw "";
 		}
 	});
 
-	suite.defineTestCase(`It should return false when a test runs unsuccessfully.`, async () => {
+	suite.defineTestCase(`It should capture an error when a test runs unsuccessfully.`, async () => {
 		let testCase = new suites.TestCase("", async () => { throw ""; });
-		let observed = await testCase.run();
-		if (observed !== false) {
+		let report = await testCase.run();
+		if (report.error == null) {
 			throw "";
 		}
 	});

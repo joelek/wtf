@@ -1,15 +1,24 @@
+import { JSON } from "./json";
 export declare type TestCallback = () => Promise<void>;
+export declare type TestCaseReport = {
+    description: string;
+    error?: JSON;
+};
 export declare class TestCase {
     private description;
     private callback;
     constructor(description: string, callback: TestCallback);
-    run(): Promise<boolean>;
+    run(): Promise<TestCaseReport>;
 }
+export declare type TestSuiteReport = {
+    reports: Array<TestCaseReport>;
+    status: number;
+};
 export declare class TestSuite {
     private description;
     private testCases;
     constructor(description: string);
     defineTestCase(description: string, callback: TestCallback): void;
-    run(): Promise<number>;
+    run(): Promise<TestSuiteReport>;
 }
 export declare function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void>;

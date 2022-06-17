@@ -1,4 +1,14 @@
+import * as loggers from "./loggers";
+import { SerializedError } from "./errors";
+import { JSON } from "./json";
+import { JSONReporter } from "./reporters";
+
 export type TestCallback = () => Promise<void>;
+
+export type TestCaseReport = {
+	description: string;
+	error?: JSON;
+};
 
 export class TestCase {
 	private description: string;
@@ -9,16 +19,26 @@ export class TestCase {
 		this.callback = callback;
 	}
 
-	async run(): Promise<boolean> {
+	async run(): Promise<TestCaseReport> {
+		let description = this.description;
 		try {
 			await this.callback();
-			return true;
-		} catch (error) {
-			console.log(`Case "${this.description}" raised an error:`);
-			console.log(error);
-			return false;
+			return {
+				description
+			};
+		} catch (throwable) {
+			let error = throwable instanceof Error ? SerializedError.fromError(throwable) : JSON.parse(JSON.serialize(throwable as any));
+			return {
+				description,
+				error
+			};
 		}
 	}
+};
+
+export type TestSuiteReport = {
+	reports: Array<TestCaseReport>;
+	status: number;
 };
 
 export class TestSuite {
@@ -35,21 +55,29 @@ export class TestSuite {
 		this.testCases.push(testCase);
 	}
 
-	async run(): Promise<number> {
-		let failures = 0;
+	async run(): Promise<TestSuiteReport> {
+		let reports = [] as Array<TestCaseReport>;
+		let status = 0;
 		for (let testCase of this.testCases) {
-			let outcome = await testCase.run();
-			if (!outcome) {
-				failures += 1;
+			let report = await testCase.run();
+			reports.push(report);
+			if (report.error != null) {
+				status += 1;
 			}
 		}
-		return failures;
+		return {
+			reports,
+			status
+		};
 	}
 };
 
 export async function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void> {
 	let suite = new TestSuite(description);
 	await callback(suite);
-	let status = await suite.run();
-	process.exit(status);
+	let report = await suite.run();
+	let logger = loggers.stderr;
+	let reporter = new JSONReporter(logger);
+	reporter.report(report);
+	process.exit(report.status);
 };
