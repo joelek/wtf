@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.json = exports.JSONReporter = void 0;
+exports.JSONReporter = void 0;
 const json_1 = require("./json");
 ;
 class JSONReporter {
@@ -14,4 +14,3 @@ class JSONReporter {
 }
 exports.JSONReporter = JSONReporter;
 ;
-exports.json = new JSONReporter();

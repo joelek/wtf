@@ -46,7 +46,7 @@ function run() {
             if ((parts = /^--reporter=(.*)$/.exec(arg)) != null) {
                 let target = parts[1];
                 let logger = getLogger(target);
-                let reporter = lib.reporters.json;
+                let reporter = new lib.reporters.JSONReporter(logger);
                 options.reporter = reporter;
                 continue;
             }

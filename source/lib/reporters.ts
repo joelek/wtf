@@ -16,5 +16,3 @@ export class JSONReporter implements Reporter<JSON> {
 		this.logger?.log(JSON.serialize(report) + "\n");
 	}
 };
-
-export const json = new JSONReporter();
