@@ -17,6 +17,7 @@ const loggers = require("./loggers");
 const reporters = require("./reporters");
 const errors_1 = require("./errors");
 const json_1 = require("./json");
+const env_1 = require("./env");
 function spawn(command, parameters, logger, environment) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -188,8 +189,8 @@ function run(options) {
             runnables.push(...scanPath(libpath.normalize(path), runners, logger));
         }
         let environment = {
-            "WTF_LOGGER": options.logger,
-            "WTF_REPORTER": options.reporter
+            [env_1.LOGGER_KEY]: options.logger,
+            [env_1.REPORTER_KEY]: options.reporter
         };
         let reports = [];
         let status = 0;

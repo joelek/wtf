@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTestSuite = exports.suites = exports.runners = exports.reporters = exports.loggers = exports.json = exports.errors = void 0;
+exports.createTestSuite = exports.suites = exports.runners = exports.reporters = exports.loggers = exports.json = exports.errors = exports.env = void 0;
+exports.env = require("./env");
 exports.errors = require("./errors");
 exports.json = require("./json");
 exports.loggers = require("./loggers");

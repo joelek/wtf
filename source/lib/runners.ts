@@ -7,6 +7,7 @@ import { SerializedError } from "./errors";
 import { JSON } from "./json";
 import { Logger } from "./loggers";
 import { Reporter } from "./reporters";
+import { LOGGER_KEY, REPORTER_KEY } from "./env";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -202,8 +203,8 @@ export async function run(options: Options): Promise<number> {
 		runnables.push(...scanPath(libpath.normalize(path), runners, logger));
 	}
 	let environment: Record<string, string | undefined> = {
-		"WTF_LOGGER": options.logger,
-		"WTF_REPORTER": options.reporter
+		[LOGGER_KEY]: options.logger,
+		[REPORTER_KEY]: options.reporter
 	};
 	let reports = [] as Array<RunReport>;
 	let status = 0;
