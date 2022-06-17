@@ -17,10 +17,10 @@ const loggers = require("./loggers");
 const reporters = require("./reporters");
 const errors_1 = require("./errors");
 const json_1 = require("./json");
-function spawn(command, parameters, logger) {
+function spawn(command, parameters, logger, environment) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
-            let childProcess = libcp.spawn(command, parameters, { shell: true });
+            let childProcess = libcp.spawn(command, parameters, { shell: true, env: Object.assign(Object.assign({}, process.env), environment) });
             let stdoutChunks = [];
             let stderrChunks = [];
             childProcess.stdout.on("data", (chunk) => {
@@ -74,11 +74,11 @@ class CustomRunner {
     matches(path) {
         return path.endsWith(this.suffix);
     }
-    run(path, logger) {
+    run(path, logger, environment) {
         return __awaiter(this, void 0, void 0, function* () {
             let command = this.command;
             logger === null || logger === void 0 ? void 0 : logger.log(`Running ${command} "${path}"...\n`);
-            let result = yield spawn(command, [path], logger);
+            let result = yield spawn(command, [path], logger, environment);
             let stdout = parseIfPossible(result.stdout.toString());
             let stderr = parseIfPossible(result.stderr.toString());
             let error = result.error == null ? undefined : errors_1.SerializedError.fromError(result.error);

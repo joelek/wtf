@@ -15,9 +15,9 @@ export type SpawnResult = {
 	status?: number;
 };
 
-export async function spawn(command: string, parameters: Array<string>, logger?: Logger): Promise<SpawnResult> {
+export async function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult> {
 	return new Promise((resolve, reject) => {
-		let childProcess = libcp.spawn(command, parameters, { shell: true });
+		let childProcess = libcp.spawn(command, parameters, { shell: true, env: { ...process.env, ...environment } });
 		let stdoutChunks = [] as Array<Buffer>;
 		let stderrChunks = [] as Array<Buffer>;
 		childProcess.stdout.on("data", (chunk) => {
@@ -68,7 +68,7 @@ export type RunReport = {
 
 export interface Runner {
 	matches(path: string): boolean;
-	run(path: string, logger?: Logger): Promise<RunReport>;
+	run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
 };
 
 export class CustomRunner implements Runner {
@@ -84,10 +84,10 @@ export class CustomRunner implements Runner {
 		return path.endsWith(this.suffix);
 	}
 
-	async run(path: string, logger?: Logger): Promise<RunReport> {
+	async run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
 		let command = this.command;
 		logger?.log(`Running ${command} "${path}"...\n`);
-		let result = await spawn(command, [path], logger);
+		let result = await spawn(command, [path], logger, environment);
 		let stdout = parseIfPossible(result.stdout.toString());
 		let stderr = parseIfPossible(result.stderr.toString());
 		let error = result.error == null ? undefined : SerializedError.fromError(result.error);

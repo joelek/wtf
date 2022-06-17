@@ -7,7 +7,7 @@ export declare type SpawnResult = {
     error?: Error;
     status?: number;
 };
-export declare function spawn(command: string, parameters: Array<string>, logger?: Logger): Promise<SpawnResult>;
+export declare function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult>;
 export declare function parseIfPossible(string: string): JSON;
 export declare type RunReport = {
     command: string;
@@ -19,14 +19,14 @@ export declare type RunReport = {
 };
 export interface Runner {
     matches(path: string): boolean;
-    run(path: string, logger?: Logger): Promise<RunReport>;
+    run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
 }
 export declare class CustomRunner implements Runner {
     private suffix;
     private command;
     constructor(suffix: string, command: string);
     matches(path: string): boolean;
-    run(path: string, logger?: Logger): Promise<RunReport>;
+    run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
 }
 export declare class JavaScriptRunner extends CustomRunner {
     constructor();
