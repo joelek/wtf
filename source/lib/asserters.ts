@@ -115,7 +115,7 @@ export class Asserter {
 		if (typeof expected === "number") {
 			return this.equalsNumber(expected, observed);
 		}
-		if (expected instanceof Object) {
+		if (expected instanceof Object && !(expected instanceof Array)) {
 			return this.equalsObject(expected, observed);
 		}
 		if (typeof expected === "string") {
@@ -131,7 +131,9 @@ export class Asserter {
 
 	json(expected: JSON, observed: JSON): void {
 		if (!this.equals(expected, observed)) {
+			let reason = `Expected types and values to be identical!`;
 			throw {
+				reason,
 				expected,
 				observed
 			};
@@ -145,7 +147,10 @@ export class Asserter {
 		} catch (error) {
 			return;
 		}
-		throw new Error(`Expected operation to throw an error!`);
+		let reason = `Expected operation to throw an error!`;
+		throw {
+			reason
+		};
 	}
 };
 
