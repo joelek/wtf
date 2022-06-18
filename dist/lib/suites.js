@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTestSuite = exports.TestSuite = exports.TestCase = void 0;
+const asserters = require("./asserters");
 const loggers = require("./loggers");
 const errors_1 = require("./errors");
 const json_1 = require("./json");
@@ -24,7 +25,7 @@ class TestCase {
         return __awaiter(this, void 0, void 0, function* () {
             let description = this.description;
             try {
-                yield this.callback();
+                yield this.callback(asserters.asserter);
                 return {
                     description
                 };

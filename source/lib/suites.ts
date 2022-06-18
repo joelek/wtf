@@ -1,11 +1,13 @@
+import * as asserters from "./asserters";
 import * as loggers from "./loggers";
 import { SerializedError } from "./errors";
 import { JSON } from "./json";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { reporters } from ".";
 import { Logger } from "./loggers";
+import { Asserter } from "./asserters";
 
-export type TestCallback = () => Promise<void>;
+export type TestCallback = (asserter: Asserter) => Promise<void>;
 
 export type TestCaseReport = {
 	description: string;
@@ -24,7 +26,7 @@ export class TestCase {
 	async run(logger?: Logger): Promise<TestCaseReport> {
 		let description = this.description;
 		try {
-			await this.callback();
+			await this.callback(asserters.asserter);
 			return {
 				description
 			};

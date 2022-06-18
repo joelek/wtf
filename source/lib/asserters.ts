@@ -148,3 +148,5 @@ export class Asserter {
 		throw new Error(`Expected operation to throw an error!`);
 	}
 };
+
+export const asserter = new Asserter();

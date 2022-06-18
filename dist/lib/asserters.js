@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Asserter = void 0;
+exports.asserter = exports.Asserter = void 0;
 /*
 export function getTypename(subject: any): string {
     if (subject === null) {
@@ -153,3 +153,4 @@ class Asserter {
 }
 exports.Asserter = Asserter;
 ;
+exports.asserter = new Asserter();

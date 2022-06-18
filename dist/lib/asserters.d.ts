@@ -12,3 +12,4 @@ export declare class Asserter {
     json(expected: JSON, observed: JSON): void;
     throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void>;
 }
+export declare const asserter: Asserter;
