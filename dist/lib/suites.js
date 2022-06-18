@@ -76,9 +76,10 @@ class TestSuite {
 exports.TestSuite = TestSuite;
 ;
 function createTestSuite(description, callback) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        let logger = loggers.getLogger(process.env[env_1.LOGGER_KEY]);
-        let reporter = _1.reporters.getReporter(process.env[env_1.REPORTER_KEY]);
+        let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
+        let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
         let suite = new TestSuite(description);
         yield callback(suite);
         let report = yield suite.run(logger);

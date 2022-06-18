@@ -80,8 +80,8 @@ export class TestSuite {
 };
 
 export async function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void> {
-	let logger = loggers.getLogger(process.env[LOGGER_KEY]);
-	let reporter = reporters.getReporter(process.env[REPORTER_KEY]);
+	let logger = loggers.getLogger(process.env[LOGGER_KEY] ?? "stdout");
+	let reporter = reporters.getReporter(process.env[REPORTER_KEY] ?? undefined);
 	let suite = new TestSuite(description);
 	await callback(suite);
 	let report = await suite.run(logger);
