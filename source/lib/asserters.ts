@@ -11,16 +11,35 @@ export function getTypename(subject: any): string {
 	return typeof subject;
 };
 
+export function serializePath(path: Array<string | number>): string {
+	let strings = ["observed"] as Array<string>;
+	for (let part of path) {
+		if (typeof part === "string") {
+			if (/^[a-z_][a-z_0-9]*$/i.test(part)) {
+				strings.push(`.${part}`);
+			} else {
+				strings.push(`.${JSON.serialize(part)}`);
+			}
+			continue;
+		}
+		if (typeof part === "number") {
+			strings.push(`[${part}]`);
+			continue;
+		}
+	}
+	return strings.join("");
+};
+
 export class Asserter {
 	private equalsArray(expected: JSON & Array<JSON>, observed: JSON, path: Array<string | number>): void {
 		if (!(observed instanceof Array)) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
 		}
 		for (let i = observed.length; i < expected.length; i++) {
-			throw `Expected element ${i} to be present!`;
+			throw `Expected element to be present at ${serializePath([...path, i])}!`;
 		}
 		for (let i = expected.length; i < observed.length; i++) {
-			throw `Expected element ${i} to be absent!`;
+			throw `Expected element to be absent at ${serializePath([...path, i])}!`;
 		}
 		for (let i = 0; i < expected.length; i++) {
 			this.equals(expected[i], observed[i], [...path, i]);
@@ -29,40 +48,40 @@ export class Asserter {
 
 	private equalsBoolean(expected: JSON & boolean, observed: JSON, path: Array<string | number>): void {
 		if (!(typeof observed === "boolean")) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
 		}
 		if (expected !== observed) {
-			throw `Expected value ${observed} to be ${expected}!`;
+			throw `Expected value ${observed} to be ${expected} at ${serializePath(path)}!`;
 		}
 	}
 
 	private equalsNull(expected: JSON & null, observed: JSON, path: Array<string | number>): void {
 		if (!(observed === null)) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
 		}
 	}
 
 	private equalsNumber(expected: JSON & number, observed: JSON, path: Array<string | number>): void {
 		if (!(typeof observed === "number")) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
 		}
 		if (expected !== observed) {
-			throw `Expected value ${observed} to be ${expected}!`;
+			throw `Expected value ${observed} to be ${expected} at ${serializePath(path)}!`;
 		}
 	}
 
 	private equalsObject(expected: JSON & Record<string, JSON>, observed: JSON, path: Array<string | number>): void {
 		if (!(observed instanceof Object && !(observed instanceof Array))) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
 		}
 		for (let key in expected) {
 			if (!(key in observed)) {
-				throw `Expected key "${key}" to be present!`;
+				throw `Expected member to be present at ${serializePath([...path, key])}!`;
 			}
 		}
 		for (let key in observed) {
 			if (!(key in expected)) {
-				throw `Expected key "${key}" to be absent!`;
+				throw `Expected member to be absent at ${serializePath([...path, key])}!`;
 			}
 		}
 		for (let key in expected) {
@@ -72,16 +91,16 @@ export class Asserter {
 
 	private equalsString(expected: JSON & string, observed: JSON, path: Array<string | number>): void {
 		if (!(typeof observed === "string")) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
 		}
 		if (expected !== observed) {
-			throw `Expected value "${observed}" to be "${expected}"!`;
+			throw `Expected value "${observed}" to be "${expected}" at ${serializePath(path)}!`;
 		}
 	}
 
 	private equalsUndefined(expected: JSON & undefined, observed: JSON, path: Array<string | number>): void {
 		if (!(observed === undefined)) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
 		}
 	}
 

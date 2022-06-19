@@ -35,7 +35,7 @@ export class TestCase {
 			let error = throwable instanceof Error ? SerializedError.fromError(throwable) : JSON.parse(JSON.serialize(throwable as any));
 			let lines = JSON.serialize(error).split(/\r?\n/);
 			for (let line of lines) {
-				logger?.log(`\t${line}\n`);
+				logger?.log(`${line}\n`);
 			}
 			return {
 				description,

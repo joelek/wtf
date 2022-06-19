@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.asserter = exports.Asserter = exports.getTypename = void 0;
+exports.asserter = exports.Asserter = exports.serializePath = exports.getTypename = void 0;
 const errors_1 = require("./errors");
 const json_1 = require("./json");
 function getTypename(subject) {
@@ -24,16 +24,37 @@ function getTypename(subject) {
 }
 exports.getTypename = getTypename;
 ;
+function serializePath(path) {
+    let strings = ["observed"];
+    for (let part of path) {
+        if (typeof part === "string") {
+            if (/^[a-z_][a-z_0-9]*$/i.test(part)) {
+                strings.push(`.${part}`);
+            }
+            else {
+                strings.push(`.${json_1.JSON.serialize(part)}`);
+            }
+            continue;
+        }
+        if (typeof part === "number") {
+            strings.push(`[${part}]`);
+            continue;
+        }
+    }
+    return strings.join("");
+}
+exports.serializePath = serializePath;
+;
 class Asserter {
     equalsArray(expected, observed, path) {
         if (!(observed instanceof Array)) {
-            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
         }
         for (let i = observed.length; i < expected.length; i++) {
-            throw `Expected element ${i} to be present!`;
+            throw `Expected element to be present at ${serializePath([...path, i])}!`;
         }
         for (let i = expected.length; i < observed.length; i++) {
-            throw `Expected element ${i} to be absent!`;
+            throw `Expected element to be absent at ${serializePath([...path, i])}!`;
         }
         for (let i = 0; i < expected.length; i++) {
             this.equals(expected[i], observed[i], [...path, i]);
@@ -41,37 +62,37 @@ class Asserter {
     }
     equalsBoolean(expected, observed, path) {
         if (!(typeof observed === "boolean")) {
-            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
         }
         if (expected !== observed) {
-            throw `Expected value ${observed} to be ${expected}!`;
+            throw `Expected value ${observed} to be ${expected} at ${serializePath(path)}!`;
         }
     }
     equalsNull(expected, observed, path) {
         if (!(observed === null)) {
-            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
         }
     }
     equalsNumber(expected, observed, path) {
         if (!(typeof observed === "number")) {
-            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
         }
         if (expected !== observed) {
-            throw `Expected value ${observed} to be ${expected}!`;
+            throw `Expected value ${observed} to be ${expected} at ${serializePath(path)}!`;
         }
     }
     equalsObject(expected, observed, path) {
         if (!(observed instanceof Object && !(observed instanceof Array))) {
-            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
         }
         for (let key in expected) {
             if (!(key in observed)) {
-                throw `Expected key "${key}" to be present!`;
+                throw `Expected member to be present at ${serializePath([...path, key])}!`;
             }
         }
         for (let key in observed) {
             if (!(key in expected)) {
-                throw `Expected key "${key}" to be absent!`;
+                throw `Expected member to be absent at ${serializePath([...path, key])}!`;
             }
         }
         for (let key in expected) {
@@ -80,15 +101,15 @@ class Asserter {
     }
     equalsString(expected, observed, path) {
         if (!(typeof observed === "string")) {
-            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
         }
         if (expected !== observed) {
-            throw `Expected value "${observed}" to be "${expected}"!`;
+            throw `Expected value "${observed}" to be "${expected}" at ${serializePath(path)}!`;
         }
     }
     equalsUndefined(expected, observed, path) {
         if (!(observed === undefined)) {
-            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
         }
     }
     constructor() { }

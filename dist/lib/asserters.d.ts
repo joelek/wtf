@@ -1,5 +1,6 @@
 import { JSON } from "./json";
 export declare function getTypename(subject: any): string;
+export declare function serializePath(path: Array<string | number>): string;
 export declare class Asserter {
     private equalsArray;
     private equalsBoolean;
