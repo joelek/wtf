@@ -31,7 +31,7 @@ class IncorrectTypeError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected type ${getTypename(this.observed)} to be ${getTypename(this.expected)} for ${json_1.JSONPath.serialize(this.path)}!`;
+        return `Expected type for observed${json_1.JSONPath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
     }
 }
 exports.IncorrectTypeError = IncorrectTypeError;
@@ -44,7 +44,7 @@ class IncorrectValueError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected value ${json_1.JSONData.serialize(this.observed)} to be ${json_1.JSONData.serialize(this.expected)} for ${json_1.JSONPath.serialize(this.path)}!`;
+        return `Expected value for observed${json_1.JSONPath.serialize(this.path)} (${json_1.JSONData.serialize(this.observed)}) to be ${json_1.JSONData.serialize(this.expected)}!`;
     }
 }
 exports.IncorrectValueError = IncorrectValueError;
@@ -55,7 +55,7 @@ class MissingElementError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected element to be present for ${json_1.JSONPath.serialize(this.path)}!`;
+        return `Expected element observed${json_1.JSONPath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingElementError = MissingElementError;
@@ -66,7 +66,7 @@ class UnexpectedElementError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected element to be absent for ${json_1.JSONPath.serialize(this.path)}!`;
+        return `Expected element observed${json_1.JSONPath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedElementError = UnexpectedElementError;
@@ -77,7 +77,7 @@ class MissingMemberError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected member to be present for ${json_1.JSONPath.serialize(this.path)}!`;
+        return `Expected member observed${json_1.JSONPath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingMemberError = MissingMemberError;
@@ -88,7 +88,7 @@ class UnexpectedMemberError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected member to be absent for ${json_1.JSONPath.serialize(this.path)}!`;
+        return `Expected member observed${json_1.JSONPath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedMemberError = UnexpectedMemberError;

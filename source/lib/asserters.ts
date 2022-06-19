@@ -16,7 +16,7 @@ export class IncorrectTypeError extends Error {
 	private path: JSONPath;
 
 	get message(): string {
-		return `Expected type ${getTypename(this.observed)} to be ${getTypename(this.expected)} for ${JSONPath.serialize(this.path)}!`;
+		return `Expected type for observed${JSONPath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
 	}
 
 	constructor(expected: JSONData, observed: JSONData, path: JSONPath) {
@@ -33,7 +33,7 @@ export class IncorrectValueError extends Error {
 	private path: JSONPath;
 
 	get message(): string {
-		return `Expected value ${JSONData.serialize(this.observed)} to be ${JSONData.serialize(this.expected)} for ${JSONPath.serialize(this.path)}!`;
+		return `Expected value for observed${JSONPath.serialize(this.path)} (${JSONData.serialize(this.observed)}) to be ${JSONData.serialize(this.expected)}!`;
 	}
 
 	constructor(expected: JSONData, observed: JSONData, path: JSONPath) {
@@ -48,7 +48,7 @@ export class MissingElementError extends Error {
 	private path: JSONPath;
 
 	get message(): string {
-		return `Expected element to be present for ${JSONPath.serialize(this.path)}!`;
+		return `Expected element observed${JSONPath.serialize(this.path)} to be present!`;
 	}
 
 	constructor(path: JSONPath) {
@@ -61,7 +61,7 @@ export class UnexpectedElementError extends Error {
 	private path: JSONPath;
 
 	get message(): string {
-		return `Expected element to be absent for ${JSONPath.serialize(this.path)}!`;
+		return `Expected element observed${JSONPath.serialize(this.path)} to be absent!`;
 	}
 
 	constructor(path: JSONPath) {
@@ -74,7 +74,7 @@ export class MissingMemberError extends Error {
 	private path: JSONPath;
 
 	get message(): string {
-		return `Expected member to be present for ${JSONPath.serialize(this.path)}!`;
+		return `Expected member observed${JSONPath.serialize(this.path)} to be present!`;
 	}
 
 	constructor(path: JSONPath) {
@@ -87,7 +87,7 @@ export class UnexpectedMemberError extends Error {
 	private path: JSONPath;
 
 	get message(): string {
-		return `Expected member to be absent for ${JSONPath.serialize(this.path)}!`;
+		return `Expected member observed${JSONPath.serialize(this.path)} to be absent!`;
 	}
 
 	constructor(path: JSONPath) {
