@@ -57,5 +57,3 @@ npm install joelek/wtf#master
 NB: This project targets TypeScript 4 in strict mode.
 
 ## Roadmap
-
-* Return status code 0 or 1 only.
