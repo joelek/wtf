@@ -75,7 +75,7 @@ export class TestSuite {
 			let report = await testCase.run(logger);
 			reports.push(report);
 			if (report.error != null) {
-				status += 1;
+				status = 1;
 			}
 		}
 		return {

@@ -210,7 +210,7 @@ export async function run(options: Options): Promise<number> {
 		let report = await runnable.runner.run(runnable.path, logger, environment);
 		reports.push(report);
 		if (report.status !== 0) {
-			status += 1;
+			status = 1;
 		}
 	}
 	logger?.log(`Completed with status ${status ?? ""} (${status === 0 ? "success" : "failure"}).\n`);

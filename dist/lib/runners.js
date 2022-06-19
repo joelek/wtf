@@ -197,7 +197,7 @@ function run(options) {
             let report = yield runnable.runner.run(runnable.path, logger, environment);
             reports.push(report);
             if (report.status !== 0) {
-                status += 1;
+                status = 1;
             }
         }
         logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${status === 0 ? "success" : "failure"}).\n`);
