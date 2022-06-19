@@ -61,3 +61,4 @@ NB: This project targets TypeScript 4 in strict mode.
 * Only log error description for test cases.
 * Add status to TestCaseReport.
 * Return status code 0 or 1 only.
+* Rename JSON to JSONData.
