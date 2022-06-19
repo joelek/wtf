@@ -1,6 +1,43 @@
-import { JSON } from "./json";
+import { JSON, JSONPath } from "./json";
 export declare function getTypename(subject: any): string;
-export declare function serializePath(path: Array<string | number>): string;
+export declare class IncorrectTypeError extends Error {
+    private expected;
+    private observed;
+    private path;
+    get message(): string;
+    constructor(expected: JSON, observed: JSON, path: JSONPath);
+}
+export declare class IncorrectValueError extends Error {
+    private expected;
+    private observed;
+    private path;
+    get message(): string;
+    constructor(expected: JSON, observed: JSON, path: JSONPath);
+}
+export declare class MissingElementError extends Error {
+    private path;
+    get message(): string;
+    constructor(path: JSONPath);
+}
+export declare class UnexpectedElementError extends Error {
+    private path;
+    get message(): string;
+    constructor(path: JSONPath);
+}
+export declare class MissingMemberError extends Error {
+    private path;
+    get message(): string;
+    constructor(path: JSONPath);
+}
+export declare class UnexpectedMemberError extends Error {
+    private path;
+    get message(): string;
+    constructor(path: JSONPath);
+}
+export declare class ExpectedThrowError extends Error {
+    get message(): string;
+    constructor();
+}
 export declare class Asserter {
     private equalsArray;
     private equalsBoolean;
@@ -9,8 +46,8 @@ export declare class Asserter {
     private equalsObject;
     private equalsString;
     private equalsUndefined;
+    private equalsJSON;
     constructor();
-    equals(expected: JSON, observed: JSON, path?: Array<string | number>): void;
+    equals(expected: JSON, observed: JSON): void;
     throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void>;
 }
-export declare const asserter: Asserter;

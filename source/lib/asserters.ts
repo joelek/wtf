@@ -1,5 +1,4 @@
-import { SerializedError } from "./errors";
-import { JSON } from "./json";
+import { JSON, JSONPath } from "./json";
 
 export function getTypename(subject: any): string {
 	if (subject === null) {
@@ -11,133 +10,204 @@ export function getTypename(subject: any): string {
 	return typeof subject;
 };
 
-export function serializePath(path: Array<string | number>): string {
-	let strings = ["observed"] as Array<string>;
-	for (let part of path) {
-		if (typeof part === "string") {
-			if (/^[a-z_][a-z_0-9]*$/i.test(part)) {
-				strings.push(`.${part}`);
-			} else {
-				strings.push(`.${JSON.serialize(part)}`);
-			}
-			continue;
-		}
-		if (typeof part === "number") {
-			strings.push(`[${part}]`);
-			continue;
-		}
+export class IncorrectTypeError extends Error {
+	private expected: JSON;
+	private observed: JSON;
+	private path: JSONPath;
+
+	get message(): string {
+		return `Expected type ${getTypename(this.observed)} to be ${getTypename(this.expected)} for ${JSONPath.serialize(this.path)}!`;
 	}
-	return strings.join("");
+
+	constructor(expected: JSON, observed: JSON, path: JSONPath) {
+		super();
+		this.expected = expected;
+		this.observed = observed;
+		this.path = path;
+	}
+};
+
+export class IncorrectValueError extends Error {
+	private expected: JSON;
+	private observed: JSON;
+	private path: JSONPath;
+
+	get message(): string {
+		return `Expected value ${JSON.serialize(this.observed)} to be ${JSON.serialize(this.expected)} for ${JSONPath.serialize(this.path)}!`;
+	}
+
+	constructor(expected: JSON, observed: JSON, path: JSONPath) {
+		super();
+		this.expected = expected;
+		this.observed = observed;
+		this.path = path;
+	}
+};
+
+export class MissingElementError extends Error {
+	private path: JSONPath;
+
+	get message(): string {
+		return `Expected element to be present for ${JSONPath.serialize(this.path)}!`;
+	}
+
+	constructor(path: JSONPath) {
+		super();
+		this.path = path;
+	}
+};
+
+export class UnexpectedElementError extends Error {
+	private path: JSONPath;
+
+	get message(): string {
+		return `Expected element to be absent for ${JSONPath.serialize(this.path)}!`;
+	}
+
+	constructor(path: JSONPath) {
+		super();
+		this.path = path;
+	}
+};
+
+export class MissingMemberError extends Error {
+	private path: JSONPath;
+
+	get message(): string {
+		return `Expected member to be present for ${JSONPath.serialize(this.path)}!`;
+	}
+
+	constructor(path: JSONPath) {
+		super();
+		this.path = path;
+	}
+};
+
+export class UnexpectedMemberError extends Error {
+	private path: JSONPath;
+
+	get message(): string {
+		return `Expected member to be absent for ${JSONPath.serialize(this.path)}!`;
+	}
+
+	constructor(path: JSONPath) {
+		super();
+		this.path = path;
+	}
+};
+
+export class ExpectedThrowError extends Error {
+	get message(): string {
+		return `Expected operation to throw an error!`;
+	}
+
+	constructor() {
+		super();
+	}
 };
 
 export class Asserter {
-	private equalsArray(expected: JSON & Array<JSON>, observed: JSON, path: Array<string | number>): void {
+	private equalsArray(expected: JSON & Array<JSON>, observed: JSON, path: JSONPath): void {
 		if (!(observed instanceof Array)) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
+			throw new IncorrectTypeError(expected, observed, path);
 		}
 		for (let i = observed.length; i < expected.length; i++) {
-			throw `Expected element to be present at ${serializePath([...path, i])}!`;
+			throw new MissingElementError([...path, i]);
 		}
 		for (let i = expected.length; i < observed.length; i++) {
-			throw `Expected element to be absent at ${serializePath([...path, i])}!`;
+			throw new UnexpectedElementError([...path, i]);
 		}
 		for (let i = 0; i < expected.length; i++) {
-			this.equals(expected[i], observed[i], [...path, i]);
+			this.equalsJSON(expected[i], observed[i], [...path, i]);
 		}
 	}
 
-	private equalsBoolean(expected: JSON & boolean, observed: JSON, path: Array<string | number>): void {
+	private equalsBoolean(expected: JSON & boolean, observed: JSON, path: JSONPath): void {
 		if (!(typeof observed === "boolean")) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
+			throw new IncorrectTypeError(expected, observed, path);
 		}
 		if (expected !== observed) {
-			throw `Expected value ${observed} to be ${expected} at ${serializePath(path)}!`;
+			throw new IncorrectValueError(expected, observed, path);
 		}
 	}
 
-	private equalsNull(expected: JSON & null, observed: JSON, path: Array<string | number>): void {
+	private equalsNull(expected: JSON & null, observed: JSON, path: JSONPath): void {
 		if (!(observed === null)) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
+			throw new IncorrectTypeError(expected, observed, path);
 		}
 	}
 
-	private equalsNumber(expected: JSON & number, observed: JSON, path: Array<string | number>): void {
+	private equalsNumber(expected: JSON & number, observed: JSON, path: JSONPath): void {
 		if (!(typeof observed === "number")) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
+			throw new IncorrectTypeError(expected, observed, path);
 		}
 		if (expected !== observed) {
-			throw `Expected value ${observed} to be ${expected} at ${serializePath(path)}!`;
+			throw new IncorrectValueError(expected, observed, path);
 		}
 	}
 
-	private equalsObject(expected: JSON & Record<string, JSON>, observed: JSON, path: Array<string | number>): void {
+	private equalsObject(expected: JSON & Record<string, JSON>, observed: JSON, path: JSONPath): void {
 		if (!(observed instanceof Object && !(observed instanceof Array))) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
+			throw new IncorrectTypeError(expected, observed, path);
 		}
 		for (let key in expected) {
 			if (!(key in observed)) {
-				throw `Expected member to be present at ${serializePath([...path, key])}!`;
+				throw new MissingMemberError([...path, key]);
 			}
 		}
 		for (let key in observed) {
 			if (!(key in expected)) {
-				throw `Expected member to be absent at ${serializePath([...path, key])}!`;
+				throw new UnexpectedMemberError([...path, key]);
 			}
 		}
 		for (let key in expected) {
-			this.equals(expected[key], observed[key], [...path, key]);
+			this.equalsJSON(expected[key], observed[key], [...path, key]);
 		}
 	}
 
-	private equalsString(expected: JSON & string, observed: JSON, path: Array<string | number>): void {
+	private equalsString(expected: JSON & string, observed: JSON, path: JSONPath): void {
 		if (!(typeof observed === "string")) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
+			throw new IncorrectTypeError(expected, observed, path);
 		}
 		if (expected !== observed) {
-			throw `Expected value "${observed}" to be "${expected}" at ${serializePath(path)}!`;
+			throw new IncorrectValueError(expected, observed, path);
 		}
 	}
 
-	private equalsUndefined(expected: JSON & undefined, observed: JSON, path: Array<string | number>): void {
+	private equalsUndefined(expected: JSON & undefined, observed: JSON, path:JSONPath): void {
 		if (!(observed === undefined)) {
-			throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)} at ${serializePath(path)}!`;
+			throw new IncorrectTypeError(expected, observed, path);
+		}
+	}
+
+	private equalsJSON(expected: JSON, observed: JSON, path: JSONPath): void {
+		if (expected instanceof Array) {
+			return this.equalsArray(expected, observed, path);
+		}
+		if (typeof expected === "boolean") {
+			return this.equalsBoolean(expected, observed, path);
+		}
+		if (expected === null) {
+			return this.equalsNull(expected, observed, path);
+		}
+		if (typeof expected === "number") {
+			return this.equalsNumber(expected, observed, path);
+		}
+		if (expected instanceof Object && !(expected instanceof Array)) {
+			return this.equalsObject(expected, observed, path);
+		}
+		if (typeof expected === "string") {
+			return this.equalsString(expected, observed, path);
+		}
+		if (expected === undefined) {
+			return this.equalsUndefined(expected, observed, path);
 		}
 	}
 
 	constructor() {}
 
-	equals(expected: JSON, observed: JSON, path: Array<string | number> = []): void {
-		try {
-			if (expected instanceof Array) {
-				return this.equalsArray(expected, observed, path);
-			}
-			if (typeof expected === "boolean") {
-				return this.equalsBoolean(expected, observed, path);
-			}
-			if (expected === null) {
-				return this.equalsNull(expected, observed, path);
-			}
-			if (typeof expected === "number") {
-				return this.equalsNumber(expected, observed, path);
-			}
-			if (expected instanceof Object && !(expected instanceof Array)) {
-				return this.equalsObject(expected, observed, path);
-			}
-			if (typeof expected === "string") {
-				return this.equalsString(expected, observed, path);
-			}
-			if (expected === undefined) {
-				return this.equalsUndefined(expected, observed, path);
-			}
-		} catch (throwable) {
-			let error = throwable instanceof Error ? SerializedError.fromError(throwable) : JSON.parse(JSON.serialize(throwable as any));
-			throw {
-				error,
-				path,
-				expected,
-				observed
-			};
-		}
+	equals(expected: JSON, observed: JSON): void {
+		this.equalsJSON(expected, observed, []);
 	}
 
 	async throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void> {
@@ -147,11 +217,6 @@ export class Asserter {
 		} catch (error) {
 			return;
 		}
-		let error = SerializedError.fromError(new Error(`Expected operation to throw an error!`));
-		throw {
-			error
-		};
+		throw new ExpectedThrowError();
 	}
 };
-
-export const asserter = new Asserter();

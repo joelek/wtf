@@ -10,32 +10,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTestSuite = exports.TestSuite = exports.TestCase = void 0;
-const asserters = require("./asserters");
 const loggers = require("./loggers");
-const errors_1 = require("./errors");
-const json_1 = require("./json");
 const env_1 = require("./env");
 const _1 = require(".");
+const asserters_1 = require("./asserters");
 class TestCase {
     constructor(description, callback) {
         this.description = description;
         this.callback = callback;
     }
     run(logger) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let description = this.description;
+            let asserter = new asserters_1.Asserter();
             try {
-                yield this.callback(asserters.asserter);
+                yield this.callback(asserter);
                 return {
                     description
                 };
             }
             catch (throwable) {
                 logger === null || logger === void 0 ? void 0 : logger.log(`Test "${description}" raised an error!\n`);
-                let error = throwable instanceof Error ? errors_1.SerializedError.fromError(throwable) : json_1.JSON.parse(json_1.JSON.serialize(throwable));
-                let lines = json_1.JSON.serialize(error).split(/\r?\n/);
-                for (let line of lines) {
-                    logger === null || logger === void 0 ? void 0 : logger.log(`${line}\n`);
+                let error;
+                if (throwable instanceof Error) {
+                    logger === null || logger === void 0 ? void 0 : logger.log(`${(_a = throwable.stack) !== null && _a !== void 0 ? _a : throwable.message}\n`);
+                    error = throwable.message;
                 }
                 return {
                     description,

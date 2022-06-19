@@ -1,6 +1,4 @@
-import * as asserters from "./asserters";
 import * as loggers from "./loggers";
-import { SerializedError } from "./errors";
 import { JSON } from "./json";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { reporters } from ".";
@@ -11,7 +9,7 @@ export type TestCallback = (asserter: Asserter) => void | Promise<void>;
 
 export type TestCaseReport = {
 	description: string;
-	error?: JSON;
+	error?: string;
 };
 
 export class TestCase {
@@ -25,17 +23,18 @@ export class TestCase {
 
 	async run(logger?: Logger): Promise<TestCaseReport> {
 		let description = this.description;
+		let asserter = new Asserter();
 		try {
-			await this.callback(asserters.asserter);
+			await this.callback(asserter);
 			return {
 				description
 			};
 		} catch (throwable) {
 			logger?.log(`Test "${description}" raised an error!\n`);
-			let error = throwable instanceof Error ? SerializedError.fromError(throwable) : JSON.parse(JSON.serialize(throwable as any));
-			let lines = JSON.serialize(error).split(/\r?\n/);
-			for (let line of lines) {
-				logger?.log(`${line}\n`);
+			let error: string | undefined;
+			if (throwable instanceof Error) {
+				logger?.log(`${throwable.stack ?? throwable.message}\n`);
+				error = throwable.message;
 			}
 			return {
 				description,

@@ -11,7 +11,7 @@ createTestSuite("Suite", async (suite) => {
 	});
 
 	suite.defineTestCase(`It should capture an error when a test runs unsuccessfully.`, async (assert) => {
-		let testCase = new suites.TestCase("", async () => { throw ""; });
+		let testCase = new suites.TestCase("", async () => { throw new Error(); });
 		let report = await testCase.run();
 		if (report.error == null) {
 			throw "";

@@ -14,7 +14,7 @@ export declare type RunReport = {
     path: string;
     stdout: JSON;
     stderr: JSON;
-    error?: JSON;
+    error?: string;
     status?: number;
 };
 export interface Runner {

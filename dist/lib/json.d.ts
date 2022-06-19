@@ -5,3 +5,7 @@ export declare const JSON: {
     parse(string: string): JSON;
     serialize(json: JSON): string;
 };
+export declare type JSONPath = Array<string | number>;
+export declare const JSONPath: {
+    serialize(path: JSONPath): string;
+};

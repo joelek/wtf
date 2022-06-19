@@ -20,7 +20,7 @@ const suites_1 = require("./suites");
         }
     }));
     suite.defineTestCase(`It should capture an error when a test runs unsuccessfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
-        let testCase = new suites.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { throw ""; }));
+        let testCase = new suites.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { throw new Error(); }));
         let report = yield testCase.run();
         if (report.error == null) {
             throw "";

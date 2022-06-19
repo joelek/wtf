@@ -1,10 +1,9 @@
-import { JSON } from "./json";
 import { Logger } from "./loggers";
 import { Asserter } from "./asserters";
 export declare type TestCallback = (asserter: Asserter) => void | Promise<void>;
 export declare type TestCaseReport = {
     description: string;
-    error?: JSON;
+    error?: string;
 };
 export declare class TestCase {
     private description;

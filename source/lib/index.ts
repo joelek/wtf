@@ -1,6 +1,5 @@
 export * as asserters from "./asserters";
 export * as env from "./env";
-export * as errors from "./errors";
 export * as json from "./json";
 export * as loggers from "./loggers";
 export * as reporters from "./reporters";

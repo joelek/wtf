@@ -3,7 +3,6 @@ import * as libfs from "fs";
 import * as libpath from "path";
 import * as loggers from "./loggers";
 import * as reporters from "./reporters";
-import { SerializedError } from "./errors";
 import { JSON } from "./json";
 import { Logger } from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
@@ -62,7 +61,7 @@ export type RunReport = {
 	path: string;
 	stdout: JSON;
 	stderr: JSON;
-	error?: JSON;
+	error?: string;
 	status?: number;
 };
 
@@ -90,7 +89,7 @@ export class CustomRunner implements Runner {
 		let result = await spawn(command, [path], logger, environment);
 		let stdout = parseIfPossible(result.stdout.toString());
 		let stderr = parseIfPossible(result.stderr.toString());
-		let error = result.error == null ? undefined : SerializedError.fromError(result.error);
+		let error = result.error == null ? undefined : result.error.message;
 		let status = result.status;
 		logger?.log(`Command ${command} returned status ${status ?? ""} (${status === 0 ? "success" : "failure"}).\n`);
 		return {

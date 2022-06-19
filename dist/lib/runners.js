@@ -15,7 +15,6 @@ const libfs = require("fs");
 const libpath = require("path");
 const loggers = require("./loggers");
 const reporters = require("./reporters");
-const errors_1 = require("./errors");
 const json_1 = require("./json");
 const env_1 = require("./env");
 function spawn(command, parameters, logger, environment) {
@@ -82,7 +81,7 @@ class CustomRunner {
             let result = yield spawn(command, [path], logger, environment);
             let stdout = parseIfPossible(result.stdout.toString());
             let stderr = parseIfPossible(result.stderr.toString());
-            let error = result.error == null ? undefined : errors_1.SerializedError.fromError(result.error);
+            let error = result.error == null ? undefined : result.error.message;
             let status = result.status;
             logger === null || logger === void 0 ? void 0 : logger.log(`Command ${command} returned status ${status !== null && status !== void 0 ? status : ""} (${status === 0 ? "success" : "failure"}).\n`);
             return {
