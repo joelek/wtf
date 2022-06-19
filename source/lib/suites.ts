@@ -9,6 +9,7 @@ export type TestCallback = (asserter: Asserter) => void | Promise<void>;
 
 export type TestCaseReport = {
 	description: string;
+	status: number;
 	error?: string;
 };
 
@@ -26,8 +27,10 @@ export class TestCase {
 		let asserter = new Asserter();
 		try {
 			await this.callback(asserter);
+			let status = 0;
 			return {
-				description
+				description,
+				status
 			};
 		} catch (throwable) {
 			logger?.log(`Test "${description}" raised an error!\n`);
@@ -36,8 +39,10 @@ export class TestCase {
 				logger?.log(`${throwable.stack ?? throwable.message}\n`);
 				error = throwable.message;
 			}
+			let status = 1;
 			return {
 				description,
+				status,
 				error
 			};
 		}
