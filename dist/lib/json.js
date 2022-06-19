@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONPath = exports.JSON = void 0;
-exports.JSON = {
+exports.JSONPath = exports.JSONData = void 0;
+exports.JSONData = {
     parse(string) {
         return globalThis.JSON.parse(string);
     },
@@ -18,7 +18,7 @@ exports.JSONPath = {
                     strings.push(`.${part}`);
                 }
                 else {
-                    strings.push(`.${exports.JSON.serialize(part)}`);
+                    strings.push(`.${exports.JSONData.serialize(part)}`);
                 }
                 continue;
             }

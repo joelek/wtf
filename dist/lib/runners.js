@@ -57,7 +57,7 @@ exports.spawn = spawn;
 ;
 function parseIfPossible(string) {
     try {
-        return json_1.JSON.parse(string);
+        return json_1.JSONData.parse(string);
     }
     catch (error) { }
     ;

@@ -1,9 +1,9 @@
-export declare type JSON = boolean | null | number | string | undefined | JSON[] | {
-    [key: string]: JSON;
+export declare type JSONData = boolean | null | number | string | undefined | JSONData[] | {
+    [key: string]: JSONData;
 };
-export declare const JSON: {
-    parse(string: string): JSON;
-    serialize(json: JSON): string;
+export declare const JSONData: {
+    parse(string: string): JSONData;
+    serialize(json: JSONData): string;
 };
 export declare type JSONPath = Array<string | number>;
 export declare const JSONPath: {

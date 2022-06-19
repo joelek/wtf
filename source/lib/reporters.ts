@@ -1,20 +1,20 @@
 import * as loggers from "./loggers";
-import { JSON } from "./json";
+import { JSONData } from "./json";
 import { Logger } from "./loggers";
 
 export interface Reporter<A> {
 	report(report: A): void;
 };
 
-export class JSONReporter implements Reporter<JSON> {
+export class JSONReporter implements Reporter<JSONData> {
 	private logger?: Logger;
 
 	constructor(logger?: Logger) {
 		this.logger = logger;
 	}
 
-	report(report: JSON): void {
-		this.logger?.log(JSON.serialize(report) + "\n");
+	report(report: JSONData): void {
+		this.logger?.log(JSONData.serialize(report) + "\n");
 	}
 };
 

@@ -3,6 +3,7 @@ import { Asserter } from "./asserters";
 export declare type TestCallback = (asserter: Asserter) => void | Promise<void>;
 export declare type TestCaseReport = {
     description: string;
+    status: number;
     error?: string;
 };
 export declare class TestCase {

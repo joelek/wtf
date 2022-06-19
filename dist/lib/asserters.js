@@ -44,7 +44,7 @@ class IncorrectValueError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected value ${json_1.JSON.serialize(this.observed)} to be ${json_1.JSON.serialize(this.expected)} for ${json_1.JSONPath.serialize(this.path)}!`;
+        return `Expected value ${json_1.JSONData.serialize(this.observed)} to be ${json_1.JSONData.serialize(this.expected)} for ${json_1.JSONPath.serialize(this.path)}!`;
     }
 }
 exports.IncorrectValueError = IncorrectValueError;

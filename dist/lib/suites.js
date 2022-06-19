@@ -26,8 +26,10 @@ class TestCase {
             let asserter = new asserters_1.Asserter();
             try {
                 yield this.callback(asserter);
+                let status = 0;
                 return {
-                    description
+                    description,
+                    status
                 };
             }
             catch (throwable) {
@@ -37,8 +39,10 @@ class TestCase {
                     logger === null || logger === void 0 ? void 0 : logger.log(`${(_a = throwable.stack) !== null && _a !== void 0 ? _a : throwable.message}\n`);
                     error = throwable.message;
                 }
+                let status = 1;
                 return {
                     description,
+                    status,
                     error
                 };
             }

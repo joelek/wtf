@@ -1,12 +1,12 @@
-export type JSON = boolean | null | number | string | undefined | JSON[] | {
-	[key: string]: JSON;
+export type JSONData = boolean | null | number | string | undefined | JSONData[] | {
+	[key: string]: JSONData;
 };
 
-export const JSON = {
-	parse(string: string): JSON {
+export const JSONData = {
+	parse(string: string): JSONData {
 		return globalThis.JSON.parse(string);
 	},
-	serialize(json: JSON): string {
+	serialize(json: JSONData): string {
 		return globalThis.JSON.stringify(json != null ? json : null, null, "\t");
 	}
 };
@@ -21,7 +21,7 @@ export const JSONPath = {
 				if (/^[a-z_][a-z_0-9]*$/i.test(part)) {
 					strings.push(`.${part}`);
 				} else {
-					strings.push(`.${JSON.serialize(part)}`);
+					strings.push(`.${JSONData.serialize(part)}`);
 				}
 				continue;
 			}

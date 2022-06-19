@@ -1,4 +1,4 @@
-import { JSON, JSONPath } from "./json";
+import { JSONData, JSONPath } from "./json";
 
 export function getTypename(subject: any): string {
 	if (subject === null) {
@@ -11,15 +11,15 @@ export function getTypename(subject: any): string {
 };
 
 export class IncorrectTypeError extends Error {
-	private expected: JSON;
-	private observed: JSON;
+	private expected: JSONData;
+	private observed: JSONData;
 	private path: JSONPath;
 
 	get message(): string {
 		return `Expected type ${getTypename(this.observed)} to be ${getTypename(this.expected)} for ${JSONPath.serialize(this.path)}!`;
 	}
 
-	constructor(expected: JSON, observed: JSON, path: JSONPath) {
+	constructor(expected: JSONData, observed: JSONData, path: JSONPath) {
 		super();
 		this.expected = expected;
 		this.observed = observed;
@@ -28,15 +28,15 @@ export class IncorrectTypeError extends Error {
 };
 
 export class IncorrectValueError extends Error {
-	private expected: JSON;
-	private observed: JSON;
+	private expected: JSONData;
+	private observed: JSONData;
 	private path: JSONPath;
 
 	get message(): string {
-		return `Expected value ${JSON.serialize(this.observed)} to be ${JSON.serialize(this.expected)} for ${JSONPath.serialize(this.path)}!`;
+		return `Expected value ${JSONData.serialize(this.observed)} to be ${JSONData.serialize(this.expected)} for ${JSONPath.serialize(this.path)}!`;
 	}
 
-	constructor(expected: JSON, observed: JSON, path: JSONPath) {
+	constructor(expected: JSONData, observed: JSONData, path: JSONPath) {
 		super();
 		this.expected = expected;
 		this.observed = observed;
@@ -107,7 +107,7 @@ export class ExpectedThrowError extends Error {
 };
 
 export class Asserter {
-	private equalsArray(expected: JSON & Array<JSON>, observed: JSON, path: JSONPath): void {
+	private equalsArray(expected: JSONData & Array<JSONData>, observed: JSONData, path: JSONPath): void {
 		if (!(observed instanceof Array)) {
 			throw new IncorrectTypeError(expected, observed, path);
 		}
@@ -122,7 +122,7 @@ export class Asserter {
 		}
 	}
 
-	private equalsBoolean(expected: JSON & boolean, observed: JSON, path: JSONPath): void {
+	private equalsBoolean(expected: JSONData & boolean, observed: JSONData, path: JSONPath): void {
 		if (!(typeof observed === "boolean")) {
 			throw new IncorrectTypeError(expected, observed, path);
 		}
@@ -131,13 +131,13 @@ export class Asserter {
 		}
 	}
 
-	private equalsNull(expected: JSON & null, observed: JSON, path: JSONPath): void {
+	private equalsNull(expected: JSONData & null, observed: JSONData, path: JSONPath): void {
 		if (!(observed === null)) {
 			throw new IncorrectTypeError(expected, observed, path);
 		}
 	}
 
-	private equalsNumber(expected: JSON & number, observed: JSON, path: JSONPath): void {
+	private equalsNumber(expected: JSONData & number, observed: JSONData, path: JSONPath): void {
 		if (!(typeof observed === "number")) {
 			throw new IncorrectTypeError(expected, observed, path);
 		}
@@ -146,7 +146,7 @@ export class Asserter {
 		}
 	}
 
-	private equalsObject(expected: JSON & Record<string, JSON>, observed: JSON, path: JSONPath): void {
+	private equalsObject(expected: JSONData & Record<string, JSONData>, observed: JSONData, path: JSONPath): void {
 		if (!(observed instanceof Object && !(observed instanceof Array))) {
 			throw new IncorrectTypeError(expected, observed, path);
 		}
@@ -165,7 +165,7 @@ export class Asserter {
 		}
 	}
 
-	private equalsString(expected: JSON & string, observed: JSON, path: JSONPath): void {
+	private equalsString(expected: JSONData & string, observed: JSONData, path: JSONPath): void {
 		if (!(typeof observed === "string")) {
 			throw new IncorrectTypeError(expected, observed, path);
 		}
@@ -174,13 +174,13 @@ export class Asserter {
 		}
 	}
 
-	private equalsUndefined(expected: JSON & undefined, observed: JSON, path:JSONPath): void {
+	private equalsUndefined(expected: JSONData & undefined, observed: JSONData, path:JSONPath): void {
 		if (!(observed === undefined)) {
 			throw new IncorrectTypeError(expected, observed, path);
 		}
 	}
 
-	private equalsJSON(expected: JSON, observed: JSON, path: JSONPath): void {
+	private equalsJSON(expected: JSONData, observed: JSONData, path: JSONPath): void {
 		if (expected instanceof Array) {
 			return this.equalsArray(expected, observed, path);
 		}
@@ -206,7 +206,7 @@ export class Asserter {
 
 	constructor() {}
 
-	equals(expected: JSON, observed: JSON): void {
+	equals(expected: JSONData, observed: JSONData): void {
 		this.equalsJSON(expected, observed, []);
 	}
 

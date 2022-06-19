@@ -1,5 +1,5 @@
 import * as loggers from "./loggers";
-import { JSON } from "./json";
+import { JSONData } from "./json";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { reporters } from ".";
 import { Logger } from "./loggers";

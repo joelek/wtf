@@ -3,7 +3,7 @@ import * as libfs from "fs";
 import * as libpath from "path";
 import * as loggers from "./loggers";
 import * as reporters from "./reporters";
-import { JSON } from "./json";
+import { JSONData } from "./json";
 import { Logger } from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 
@@ -49,9 +49,9 @@ export async function spawn(command: string, parameters: Array<string>, logger?:
 	});
 };
 
-export function parseIfPossible(string: string): JSON {
+export function parseIfPossible(string: string): JSONData {
 	try {
-		return JSON.parse(string);
+		return JSONData.parse(string);
 	} catch (error) {};
 	return string;
 };
@@ -59,8 +59,8 @@ export function parseIfPossible(string: string): JSON {
 export type RunReport = {
 	command: string;
 	path: string;
-	stdout: JSON;
-	stderr: JSON;
+	stdout: JSONData;
+	stderr: JSONData;
 	error?: string;
 	status?: number;
 };
