@@ -1,6 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONPath = exports.JSONData = void 0;
+exports.JSONPath = exports.JSONData = exports.JSONObject = exports.JSONArray = void 0;
+exports.JSONArray = {
+    is(subject) {
+        return subject != null && subject.constructor === Array;
+    }
+};
+exports.JSONObject = {
+    is(subject) {
+        return subject != null && subject.constructor === Object;
+    }
+};
 exports.JSONData = {
     parse(string) {
         return globalThis.JSON.parse(string);

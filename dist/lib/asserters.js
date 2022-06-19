@@ -105,7 +105,7 @@ exports.ExpectedThrowError = ExpectedThrowError;
 ;
 class Asserter {
     equalsArray(observed, expected, path) {
-        if (!(observed instanceof Array)) {
+        if (!json_1.JSONArray.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
         }
         for (let i = observed.length; i < expected.length; i++) {
@@ -140,7 +140,7 @@ class Asserter {
         }
     }
     equalsObject(observed, expected, path) {
-        if (!(observed instanceof Object && !(observed instanceof Array))) {
+        if (!json_1.JSONObject.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
         }
         for (let key in expected) {
@@ -171,7 +171,7 @@ class Asserter {
         }
     }
     equalsJSON(observed, expected, path) {
-        if (expected instanceof Array) {
+        if (json_1.JSONArray.is(expected)) {
             return this.equalsArray(observed, expected, path);
         }
         if (typeof expected === "boolean") {
@@ -183,7 +183,7 @@ class Asserter {
         if (typeof expected === "number") {
             return this.equalsNumber(observed, expected, path);
         }
-        if (expected instanceof Object && !(expected instanceof Array)) {
+        if (json_1.JSONObject.is(expected)) {
             return this.equalsObject(observed, expected, path);
         }
         if (typeof expected === "string") {

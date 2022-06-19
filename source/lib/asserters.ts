@@ -1,4 +1,4 @@
-import { JSONData, JSONPath } from "./json";
+import { JSONArray, JSONData, JSONObject, JSONPath } from "./json";
 
 export function getTypename(subject: any): string {
 	if (subject === null) {
@@ -107,8 +107,8 @@ export class ExpectedThrowError extends Error {
 };
 
 export class Asserter {
-	private equalsArray(observed: JSONData, expected: JSONData & Array<JSONData>, path: JSONPath): void {
-		if (!(observed instanceof Array)) {
+	private equalsArray(observed: JSONData, expected: JSONData & JSONArray, path: JSONPath): void {
+		if (!JSONArray.is(observed)) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
 		for (let i = observed.length; i < expected.length; i++) {
@@ -146,8 +146,8 @@ export class Asserter {
 		}
 	}
 
-	private equalsObject(observed: JSONData, expected: JSONData & Record<string, JSONData>, path: JSONPath): void {
-		if (!(observed instanceof Object && !(observed instanceof Array))) {
+	private equalsObject(observed: JSONData, expected: JSONData & JSONObject, path: JSONPath): void {
+		if (!JSONObject.is(observed)) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
 		for (let key in expected) {
@@ -181,7 +181,7 @@ export class Asserter {
 	}
 
 	private equalsJSON(observed: JSONData, expected: JSONData, path: JSONPath): void {
-		if (expected instanceof Array) {
+		if (JSONArray.is(expected)) {
 			return this.equalsArray(observed, expected, path);
 		}
 		if (typeof expected === "boolean") {
@@ -193,7 +193,7 @@ export class Asserter {
 		if (typeof expected === "number") {
 			return this.equalsNumber(observed, expected, path);
 		}
-		if (expected instanceof Object && !(expected instanceof Array)) {
+		if (JSONObject.is(expected)) {
 			return this.equalsObject(observed, expected, path);
 		}
 		if (typeof expected === "string") {

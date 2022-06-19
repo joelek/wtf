@@ -1,5 +1,22 @@
+
 export type JSONData = boolean | null | number | string | undefined | JSONData[] | {
 	[key: string]: JSONData;
+};
+
+export type JSONArray = Array<JSONData>;
+
+export const JSONArray = {
+	is(subject: JSONData): subject is Array<JSONData> {
+		return subject != null && subject.constructor === Array;
+	}
+};
+
+export type JSONObject = Record<string, JSONData>;
+
+export const JSONObject = {
+	is(subject: JSONData): subject is Record<string, JSONData> {
+		return subject != null && subject.constructor === Object;
+	}
 };
 
 export const JSONData = {
