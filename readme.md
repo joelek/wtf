@@ -59,3 +59,4 @@ NB: This project targets TypeScript 4 in strict mode.
 ## Roadmap
 
 * Create asserter instance for each test case and use asynch queue.
+* Add paths to asserter.
