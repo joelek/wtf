@@ -25,7 +25,7 @@ function getTypename(subject) {
 exports.getTypename = getTypename;
 ;
 class Asserter {
-    equalsArray(expected, observed) {
+    equalsArray(expected, observed, path) {
         if (!(observed instanceof Array)) {
             throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
@@ -36,10 +36,10 @@ class Asserter {
             throw `Expected element ${i} to be absent!`;
         }
         for (let i = 0; i < expected.length; i++) {
-            this.equals(expected[i], observed[i]);
+            this.equals(expected[i], observed[i], [...path, i]);
         }
     }
-    equalsBoolean(expected, observed) {
+    equalsBoolean(expected, observed, path) {
         if (!(typeof observed === "boolean")) {
             throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
@@ -47,12 +47,12 @@ class Asserter {
             throw `Expected value ${observed} to be ${expected}!`;
         }
     }
-    equalsNull(expected, observed) {
+    equalsNull(expected, observed, path) {
         if (!(observed === null)) {
             throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
     }
-    equalsNumber(expected, observed) {
+    equalsNumber(expected, observed, path) {
         if (!(typeof observed === "number")) {
             throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
@@ -60,7 +60,7 @@ class Asserter {
             throw `Expected value ${observed} to be ${expected}!`;
         }
     }
-    equalsObject(expected, observed) {
+    equalsObject(expected, observed, path) {
         if (!(observed instanceof Object && !(observed instanceof Array))) {
             throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
@@ -75,10 +75,10 @@ class Asserter {
             }
         }
         for (let key in expected) {
-            this.equals(expected[key], observed[key]);
+            this.equals(expected[key], observed[key], [...path, key]);
         }
     }
-    equalsString(expected, observed) {
+    equalsString(expected, observed, path) {
         if (!(typeof observed === "string")) {
             throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
@@ -86,40 +86,41 @@ class Asserter {
             throw `Expected value "${observed}" to be "${expected}"!`;
         }
     }
-    equalsUndefined(expected, observed) {
+    equalsUndefined(expected, observed, path) {
         if (!(observed === undefined)) {
             throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
     }
     constructor() { }
-    equals(expected, observed) {
+    equals(expected, observed, path = []) {
         try {
             if (expected instanceof Array) {
-                return this.equalsArray(expected, observed);
+                return this.equalsArray(expected, observed, path);
             }
             if (typeof expected === "boolean") {
-                return this.equalsBoolean(expected, observed);
+                return this.equalsBoolean(expected, observed, path);
             }
             if (expected === null) {
-                return this.equalsNull(expected, observed);
+                return this.equalsNull(expected, observed, path);
             }
             if (typeof expected === "number") {
-                return this.equalsNumber(expected, observed);
+                return this.equalsNumber(expected, observed, path);
             }
             if (expected instanceof Object && !(expected instanceof Array)) {
-                return this.equalsObject(expected, observed);
+                return this.equalsObject(expected, observed, path);
             }
             if (typeof expected === "string") {
-                return this.equalsString(expected, observed);
+                return this.equalsString(expected, observed, path);
             }
             if (expected === undefined) {
-                return this.equalsUndefined(expected, observed);
+                return this.equalsUndefined(expected, observed, path);
             }
         }
         catch (throwable) {
             let error = throwable instanceof Error ? errors_1.SerializedError.fromError(throwable) : json_1.JSON.parse(json_1.JSON.serialize(throwable));
             throw {
                 error,
+                path,
                 expected,
                 observed
             };

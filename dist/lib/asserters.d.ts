@@ -9,7 +9,7 @@ export declare class Asserter {
     private equalsString;
     private equalsUndefined;
     constructor();
-    equals(expected: JSON, observed: JSON): void;
+    equals(expected: JSON, observed: JSON, path?: Array<string | number>): void;
     throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void>;
 }
 export declare const asserter: Asserter;
