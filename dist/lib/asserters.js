@@ -24,10 +24,10 @@ function getTypename(subject) {
 exports.getTypename = getTypename;
 ;
 class IncorrectTypeError extends Error {
-    constructor(expected, observed, path) {
+    constructor(observed, expected, path) {
         super();
-        this.expected = expected;
         this.observed = observed;
+        this.expected = expected;
         this.path = path;
     }
     get message() {
@@ -37,10 +37,10 @@ class IncorrectTypeError extends Error {
 exports.IncorrectTypeError = IncorrectTypeError;
 ;
 class IncorrectValueError extends Error {
-    constructor(expected, observed, path) {
+    constructor(observed, expected, path) {
         super();
-        this.expected = expected;
         this.observed = observed;
+        this.expected = expected;
         this.path = path;
     }
     get message() {
@@ -104,9 +104,9 @@ class ExpectedThrowError extends Error {
 exports.ExpectedThrowError = ExpectedThrowError;
 ;
 class Asserter {
-    equalsArray(expected, observed, path) {
+    equalsArray(observed, expected, path) {
         if (!(observed instanceof Array)) {
-            throw new IncorrectTypeError(expected, observed, path);
+            throw new IncorrectTypeError(observed, expected, path);
         }
         for (let i = observed.length; i < expected.length; i++) {
             throw new MissingElementError([...path, i]);
@@ -115,33 +115,33 @@ class Asserter {
             throw new UnexpectedElementError([...path, i]);
         }
         for (let i = 0; i < expected.length; i++) {
-            this.equalsJSON(expected[i], observed[i], [...path, i]);
+            this.equalsJSON(observed[i], expected[i], [...path, i]);
         }
     }
-    equalsBoolean(expected, observed, path) {
+    equalsBoolean(observed, expected, path) {
         if (!(typeof observed === "boolean")) {
-            throw new IncorrectTypeError(expected, observed, path);
+            throw new IncorrectTypeError(observed, expected, path);
         }
         if (expected !== observed) {
-            throw new IncorrectValueError(expected, observed, path);
+            throw new IncorrectValueError(observed, expected, path);
         }
     }
-    equalsNull(expected, observed, path) {
+    equalsNull(observed, expected, path) {
         if (!(observed === null)) {
-            throw new IncorrectTypeError(expected, observed, path);
+            throw new IncorrectTypeError(observed, expected, path);
         }
     }
-    equalsNumber(expected, observed, path) {
+    equalsNumber(observed, expected, path) {
         if (!(typeof observed === "number")) {
-            throw new IncorrectTypeError(expected, observed, path);
+            throw new IncorrectTypeError(observed, expected, path);
         }
         if (expected !== observed) {
-            throw new IncorrectValueError(expected, observed, path);
+            throw new IncorrectValueError(observed, expected, path);
         }
     }
-    equalsObject(expected, observed, path) {
+    equalsObject(observed, expected, path) {
         if (!(observed instanceof Object && !(observed instanceof Array))) {
-            throw new IncorrectTypeError(expected, observed, path);
+            throw new IncorrectTypeError(observed, expected, path);
         }
         for (let key in expected) {
             if (!(key in observed)) {
@@ -154,48 +154,48 @@ class Asserter {
             }
         }
         for (let key in expected) {
-            this.equalsJSON(expected[key], observed[key], [...path, key]);
+            this.equalsJSON(observed[key], expected[key], [...path, key]);
         }
     }
-    equalsString(expected, observed, path) {
+    equalsString(observed, expected, path) {
         if (!(typeof observed === "string")) {
-            throw new IncorrectTypeError(expected, observed, path);
+            throw new IncorrectTypeError(observed, expected, path);
         }
         if (expected !== observed) {
-            throw new IncorrectValueError(expected, observed, path);
+            throw new IncorrectValueError(observed, expected, path);
         }
     }
-    equalsUndefined(expected, observed, path) {
+    equalsUndefined(observed, expected, path) {
         if (!(observed === undefined)) {
-            throw new IncorrectTypeError(expected, observed, path);
+            throw new IncorrectTypeError(observed, expected, path);
         }
     }
-    equalsJSON(expected, observed, path) {
+    equalsJSON(observed, expected, path) {
         if (expected instanceof Array) {
-            return this.equalsArray(expected, observed, path);
+            return this.equalsArray(observed, expected, path);
         }
         if (typeof expected === "boolean") {
-            return this.equalsBoolean(expected, observed, path);
+            return this.equalsBoolean(observed, expected, path);
         }
         if (expected === null) {
-            return this.equalsNull(expected, observed, path);
+            return this.equalsNull(observed, expected, path);
         }
         if (typeof expected === "number") {
-            return this.equalsNumber(expected, observed, path);
+            return this.equalsNumber(observed, expected, path);
         }
         if (expected instanceof Object && !(expected instanceof Array)) {
-            return this.equalsObject(expected, observed, path);
+            return this.equalsObject(observed, expected, path);
         }
         if (typeof expected === "string") {
-            return this.equalsString(expected, observed, path);
+            return this.equalsString(observed, expected, path);
         }
         if (expected === undefined) {
-            return this.equalsUndefined(expected, observed, path);
+            return this.equalsUndefined(observed, expected, path);
         }
     }
     constructor() { }
-    equals(expected, observed) {
-        this.equalsJSON(expected, observed, []);
+    equals(observed, expected) {
+        this.equalsJSON(observed, expected, []);
     }
     throws(operation) {
         return __awaiter(this, void 0, void 0, function* () {

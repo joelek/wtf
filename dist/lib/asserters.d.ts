@@ -1,18 +1,18 @@
 import { JSONData, JSONPath } from "./json";
 export declare function getTypename(subject: any): string;
 export declare class IncorrectTypeError extends Error {
-    private expected;
     private observed;
+    private expected;
     private path;
     get message(): string;
-    constructor(expected: JSONData, observed: JSONData, path: JSONPath);
+    constructor(observed: JSONData, expected: JSONData, path: JSONPath);
 }
 export declare class IncorrectValueError extends Error {
-    private expected;
     private observed;
+    private expected;
     private path;
     get message(): string;
-    constructor(expected: JSONData, observed: JSONData, path: JSONPath);
+    constructor(observed: JSONData, expected: JSONData, path: JSONPath);
 }
 export declare class MissingElementError extends Error {
     private path;
@@ -48,6 +48,6 @@ export declare class Asserter {
     private equalsUndefined;
     private equalsJSON;
     constructor();
-    equals(expected: JSONData, observed: JSONData): void;
+    equals(observed: JSONData, expected: JSONData): void;
     throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void>;
 }
