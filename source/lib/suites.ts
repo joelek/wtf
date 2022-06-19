@@ -7,7 +7,7 @@ import { reporters } from ".";
 import { Logger } from "./loggers";
 import { Asserter } from "./asserters";
 
-export type TestCallback = (asserter: Asserter) => Promise<void>;
+export type TestCallback = (asserter: Asserter) => void | Promise<void>;
 
 export type TestCaseReport = {
 	description: string;
