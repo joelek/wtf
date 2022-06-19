@@ -6,7 +6,9 @@ export type SerializedError = {
 
 export const SerializedError = {
 	fromError(error: Error): SerializedError {
-		let { name: type, message, stack } = { ...error };
+		let type = error.name;
+		let message = error.message;
+		let stack = error.stack;
 		return {
 			type,
 			message,
