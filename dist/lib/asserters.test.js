@@ -13,7 +13,7 @@ const suites_1 = require("./suites");
 (0, suites_1.createTestSuite)("", (suite) => __awaiter(void 0, void 0, void 0, function* () {
     suite.defineTestCase(`It should ...`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         yield assert.throws(() => {
-            assert.json({}, {});
+            assert.equals(1, 2);
         });
     }));
 }));

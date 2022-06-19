@@ -9,132 +9,116 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.asserter = exports.Asserter = void 0;
-/*
-export function getTypename(subject: any): string {
+exports.asserter = exports.Asserter = exports.getTypename = void 0;
+function getTypename(subject) {
+    var _a;
     if (subject === null) {
         return "null";
     }
-    if (typeof subject?.constructor?.name === "string") {
+    if (typeof ((_a = subject === null || subject === void 0 ? void 0 : subject.constructor) === null || _a === void 0 ? void 0 : _a.name) === "string") {
         return subject.constructor.name;
     }
     return typeof subject;
-};
- */
+}
+exports.getTypename = getTypename;
+;
 class Asserter {
     equalsArray(expected, observed) {
         if (!(observed instanceof Array)) {
-            return false;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
         for (let i = observed.length; i < expected.length; i++) {
-            return false;
+            throw `Expected element ${i} to be present!`;
         }
         for (let i = expected.length; i < observed.length; i++) {
-            return false;
+            throw `Expected element ${i} to be absent!`;
         }
         for (let i = 0; i < expected.length; i++) {
-            if (!this.equals(expected[i], observed[i])) {
-                return false;
-            }
+            this.equals(expected[i], observed[i]);
         }
-        return true;
     }
     equalsBoolean(expected, observed) {
         if (!(typeof observed === "boolean")) {
-            return false;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
         if (expected !== observed) {
-            return false;
+            throw `Expected value ${observed} to be ${expected}!`;
         }
-        return true;
     }
     equalsNull(expected, observed) {
         if (!(observed === null)) {
-            return false;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
-        if (expected !== observed) {
-            return false;
-        }
-        return true;
     }
     equalsNumber(expected, observed) {
         if (!(typeof observed === "number")) {
-            return false;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
         if (expected !== observed) {
-            return false;
+            throw `Expected value ${observed} to be ${expected}!`;
         }
-        return true;
     }
     equalsObject(expected, observed) {
         if (!(observed instanceof Object && !(observed instanceof Array))) {
-            return false;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
         for (let key in expected) {
             if (!(key in observed)) {
-                return false;
+                throw `Expected key "${key}" to be present!`;
             }
         }
         for (let key in observed) {
             if (!(key in expected)) {
-                return false;
+                throw `Expected key "${key}" to be absent!`;
             }
         }
         for (let key in expected) {
-            if (!this.equals(expected[key], observed[key])) {
-                return false;
-            }
+            this.equals(expected[key], observed[key]);
         }
-        return true;
     }
     equalsString(expected, observed) {
         if (!(typeof observed === "string")) {
-            return false;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
         if (expected !== observed) {
-            return false;
+            throw `Expected value "${observed}" to be "${expected}"!`;
         }
-        return true;
     }
     equalsUndefined(expected, observed) {
         if (!(observed === undefined)) {
-            return false;
+            throw `Expected type ${getTypename(observed)} to be ${getTypename(expected)}!`;
         }
-        if (expected !== observed) {
-            return false;
-        }
-        return true;
-    }
-    equals(expected, observed) {
-        if (expected instanceof Array) {
-            return this.equalsArray(expected, observed);
-        }
-        if (typeof expected === "boolean") {
-            return this.equalsBoolean(expected, observed);
-        }
-        if (expected === null) {
-            return this.equalsNull(expected, observed);
-        }
-        if (typeof expected === "number") {
-            return this.equalsNumber(expected, observed);
-        }
-        if (expected instanceof Object && !(expected instanceof Array)) {
-            return this.equalsObject(expected, observed);
-        }
-        if (typeof expected === "string") {
-            return this.equalsString(expected, observed);
-        }
-        if (expected === undefined) {
-            return this.equalsUndefined(expected, observed);
-        }
-        return false;
     }
     constructor() { }
-    json(expected, observed) {
-        if (!this.equals(expected, observed)) {
-            let reason = `Expected types and values to be identical!`;
+    equals(expected, observed) {
+        try {
+            if (expected instanceof Array) {
+                return this.equalsArray(expected, observed);
+            }
+            if (typeof expected === "boolean") {
+                return this.equalsBoolean(expected, observed);
+            }
+            if (expected === null) {
+                return this.equalsNull(expected, observed);
+            }
+            if (typeof expected === "number") {
+                return this.equalsNumber(expected, observed);
+            }
+            if (expected instanceof Object && !(expected instanceof Array)) {
+                return this.equalsObject(expected, observed);
+            }
+            if (typeof expected === "string") {
+                return this.equalsString(expected, observed);
+            }
+            if (expected === undefined) {
+                return this.equalsUndefined(expected, observed);
+            }
+        }
+        catch (throwable) {
+            let message = typeof throwable === "string" ? throwable : `Expected type and value to be identical!`;
+            let error = new Error(message);
             throw {
-                reason,
+                error,
                 expected,
                 observed
             };
@@ -149,9 +133,10 @@ class Asserter {
             catch (error) {
                 return;
             }
-            let reason = `Expected operation to throw an error!`;
+            let message = `Expected operation to throw an error!`;
+            let error = new Error(message);
             throw {
-                reason
+                error
             };
         });
     }
