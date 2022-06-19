@@ -111,9 +111,8 @@ export class Asserter {
 			}
 		} catch (throwable) {
 			let message = typeof throwable === "string" ? throwable : `Expected type and value to be identical!`;
-			let error = new Error(message);
 			throw {
-				error,
+				message,
 				expected,
 				observed
 			};
@@ -128,9 +127,8 @@ export class Asserter {
 			return;
 		}
 		let message = `Expected operation to throw an error!`;
-		let error = new Error(message);
 		throw {
-			error
+			message
 		};
 	}
 };
