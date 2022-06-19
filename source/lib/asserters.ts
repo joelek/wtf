@@ -1,3 +1,4 @@
+import { SerializedError } from "./errors";
 import { JSON } from "./json";
 
 export function getTypename(subject: any): string {
@@ -110,9 +111,9 @@ export class Asserter {
 				return this.equalsUndefined(expected, observed);
 			}
 		} catch (throwable) {
-			let message = typeof throwable === "string" ? throwable : `Expected type and value to be identical!`;
+			let error = throwable instanceof Error ? SerializedError.fromError(throwable) : JSON.parse(JSON.serialize(throwable as any));
 			throw {
-				message,
+				error,
 				expected,
 				observed
 			};
@@ -126,9 +127,9 @@ export class Asserter {
 		} catch (error) {
 			return;
 		}
-		let message = `Expected operation to throw an error!`;
+		let error = SerializedError.fromError(new Error(`Expected operation to throw an error!`));
 		throw {
-			message
+			error
 		};
 	}
 };

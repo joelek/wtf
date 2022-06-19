@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.asserter = exports.Asserter = exports.getTypename = void 0;
+const errors_1 = require("./errors");
+const json_1 = require("./json");
 function getTypename(subject) {
     var _a;
     if (subject === null) {
@@ -115,9 +117,9 @@ class Asserter {
             }
         }
         catch (throwable) {
-            let message = typeof throwable === "string" ? throwable : `Expected type and value to be identical!`;
+            let error = throwable instanceof Error ? errors_1.SerializedError.fromError(throwable) : json_1.JSON.parse(json_1.JSON.serialize(throwable));
             throw {
-                message,
+                error,
                 expected,
                 observed
             };
@@ -132,9 +134,9 @@ class Asserter {
             catch (error) {
                 return;
             }
-            let message = `Expected operation to throw an error!`;
+            let error = errors_1.SerializedError.fromError(new Error(`Expected operation to throw an error!`));
             throw {
-                message
+                error
             };
         });
     }
