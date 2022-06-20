@@ -1,4 +1,4 @@
-import { JSONArray, JSONData, JSONObject, JSONPath } from "./json";
+import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath } from "./json";
 
 export function getTypename(subject: any): string {
 	if (subject === null) {
@@ -11,15 +11,15 @@ export function getTypename(subject: any): string {
 };
 
 export class IncorrectTypeError extends Error {
-	private observed: JSONData;
-	private expected: JSONData;
-	private path: JSONPath;
+	private observed: SerializableData;
+	private expected: SerializableData;
+	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected type for observed${JSONPath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
+		return `Expected type for observed${SerializablePath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
 	}
 
-	constructor(observed: JSONData, expected: JSONData,path: JSONPath) {
+	constructor(observed: SerializableData, expected: SerializableData,path: SerializablePath) {
 		super();
 		this.observed = observed;
 		this.expected = expected;
@@ -28,15 +28,15 @@ export class IncorrectTypeError extends Error {
 };
 
 export class IncorrectValueError extends Error {
-	private observed: JSONData;
-	private expected: JSONData;
-	private path: JSONPath;
+	private observed: SerializableData;
+	private expected: SerializableData;
+	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected value for observed${JSONPath.serialize(this.path)} (${JSONData.serialize(this.observed)}) to be ${JSONData.serialize(this.expected)}!`;
+		return `Expected value for observed${SerializablePath.serialize(this.path)} (${SerializableData.serialize(this.observed, false)}) to be ${SerializableData.serialize(this.expected, false)}!`;
 	}
 
-	constructor(observed: JSONData, expected: JSONData, path: JSONPath) {
+	constructor(observed: SerializableData, expected: SerializableData, path: SerializablePath) {
 		super();
 		this.observed = observed;
 		this.expected = expected;
@@ -45,52 +45,52 @@ export class IncorrectValueError extends Error {
 };
 
 export class MissingElementError extends Error {
-	private path: JSONPath;
+	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected element observed${JSONPath.serialize(this.path)} to be present!`;
+		return `Expected element observed${SerializablePath.serialize(this.path)} to be present!`;
 	}
 
-	constructor(path: JSONPath) {
+	constructor(path: SerializablePath) {
 		super();
 		this.path = path;
 	}
 };
 
 export class UnexpectedElementError extends Error {
-	private path: JSONPath;
+	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected element observed${JSONPath.serialize(this.path)} to be absent!`;
+		return `Expected element observed${SerializablePath.serialize(this.path)} to be absent!`;
 	}
 
-	constructor(path: JSONPath) {
+	constructor(path: SerializablePath) {
 		super();
 		this.path = path;
 	}
 };
 
 export class MissingMemberError extends Error {
-	private path: JSONPath;
+	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected member observed${JSONPath.serialize(this.path)} to be present!`;
+		return `Expected member observed${SerializablePath.serialize(this.path)} to be present!`;
 	}
 
-	constructor(path: JSONPath) {
+	constructor(path: SerializablePath) {
 		super();
 		this.path = path;
 	}
 };
 
 export class UnexpectedMemberError extends Error {
-	private path: JSONPath;
+	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected member observed${JSONPath.serialize(this.path)} to be absent!`;
+		return `Expected member observed${SerializablePath.serialize(this.path)} to be absent!`;
 	}
 
-	constructor(path: JSONPath) {
+	constructor(path: SerializablePath) {
 		super();
 		this.path = path;
 	}
@@ -107,8 +107,8 @@ export class ExpectedThrowError extends Error {
 };
 
 export class Asserter {
-	private equalsArray(observed: JSONData, expected: JSONData & JSONArray, path: JSONPath): void {
-		if (!JSONArray.is(observed)) {
+	private equalsArray(observed: SerializableData, expected: SerializableData & SerializableDataArray, path: SerializablePath): void {
+		if (!SerializableDataArray.is(observed)) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
 		for (let i = observed.length; i < expected.length; i++) {
@@ -118,11 +118,20 @@ export class Asserter {
 			throw new UnexpectedElementError([...path, i]);
 		}
 		for (let i = 0; i < expected.length; i++) {
-			this.equalsJSON(observed[i], expected[i], [...path, i]);
+			this.equalsAny(observed[i], expected[i], [...path, i]);
 		}
 	}
 
-	private equalsBoolean(observed: JSONData, expected: JSONData & boolean, path: JSONPath): void {
+	private equalsBigint(observed: SerializableData, expected: SerializableData & bigint, path: SerializablePath): void {
+		if (!(typeof observed === "bigint")) {
+			throw new IncorrectTypeError(observed, expected, path);
+		}
+		if (expected !== observed) {
+			throw new IncorrectValueError(observed, expected, path);
+		}
+	}
+
+	private equalsBoolean(observed: SerializableData, expected: SerializableData & boolean, path: SerializablePath): void {
 		if (!(typeof observed === "boolean")) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
@@ -131,13 +140,13 @@ export class Asserter {
 		}
 	}
 
-	private equalsNull(observed: JSONData, expected: JSONData & null, path: JSONPath): void {
+	private equalsNull(observed: SerializableData, expected: SerializableData & null, path: SerializablePath): void {
 		if (!(observed === null)) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
 	}
 
-	private equalsNumber(observed: JSONData, expected: JSONData & number, path: JSONPath): void {
+	private equalsNumber(observed: SerializableData, expected: SerializableData & number, path: SerializablePath): void {
 		if (!(typeof observed === "number")) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
@@ -146,8 +155,8 @@ export class Asserter {
 		}
 	}
 
-	private equalsObject(observed: JSONData, expected: JSONData & JSONObject, path: JSONPath): void {
-		if (!JSONObject.is(observed)) {
+	private equalsObject(observed: SerializableData, expected: SerializableData & SerializableDataObject, path: SerializablePath): void {
+		if (!SerializableDataObject.is(observed)) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
 		for (let key in expected) {
@@ -161,11 +170,11 @@ export class Asserter {
 			}
 		}
 		for (let key in expected) {
-			this.equalsJSON(observed[key], expected[key], [...path, key]);
+			this.equalsAny(observed[key], expected[key], [...path, key]);
 		}
 	}
 
-	private equalsString(observed: JSONData, expected: JSONData & string, path: JSONPath): void {
+	private equalsString(observed: SerializableData, expected: SerializableData & string, path: SerializablePath): void {
 		if (!(typeof observed === "string")) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
@@ -174,15 +183,18 @@ export class Asserter {
 		}
 	}
 
-	private equalsUndefined(observed: JSONData, expected: JSONData & undefined, path:JSONPath): void {
+	private equalsUndefined(observed: SerializableData, expected: SerializableData & undefined, path:SerializablePath): void {
 		if (!(observed === undefined)) {
 			throw new IncorrectTypeError(observed, expected, path);
 		}
 	}
 
-	private equalsJSON(observed: JSONData, expected: JSONData, path: JSONPath): void {
-		if (JSONArray.is(expected)) {
+	private equalsAny(observed: SerializableData, expected: SerializableData, path: SerializablePath): void {
+		if (SerializableDataArray.is(expected)) {
 			return this.equalsArray(observed, expected, path);
+		}
+		if (typeof expected === "bigint") {
+			return this.equalsBigint(observed, expected, path);
 		}
 		if (typeof expected === "boolean") {
 			return this.equalsBoolean(observed, expected, path);
@@ -193,7 +205,7 @@ export class Asserter {
 		if (typeof expected === "number") {
 			return this.equalsNumber(observed, expected, path);
 		}
-		if (JSONObject.is(expected)) {
+		if (SerializableDataObject.is(expected)) {
 			return this.equalsObject(observed, expected, path);
 		}
 		if (typeof expected === "string") {
@@ -206,8 +218,8 @@ export class Asserter {
 
 	constructor() {}
 
-	equals(observed: JSONData, expected: JSONData): void {
-		this.equalsJSON(observed, expected, []);
+	equals(observed: SerializableData, expected: SerializableData): void {
+		this.equalsAny(observed, expected, []);
 	}
 
 	async throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void> {

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { JSONData } from "./json";
+import { SerializableData } from "./json";
 import { Logger } from "./loggers";
 export declare type SpawnResult = {
     stdout: Buffer;
@@ -8,12 +8,12 @@ export declare type SpawnResult = {
     status?: number;
 };
 export declare function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult>;
-export declare function parseIfPossible(string: string): JSONData;
+export declare function parseIfPossible(string: string): SerializableData;
 export declare type RunReport = {
     command: string;
     path: string;
-    stdout: JSONData;
-    stderr: JSONData;
+    stdout: SerializableData;
+    stderr: SerializableData;
     error?: string;
     status?: number;
 };

@@ -10,7 +10,7 @@ class JSONReporter {
     }
     report(report) {
         var _a;
-        (_a = this.logger) === null || _a === void 0 ? void 0 : _a.log(json_1.JSONData.serialize(report) + "\n");
+        (_a = this.logger) === null || _a === void 0 ? void 0 : _a.log(json_1.SerializableData.serialize(report) + "\n");
     }
 }
 exports.JSONReporter = JSONReporter;

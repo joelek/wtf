@@ -1,19 +1,19 @@
-export declare type JSONData = boolean | null | number | string | undefined | JSONData[] | {
-    [key: string]: JSONData;
+export declare type SerializableData = bigint | boolean | null | number | string | undefined | SerializableData[] | {
+    [key: string]: SerializableData;
 };
-export declare type JSONArray = Array<JSONData>;
-export declare const JSONArray: {
-    is(subject: JSONData): subject is JSONData[];
+export declare type SerializableDataArray = Array<SerializableData>;
+export declare const SerializableDataArray: {
+    is(subject: SerializableData): subject is SerializableDataArray;
 };
-export declare type JSONObject = Record<string, JSONData>;
-export declare const JSONObject: {
-    is(subject: JSONData): subject is Record<string, JSONData>;
+export declare type SerializableDataObject = Record<string, SerializableData>;
+export declare const SerializableDataObject: {
+    is(subject: SerializableData): subject is SerializableDataObject;
 };
-export declare const JSONData: {
-    parse(string: string): JSONData;
-    serialize(json: JSONData): string;
+export declare const SerializableData: {
+    parse(string: string): SerializableData;
+    serialize(json: SerializableData, wrap?: boolean): string;
 };
-export declare type JSONPath = Array<string | number>;
-export declare const JSONPath: {
-    serialize(path: JSONPath): string;
+export declare type SerializablePath = Array<string | number>;
+export declare const SerializablePath: {
+    serialize(path: SerializablePath): string;
 };

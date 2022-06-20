@@ -57,7 +57,7 @@ exports.spawn = spawn;
 ;
 function parseIfPossible(string) {
     try {
-        return json_1.JSONData.parse(string);
+        return json_1.SerializableData.parse(string);
     }
     catch (error) { }
     ;

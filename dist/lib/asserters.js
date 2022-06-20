@@ -31,7 +31,7 @@ class IncorrectTypeError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected type for observed${json_1.JSONPath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
+        return `Expected type for observed${json_1.SerializablePath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
     }
 }
 exports.IncorrectTypeError = IncorrectTypeError;
@@ -44,7 +44,7 @@ class IncorrectValueError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected value for observed${json_1.JSONPath.serialize(this.path)} (${json_1.JSONData.serialize(this.observed)}) to be ${json_1.JSONData.serialize(this.expected)}!`;
+        return `Expected value for observed${json_1.SerializablePath.serialize(this.path)} (${json_1.SerializableData.serialize(this.observed, false)}) to be ${json_1.SerializableData.serialize(this.expected, false)}!`;
     }
 }
 exports.IncorrectValueError = IncorrectValueError;
@@ -55,7 +55,7 @@ class MissingElementError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected element observed${json_1.JSONPath.serialize(this.path)} to be present!`;
+        return `Expected element observed${json_1.SerializablePath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingElementError = MissingElementError;
@@ -66,7 +66,7 @@ class UnexpectedElementError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected element observed${json_1.JSONPath.serialize(this.path)} to be absent!`;
+        return `Expected element observed${json_1.SerializablePath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedElementError = UnexpectedElementError;
@@ -77,7 +77,7 @@ class MissingMemberError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected member observed${json_1.JSONPath.serialize(this.path)} to be present!`;
+        return `Expected member observed${json_1.SerializablePath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingMemberError = MissingMemberError;
@@ -88,7 +88,7 @@ class UnexpectedMemberError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected member observed${json_1.JSONPath.serialize(this.path)} to be absent!`;
+        return `Expected member observed${json_1.SerializablePath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedMemberError = UnexpectedMemberError;
@@ -105,7 +105,7 @@ exports.ExpectedThrowError = ExpectedThrowError;
 ;
 class Asserter {
     equalsArray(observed, expected, path) {
-        if (!json_1.JSONArray.is(observed)) {
+        if (!json_1.SerializableDataArray.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
         }
         for (let i = observed.length; i < expected.length; i++) {
@@ -115,7 +115,15 @@ class Asserter {
             throw new UnexpectedElementError([...path, i]);
         }
         for (let i = 0; i < expected.length; i++) {
-            this.equalsJSON(observed[i], expected[i], [...path, i]);
+            this.equalsAny(observed[i], expected[i], [...path, i]);
+        }
+    }
+    equalsBigint(observed, expected, path) {
+        if (!(typeof observed === "bigint")) {
+            throw new IncorrectTypeError(observed, expected, path);
+        }
+        if (expected !== observed) {
+            throw new IncorrectValueError(observed, expected, path);
         }
     }
     equalsBoolean(observed, expected, path) {
@@ -140,7 +148,7 @@ class Asserter {
         }
     }
     equalsObject(observed, expected, path) {
-        if (!json_1.JSONObject.is(observed)) {
+        if (!json_1.SerializableDataObject.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
         }
         for (let key in expected) {
@@ -154,7 +162,7 @@ class Asserter {
             }
         }
         for (let key in expected) {
-            this.equalsJSON(observed[key], expected[key], [...path, key]);
+            this.equalsAny(observed[key], expected[key], [...path, key]);
         }
     }
     equalsString(observed, expected, path) {
@@ -170,9 +178,12 @@ class Asserter {
             throw new IncorrectTypeError(observed, expected, path);
         }
     }
-    equalsJSON(observed, expected, path) {
-        if (json_1.JSONArray.is(expected)) {
+    equalsAny(observed, expected, path) {
+        if (json_1.SerializableDataArray.is(expected)) {
             return this.equalsArray(observed, expected, path);
+        }
+        if (typeof expected === "bigint") {
+            return this.equalsBigint(observed, expected, path);
         }
         if (typeof expected === "boolean") {
             return this.equalsBoolean(observed, expected, path);
@@ -183,7 +194,7 @@ class Asserter {
         if (typeof expected === "number") {
             return this.equalsNumber(observed, expected, path);
         }
-        if (json_1.JSONObject.is(expected)) {
+        if (json_1.SerializableDataObject.is(expected)) {
             return this.equalsObject(observed, expected, path);
         }
         if (typeof expected === "string") {
@@ -195,7 +206,7 @@ class Asserter {
     }
     constructor() { }
     equals(observed, expected) {
-        this.equalsJSON(observed, expected, []);
+        this.equalsAny(observed, expected, []);
     }
     throws(operation) {
         return __awaiter(this, void 0, void 0, function* () {

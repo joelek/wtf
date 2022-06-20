@@ -1,38 +1,38 @@
-import { JSONData, JSONPath } from "./json";
+import { SerializableData, SerializablePath } from "./json";
 export declare function getTypename(subject: any): string;
 export declare class IncorrectTypeError extends Error {
     private observed;
     private expected;
     private path;
     get message(): string;
-    constructor(observed: JSONData, expected: JSONData, path: JSONPath);
+    constructor(observed: SerializableData, expected: SerializableData, path: SerializablePath);
 }
 export declare class IncorrectValueError extends Error {
     private observed;
     private expected;
     private path;
     get message(): string;
-    constructor(observed: JSONData, expected: JSONData, path: JSONPath);
+    constructor(observed: SerializableData, expected: SerializableData, path: SerializablePath);
 }
 export declare class MissingElementError extends Error {
     private path;
     get message(): string;
-    constructor(path: JSONPath);
+    constructor(path: SerializablePath);
 }
 export declare class UnexpectedElementError extends Error {
     private path;
     get message(): string;
-    constructor(path: JSONPath);
+    constructor(path: SerializablePath);
 }
 export declare class MissingMemberError extends Error {
     private path;
     get message(): string;
-    constructor(path: JSONPath);
+    constructor(path: SerializablePath);
 }
 export declare class UnexpectedMemberError extends Error {
     private path;
     get message(): string;
-    constructor(path: JSONPath);
+    constructor(path: SerializablePath);
 }
 export declare class ExpectedThrowError extends Error {
     get message(): string;
@@ -40,14 +40,15 @@ export declare class ExpectedThrowError extends Error {
 }
 export declare class Asserter {
     private equalsArray;
+    private equalsBigint;
     private equalsBoolean;
     private equalsNull;
     private equalsNumber;
     private equalsObject;
     private equalsString;
     private equalsUndefined;
-    private equalsJSON;
+    private equalsAny;
     constructor();
-    equals(observed: JSONData, expected: JSONData): void;
+    equals(observed: SerializableData, expected: SerializableData): void;
     throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void>;
 }

@@ -1,25 +1,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONPath = exports.JSONData = exports.JSONObject = exports.JSONArray = void 0;
-exports.JSONArray = {
+exports.SerializablePath = exports.SerializableData = exports.SerializableDataObject = exports.SerializableDataArray = void 0;
+exports.SerializableDataArray = {
     is(subject) {
         return subject != null && subject.constructor === Array;
     }
 };
-exports.JSONObject = {
+exports.SerializableDataObject = {
     is(subject) {
         return subject != null && subject.constructor === Object;
     }
 };
-exports.JSONData = {
+exports.SerializableData = {
     parse(string) {
-        return globalThis.JSON.parse(string);
+        return globalThis.JSON.parse(string, (key, value) => {
+            if (exports.SerializableDataObject.is(value)) {
+                let type = value.type;
+                let data = value.data;
+                if (typeof type === "string" && typeof data === "string") {
+                    if (type === "bigint" && /^[0-9]+n$/.test(data)) {
+                        return BigInt(data);
+                    }
+                }
+            }
+            return value;
+        });
     },
-    serialize(json) {
-        return globalThis.JSON.stringify(json != null ? json : null, null, "\t");
+    serialize(json, wrap = true) {
+        return globalThis.JSON.stringify(json != null ? json : null, (key, value) => {
+            if (typeof value === "bigint") {
+                return !wrap ? `${value}n` : {
+                    type: "bigint",
+                    data: `${value}n`
+                };
+            }
+            return value;
+        }, "\t");
     }
 };
-exports.JSONPath = {
+exports.SerializablePath = {
     serialize(path) {
         let strings = [];
         for (let part of path) {
@@ -28,7 +47,7 @@ exports.JSONPath = {
                     strings.push(`.${part}`);
                 }
                 else {
-                    strings.push(`.${exports.JSONData.serialize(part)}`);
+                    strings.push(`.${exports.SerializableData.serialize(part)}`);
                 }
                 continue;
             }
