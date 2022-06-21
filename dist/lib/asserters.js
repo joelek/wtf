@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Asserter = exports.ExpectedThrowError = exports.UnexpectedMemberError = exports.MissingMemberError = exports.UnexpectedElementError = exports.MissingElementError = exports.IncorrectValueError = exports.IncorrectTypeError = exports.getTypename = void 0;
-const json_1 = require("./json");
+const data_1 = require("./data");
 function getTypename(subject) {
     var _a;
     if (subject === null) {
@@ -31,7 +31,7 @@ class IncorrectTypeError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected type for observed${json_1.SerializablePath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
+        return `Expected type for observed${data_1.SerializablePath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
     }
 }
 exports.IncorrectTypeError = IncorrectTypeError;
@@ -44,7 +44,7 @@ class IncorrectValueError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected value for observed${json_1.SerializablePath.serialize(this.path)} (${json_1.SerializableData.serialize(this.observed, false)}) to be ${json_1.SerializableData.serialize(this.expected, false)}!`;
+        return `Expected value for observed${data_1.SerializablePath.serialize(this.path)} (${data_1.SerializableData.serialize(this.observed, false)}) to be ${data_1.SerializableData.serialize(this.expected, false)}!`;
     }
 }
 exports.IncorrectValueError = IncorrectValueError;
@@ -55,7 +55,7 @@ class MissingElementError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected element observed${json_1.SerializablePath.serialize(this.path)} to be present!`;
+        return `Expected element observed${data_1.SerializablePath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingElementError = MissingElementError;
@@ -66,7 +66,7 @@ class UnexpectedElementError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected element observed${json_1.SerializablePath.serialize(this.path)} to be absent!`;
+        return `Expected element observed${data_1.SerializablePath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedElementError = UnexpectedElementError;
@@ -77,7 +77,7 @@ class MissingMemberError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected member observed${json_1.SerializablePath.serialize(this.path)} to be present!`;
+        return `Expected member observed${data_1.SerializablePath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingMemberError = MissingMemberError;
@@ -88,7 +88,7 @@ class UnexpectedMemberError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected member observed${json_1.SerializablePath.serialize(this.path)} to be absent!`;
+        return `Expected member observed${data_1.SerializablePath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedMemberError = UnexpectedMemberError;
@@ -105,7 +105,7 @@ exports.ExpectedThrowError = ExpectedThrowError;
 ;
 class Asserter {
     equalsArray(observed, expected, path) {
-        if (!json_1.SerializableDataArray.is(observed)) {
+        if (!data_1.SerializableDataArray.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
         }
         for (let i = observed.length; i < expected.length; i++) {
@@ -148,7 +148,7 @@ class Asserter {
         }
     }
     equalsObject(observed, expected, path) {
-        if (!json_1.SerializableDataObject.is(observed)) {
+        if (!data_1.SerializableDataObject.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
         }
         for (let key in expected) {
@@ -179,7 +179,7 @@ class Asserter {
         }
     }
     equalsAny(observed, expected, path) {
-        if (json_1.SerializableDataArray.is(expected)) {
+        if (data_1.SerializableDataArray.is(expected)) {
             return this.equalsArray(observed, expected, path);
         }
         if (typeof expected === "bigint") {
@@ -194,7 +194,7 @@ class Asserter {
         if (typeof expected === "number") {
             return this.equalsNumber(observed, expected, path);
         }
-        if (json_1.SerializableDataObject.is(expected)) {
+        if (data_1.SerializableDataObject.is(expected)) {
             return this.equalsObject(observed, expected, path);
         }
         if (typeof expected === "string") {

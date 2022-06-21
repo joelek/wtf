@@ -1,4 +1,4 @@
-import { SerializableData, SerializablePath } from "./json";
+import { SerializableData, SerializablePath } from "./data";
 export declare function getTypename(subject: any): string;
 export declare class IncorrectTypeError extends Error {
     private observed;

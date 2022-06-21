@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { SerializableData } from "./json";
+import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 export declare type SpawnResult = {
     stdout: Buffer;

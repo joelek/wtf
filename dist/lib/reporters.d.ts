@@ -1,4 +1,4 @@
-import { SerializableData } from "./json";
+import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 export interface Reporter<A> {
     report(report: A): void;

@@ -15,7 +15,7 @@ const libfs = require("fs");
 const libpath = require("path");
 const loggers = require("./loggers");
 const reporters = require("./reporters");
-const json_1 = require("./json");
+const data_1 = require("./data");
 const env_1 = require("./env");
 function spawn(command, parameters, logger, environment) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -57,7 +57,7 @@ exports.spawn = spawn;
 ;
 function parseIfPossible(string) {
     try {
-        return json_1.SerializableData.parse(string);
+        return data_1.SerializableData.parse(string);
     }
     catch (error) { }
     ;

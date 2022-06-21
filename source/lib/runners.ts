@@ -3,7 +3,7 @@ import * as libfs from "fs";
 import * as libpath from "path";
 import * as loggers from "./loggers";
 import * as reporters from "./reporters";
-import { SerializableData } from "./json";
+import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 

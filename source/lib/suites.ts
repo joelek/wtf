@@ -1,5 +1,4 @@
 import * as loggers from "./loggers";
-import { SerializableData } from "./json";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { reporters } from ".";
 import { Logger } from "./loggers";

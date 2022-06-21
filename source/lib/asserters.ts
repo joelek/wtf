@@ -1,4 +1,4 @@
-import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath } from "./json";
+import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath } from "./data";
 
 export function getTypename(subject: any): string {
 	if (subject === null) {
