@@ -60,4 +60,3 @@ NB: This project targets TypeScript 4 in strict mode.
 
 * Write more test cases.
 * Document features and usage.
-* Add support for typed arrays.

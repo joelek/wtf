@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Asserter = exports.ExpectedThrowError = exports.UnexpectedMemberError = exports.MissingMemberError = exports.UnexpectedElementError = exports.MissingElementError = exports.IncorrectValueError = exports.IncorrectTypeError = exports.getTypename = void 0;
+exports.Asserter = exports.ExpectedThrowError = exports.UnexpectedMemberError = exports.MissingMemberError = exports.UnexpectedElementError = exports.MissingElementError = exports.IncorrectValueError = exports.IncorrectTypeError = exports.UnsupportedTypeError = exports.getTypename = void 0;
 const data_1 = require("./data");
 function getTypename(subject) {
     var _a;
@@ -22,6 +22,18 @@ function getTypename(subject) {
     return typeof subject;
 }
 exports.getTypename = getTypename;
+;
+class UnsupportedTypeError extends Error {
+    constructor(expected, path) {
+        super();
+        this.expected = expected;
+        this.path = path;
+    }
+    get message() {
+        return `Expected type for expected${data_1.SerializablePath.serialize(this.path)} (${getTypename(this.expected)}) to be supported by the asserter!`;
+    }
+}
+exports.UnsupportedTypeError = UnsupportedTypeError;
 ;
 class IncorrectTypeError extends Error {
     constructor(observed, expected, path) {
@@ -44,7 +56,7 @@ class IncorrectValueError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected value for observed${data_1.SerializablePath.serialize(this.path)} (${data_1.SerializableData.serialize(this.observed, false)}) to be ${data_1.SerializableData.serialize(this.expected, false)}!`;
+        return `Expected value for observed${data_1.SerializablePath.serialize(this.path)} (${data_1.SerializableData.serialize(this.observed, true)}) to be ${data_1.SerializableData.serialize(this.expected, true)}!`;
     }
 }
 exports.IncorrectValueError = IncorrectValueError;
@@ -104,6 +116,24 @@ class ExpectedThrowError extends Error {
 exports.ExpectedThrowError = ExpectedThrowError;
 ;
 class Asserter {
+    equalsBinaryData(constructor, observed, expected, path) {
+        if (!(observed instanceof constructor)) {
+            throw new IncorrectTypeError(observed, expected, path);
+        }
+        for (let i = observed.length; i < expected.length; i++) {
+            throw new MissingElementError([...path, i]);
+        }
+        for (let i = expected.length; i < observed.length; i++) {
+            throw new UnexpectedElementError([...path, i]);
+        }
+        for (let i = 0; i < expected.length; i++) {
+            let observedElement = observed[i];
+            let expectedElement = expected[i];
+            if (observedElement !== expectedElement) {
+                throw new IncorrectValueError(observedElement, expectedElement, [...path, i]);
+            }
+        }
+    }
     equalsArray(observed, expected, path) {
         if (!data_1.SerializableDataArray.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
@@ -203,6 +233,43 @@ class Asserter {
         if (expected === undefined) {
             return this.equalsUndefined(observed, expected, path);
         }
+        if (expected instanceof Buffer) {
+            return this.equalsBinaryData(Buffer, observed, expected, path);
+        }
+        if (expected instanceof Int8Array) {
+            return this.equalsBinaryData(Int8Array, observed, expected, path);
+        }
+        if (expected instanceof Uint8Array) {
+            return this.equalsBinaryData(Uint8Array, observed, expected, path);
+        }
+        if (expected instanceof Uint8ClampedArray) {
+            return this.equalsBinaryData(Uint8ClampedArray, observed, expected, path);
+        }
+        if (expected instanceof Int16Array) {
+            return this.equalsBinaryData(Int16Array, observed, expected, path);
+        }
+        if (expected instanceof Uint16Array) {
+            return this.equalsBinaryData(Uint16Array, observed, expected, path);
+        }
+        if (expected instanceof Int32Array) {
+            return this.equalsBinaryData(Int32Array, observed, expected, path);
+        }
+        if (expected instanceof Uint32Array) {
+            return this.equalsBinaryData(Uint32Array, observed, expected, path);
+        }
+        if (expected instanceof Float32Array) {
+            return this.equalsBinaryData(Float32Array, observed, expected, path);
+        }
+        if (expected instanceof Float64Array) {
+            return this.equalsBinaryData(Float64Array, observed, expected, path);
+        }
+        if (expected instanceof BigInt64Array) {
+            return this.equalsBinaryData(BigInt64Array, observed, expected, path);
+        }
+        if (expected instanceof BigUint64Array) {
+            return this.equalsBinaryData(BigUint64Array, observed, expected, path);
+        }
+        throw new UnsupportedTypeError(expected, path);
     }
     constructor() { }
     equals(observed, expected) {
