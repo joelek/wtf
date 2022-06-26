@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTestSuite = exports.TestSuite = exports.TestCase = void 0;
+exports.createTestSuite = exports.TestSuites = exports.TestSuite = exports.TestCase = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
 const _1 = require(".");
@@ -52,9 +52,10 @@ class TestCase {
 exports.TestCase = TestCase;
 ;
 class TestSuite {
-    constructor(description) {
+    constructor(description, callback) {
         this.description = description;
         this.testCases = [];
+        this.callback = callback;
     }
     defineTestCase(description, callback) {
         let testCase = new TestCase(description, callback);
@@ -62,12 +63,13 @@ class TestSuite {
     }
     run(logger) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.callback(this);
             let reports = [];
             let status = 0;
             for (let testCase of this.testCases) {
                 let report = yield testCase.run(logger);
                 reports.push(report);
-                if (report.error != null) {
+                if (report.status != 0) {
                     status = 1;
                 }
             }
@@ -80,17 +82,43 @@ class TestSuite {
 }
 exports.TestSuite = TestSuite;
 ;
-function createTestSuite(description, callback) {
+class TestSuites {
+    constructor() {
+        this.testSuites = [];
+    }
+    createTestSuite(description, callback) {
+        let testSuite = new TestSuite(description, callback);
+        this.testSuites.push(testSuite);
+    }
+    run(logger) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let reports = [];
+            let status = 0;
+            for (let testSuite of this.testSuites) {
+                let report = yield testSuite.run(logger);
+                reports.push(report);
+                if (report.status != 0) {
+                    status = 1;
+                }
+            }
+            return {
+                reports,
+                status
+            };
+        });
+    }
+}
+exports.TestSuites = TestSuites;
+;
+exports.createTestSuite = (() => {
     var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
-        let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
-        let suite = new TestSuite(description);
-        yield callback(suite);
-        let report = yield suite.run(logger);
+    let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
+    let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
+    let suites = new TestSuites();
+    process.on("beforeExit", () => __awaiter(void 0, void 0, void 0, function* () {
+        let report = yield suites.run(logger);
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         process.exit(report.status);
-    });
-}
-exports.createTestSuite = createTestSuite;
-;
+    }));
+    return suites.createTestSuite.bind(suites);
+})();

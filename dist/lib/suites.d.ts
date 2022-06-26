@@ -1,6 +1,7 @@
 import { Logger } from "./loggers";
 import { Asserter } from "./asserters";
-export declare type TestCallback = (asserter: Asserter) => void | Promise<void>;
+export declare type OptionallyAsync<A> = A | Promise<A>;
+export declare type TestCaseCallback = (asserter: Asserter) => OptionallyAsync<void>;
 export declare type TestCaseReport = {
     description: string;
     status: number;
@@ -9,9 +10,10 @@ export declare type TestCaseReport = {
 export declare class TestCase {
     private description;
     private callback;
-    constructor(description: string, callback: TestCallback);
+    constructor(description: string, callback: TestCaseCallback);
     run(logger?: Logger): Promise<TestCaseReport>;
 }
+export declare type TestSuiteCallback = (suite: TestSuite) => OptionallyAsync<void>;
 export declare type TestSuiteReport = {
     reports: Array<TestCaseReport>;
     status: number;
@@ -19,8 +21,19 @@ export declare type TestSuiteReport = {
 export declare class TestSuite {
     private description;
     private testCases;
-    constructor(description: string);
-    defineTestCase(description: string, callback: TestCallback): void;
+    private callback;
+    constructor(description: string, callback: TestSuiteCallback);
+    defineTestCase(description: string, callback: TestCaseCallback): void;
     run(logger?: Logger): Promise<TestSuiteReport>;
 }
-export declare function createTestSuite(description: string, callback: (suite: TestSuite) => Promise<void>): Promise<void>;
+export declare type TestSuitesReport = {
+    reports: Array<TestSuiteReport>;
+    status: number;
+};
+export declare class TestSuites {
+    private testSuites;
+    constructor();
+    createTestSuite(description: string, callback: TestSuiteCallback): void;
+    run(logger?: Logger): Promise<TestSuitesReport>;
+}
+export declare const createTestSuite: (description: string, callback: TestSuiteCallback) => void;
