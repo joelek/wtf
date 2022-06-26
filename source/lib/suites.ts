@@ -53,6 +53,7 @@ export class TestCase {
 export type TestSuiteCallback = (suite: TestSuite) => OptionallyAsync<void>;
 
 export type TestSuiteReport = {
+	description: string;
 	reports: Array<TestCaseReport>;
 	status: number;
 };
@@ -75,6 +76,7 @@ export class TestSuite {
 
 	async run(logger?: Logger): Promise<TestSuiteReport> {
 		await this.callback(this);
+		let description = this.description;
 		let reports = [] as Array<TestCaseReport>;
 		let status = 0;
 		for (let testCase of this.testCases) {
@@ -85,6 +87,7 @@ export class TestSuite {
 			}
 		}
 		return {
+			description,
 			reports,
 			status
 		};

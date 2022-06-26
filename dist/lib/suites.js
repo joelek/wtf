@@ -64,6 +64,7 @@ class TestSuite {
     run(logger) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.callback(this);
+            let description = this.description;
             let reports = [];
             let status = 0;
             for (let testCase of this.testCases) {
@@ -74,6 +75,7 @@ class TestSuite {
                 }
             }
             return {
+                description,
                 reports,
                 status
             };

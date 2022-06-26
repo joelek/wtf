@@ -15,6 +15,7 @@ export declare class TestCase {
 }
 export declare type TestSuiteCallback = (suite: TestSuite) => OptionallyAsync<void>;
 export declare type TestSuiteReport = {
+    description: string;
     reports: Array<TestCaseReport>;
     status: number;
 };
