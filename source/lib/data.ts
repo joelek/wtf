@@ -36,9 +36,9 @@ export const SerializableData = {
 	serialize(json: SerializableData, compact: boolean = false): string {
 		return globalThis.JSON.stringify(json != null ? json : null, (key, value) => {
 			if (typeof value === "bigint") {
-				return compact ? `${value}n` : {
+				return compact ? `${value}` : {
 					type: "bigint",
-					data: `${value}n`
+					data: `${value}`
 				};
 			}
 			return value;
