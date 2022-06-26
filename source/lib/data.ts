@@ -25,7 +25,7 @@ export const SerializableData = {
 				let type = value.type;
 				let data = value.data;
 				if (typeof type === "string" && typeof data === "string") {
-					if (type === "bigint" && /^[0-9]+n$/.test(data)) {
+					if (type === "bigint") {
 						return BigInt(data);
 					}
 				}
