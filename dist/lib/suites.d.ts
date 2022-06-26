@@ -4,7 +4,7 @@ export declare type OptionallyAsync<A> = A | Promise<A>;
 export declare type TestCaseCallback = (asserter: Asserter) => OptionallyAsync<void>;
 export declare type TestCaseReport = {
     description: string;
-    status: number;
+    success: boolean;
     error?: string;
 };
 export declare class TestCase {
@@ -17,7 +17,7 @@ export declare type TestSuiteCallback = (suite: TestSuite) => OptionallyAsync<vo
 export declare type TestSuiteReport = {
     description: string;
     reports: Array<TestCaseReport>;
-    status: number;
+    success: boolean;
 };
 export declare class TestSuite {
     private description;
@@ -29,7 +29,7 @@ export declare class TestSuite {
 }
 export declare type TestSuitesReport = {
     reports: Array<TestSuiteReport>;
-    status: number;
+    success: boolean;
 };
 export declare class TestSuites {
     private testSuites;

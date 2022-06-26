@@ -26,10 +26,10 @@ class TestCase {
             let asserter = new asserters_1.Asserter();
             try {
                 yield this.callback(asserter);
-                let status = 0;
+                let success = true;
                 return {
                     description,
-                    status
+                    success
                 };
             }
             catch (throwable) {
@@ -39,10 +39,10 @@ class TestCase {
                     logger === null || logger === void 0 ? void 0 : logger.log(`${(_a = throwable.stack) !== null && _a !== void 0 ? _a : throwable.message}\n`);
                     error = throwable.message;
                 }
-                let status = 1;
+                let success = false;
                 return {
                     description,
-                    status,
+                    success,
                     error
                 };
             }
@@ -66,18 +66,18 @@ class TestSuite {
             yield this.callback(this);
             let description = this.description;
             let reports = [];
-            let status = 0;
+            let success = true;
             for (let testCase of this.testCases) {
                 let report = yield testCase.run(logger);
                 reports.push(report);
-                if (report.status != 0) {
-                    status = 1;
+                if (!report.success) {
+                    success = false;
                 }
             }
             return {
                 description,
                 reports,
-                status
+                success
             };
         });
     }
@@ -95,17 +95,17 @@ class TestSuites {
     run(logger) {
         return __awaiter(this, void 0, void 0, function* () {
             let reports = [];
-            let status = 0;
+            let success = true;
             for (let testSuite of this.testSuites) {
                 let report = yield testSuite.run(logger);
                 reports.push(report);
-                if (report.status != 0) {
-                    status = 1;
+                if (!report.success) {
+                    success = false;
                 }
             }
             return {
                 reports,
-                status
+                success
             };
         });
     }
@@ -120,7 +120,8 @@ exports.createTestSuite = (() => {
     process.on("beforeExit", () => __awaiter(void 0, void 0, void 0, function* () {
         let report = yield suites.run(logger);
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
-        process.exit(report.status);
+        let status = report.success ? 0 : 1;
+        process.exit(status);
     }));
     return suites.createTestSuite.bind(suites);
 })();

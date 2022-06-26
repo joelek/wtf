@@ -14,8 +14,8 @@ export declare type RunReport = {
     path: string;
     stdout: SerializableData;
     stderr: SerializableData;
+    success: boolean;
     error?: string;
-    status?: number;
 };
 export interface Runner {
     matches(path: string): boolean;
@@ -51,6 +51,6 @@ export declare function createDefaultPaths(): Array<string>;
 export declare function createDefaultRunners(): Array<Runner>;
 export declare type Report = {
     reports: Array<RunReport>;
-    status: number;
+    success: boolean;
 };
 export declare function run(options: Options): Promise<number>;

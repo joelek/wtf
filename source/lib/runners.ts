@@ -61,8 +61,8 @@ export type RunReport = {
 	path: string;
 	stdout: SerializableData;
 	stderr: SerializableData;
+	success: boolean;
 	error?: string;
-	status?: number;
 };
 
 export interface Runner {
@@ -91,14 +91,15 @@ export class CustomRunner implements Runner {
 		let stderr = parseIfPossible(result.stderr.toString());
 		let error = result.error == null ? undefined : result.error.message;
 		let status = result.status;
-		logger?.log(`Command ${command} returned status ${status ?? ""} (${status === 0 ? "success" : "failure"}).\n`);
+		let success = status === 0;
+		logger?.log(`Command ${command} returned status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
 		return {
 			command,
 			path,
 			stdout,
 			stderr,
-			error,
-			status
+			success,
+			error
 		};
 	}
 };
@@ -188,7 +189,7 @@ export function createDefaultRunners(): Array<Runner> {
 
 export type Report = {
 	reports: Array<RunReport>;
-	status: number;
+	success: boolean;
 };
 
 export async function run(options: Options): Promise<number> {
@@ -205,18 +206,19 @@ export async function run(options: Options): Promise<number> {
 		[REPORTER_KEY]: options.reporter
 	};
 	let reports = [] as Array<RunReport>;
-	let status = 0;
+	let success = true;
 	for (let runnable of runnables) {
 		let report = await runnable.runner.run(runnable.path, logger, environment);
 		reports.push(report);
-		if (report.status !== 0) {
-			status = 1;
+		if (!report.success) {
+			success = false;
 		}
 	}
-	logger?.log(`Completed with status ${status ?? ""} (${status === 0 ? "success" : "failure"}).\n`);
+	let status = success ? 0 : 1;
+	logger?.log(`Completed with status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
 	let report: Report = {
 		reports,
-		status
+		success
 	};
 	reporter?.report(report);
 	return status;

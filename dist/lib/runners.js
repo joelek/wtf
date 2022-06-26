@@ -83,14 +83,15 @@ class CustomRunner {
             let stderr = parseIfPossible(result.stderr.toString());
             let error = result.error == null ? undefined : result.error.message;
             let status = result.status;
-            logger === null || logger === void 0 ? void 0 : logger.log(`Command ${command} returned status ${status !== null && status !== void 0 ? status : ""} (${status === 0 ? "success" : "failure"}).\n`);
+            let success = status === 0;
+            logger === null || logger === void 0 ? void 0 : logger.log(`Command ${command} returned status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
             return {
                 command,
                 path,
                 stdout,
                 stderr,
-                error,
-                status
+                success,
+                error
             };
         });
     }
@@ -192,18 +193,19 @@ function run(options) {
             [env_1.REPORTER_KEY]: options.reporter
         };
         let reports = [];
-        let status = 0;
+        let success = true;
         for (let runnable of runnables) {
             let report = yield runnable.runner.run(runnable.path, logger, environment);
             reports.push(report);
-            if (report.status !== 0) {
-                status = 1;
+            if (!report.success) {
+                success = false;
             }
         }
-        logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${status === 0 ? "success" : "failure"}).\n`);
+        let status = success ? 0 : 1;
+        logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
         let report = {
             reports,
-            status
+            success
         };
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         return status;

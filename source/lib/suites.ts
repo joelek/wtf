@@ -10,7 +10,7 @@ export type TestCaseCallback = (asserter: Asserter) => OptionallyAsync<void>;
 
 export type TestCaseReport = {
 	description: string;
-	status: number;
+	success: boolean;
 	error?: string;
 };
 
@@ -28,10 +28,10 @@ export class TestCase {
 		let asserter = new Asserter();
 		try {
 			await this.callback(asserter);
-			let status = 0;
+			let success = true;
 			return {
 				description,
-				status
+				success
 			};
 		} catch (throwable) {
 			logger?.log(`Test "${description}" raised an error!\n`);
@@ -40,10 +40,10 @@ export class TestCase {
 				logger?.log(`${throwable.stack ?? throwable.message}\n`);
 				error = throwable.message;
 			}
-			let status = 1;
+			let success = false;
 			return {
 				description,
-				status,
+				success,
 				error
 			};
 		}
@@ -55,7 +55,7 @@ export type TestSuiteCallback = (suite: TestSuite) => OptionallyAsync<void>;
 export type TestSuiteReport = {
 	description: string;
 	reports: Array<TestCaseReport>;
-	status: number;
+	success: boolean;
 };
 
 export class TestSuite {
@@ -78,25 +78,25 @@ export class TestSuite {
 		await this.callback(this);
 		let description = this.description;
 		let reports = [] as Array<TestCaseReport>;
-		let status = 0;
+		let success = true;
 		for (let testCase of this.testCases) {
 			let report = await testCase.run(logger);
 			reports.push(report);
-			if (report.status != 0) {
-				status = 1;
+			if (!report.success) {
+				success = false;
 			}
 		}
 		return {
 			description,
 			reports,
-			status
+			success
 		};
 	}
 };
 
 export type TestSuitesReport = {
 	reports: Array<TestSuiteReport>;
-	status: number;
+	success: boolean;
 };
 
 export class TestSuites {
@@ -113,17 +113,17 @@ export class TestSuites {
 
 	async run(logger?: Logger): Promise<TestSuitesReport> {
 		let reports = [] as Array<TestSuiteReport>;
-		let status = 0;
+		let success = true;
 		for (let testSuite of this.testSuites) {
 			let report = await testSuite.run(logger);
 			reports.push(report);
-			if (report.status != 0) {
-				status = 1;
+			if (!report.success) {
+				success = false;
 			}
 		}
 		return {
 			reports,
-			status
+			success
 		};
 	}
 };
@@ -135,7 +135,8 @@ export const createTestSuite = (() => {
 	process.on("beforeExit", async () => {
 		let report = await suites.run(logger);
 		reporter?.report(report);
-		process.exit(report.status);
+		let status = report.success ? 0 : 1;
+		process.exit(status);
 	});
 	return suites.createTestSuite.bind(suites);
 })();
