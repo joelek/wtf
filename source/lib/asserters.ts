@@ -10,6 +10,21 @@ export function getTypename(subject: any): string {
 	return typeof subject;
 };
 
+export class UnsupportedTypeError extends Error {
+	private expected: SerializableData;
+	private path: SerializablePath;
+
+	get message(): string {
+		return `Expected type for expected${SerializablePath.serialize(this.path)} (${getTypename(this.expected)}) to be supported by the asserter!`;
+	}
+
+	constructor(expected: SerializableData,path: SerializablePath) {
+		super();
+		this.expected = expected;
+		this.path = path;
+	}
+};
+
 export class IncorrectTypeError extends Error {
 	private observed: SerializableData;
 	private expected: SerializableData;
@@ -214,6 +229,7 @@ export class Asserter {
 		if (expected === undefined) {
 			return this.equalsUndefined(observed, expected, path);
 		}
+		throw new UnsupportedTypeError(expected, path);
 	}
 
 	constructor() {}
