@@ -48,7 +48,7 @@ export class IncorrectValueError extends Error {
 	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected value for observed${SerializablePath.serialize(this.path)} (${SerializableData.serialize(this.observed, false)}) to be ${SerializableData.serialize(this.expected, false)}!`;
+		return `Expected value for observed${SerializablePath.serialize(this.path)} (${SerializableData.serialize(this.observed, true)}) to be ${SerializableData.serialize(this.expected, true)}!`;
 	}
 
 	constructor(observed: SerializableData, expected: SerializableData, path: SerializablePath) {

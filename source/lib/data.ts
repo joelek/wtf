@@ -33,10 +33,10 @@ export const SerializableData = {
 			return value;
 		});
 	},
-	serialize(json: SerializableData, wrap: boolean = true): string {
+	serialize(json: SerializableData, compact: boolean = false): string {
 		return globalThis.JSON.stringify(json != null ? json : null, (key, value) => {
 			if (typeof value === "bigint") {
-				return !wrap ? `${value}n` : {
+				return compact ? `${value}n` : {
 					type: "bigint",
 					data: `${value}n`
 				};
