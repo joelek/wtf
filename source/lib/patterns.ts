@@ -10,6 +10,9 @@ export type PatternMatcher = Comparable & {
 export const PatternMatcher = {
 	parse(pattern: string): Array<PatternMatcher> {
 		return pattern.split(".").map((part) => {
+			if (part === "**") {
+				return new DynamicPatternMatcher(1, Infinity);
+			}
 			if (part === "*") {
 				return new DynamicPatternMatcher(1, 1);
 			}

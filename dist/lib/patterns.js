@@ -5,6 +5,9 @@ const asserters_1 = require("./asserters");
 exports.PatternMatcher = {
     parse(pattern) {
         return pattern.split(".").map((part) => {
+            if (part === "**") {
+                return new DynamicPatternMatcher(1, Infinity);
+            }
             if (part === "*") {
                 return new DynamicPatternMatcher(1, 1);
             }
