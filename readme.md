@@ -163,7 +163,9 @@ npm install [-g] joelek/wtf#master
 NB: This project targets TypeScript 4 in strict mode.
 
 ## Roadmap
+
 * Write more test cases.
 * Document features and usage.
 * Consider parallel execution of test units.
 * Get rid of await requirement for assert.throws().
+* Implement support for logging and reporting over HTTP.
