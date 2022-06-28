@@ -15,7 +15,7 @@ export class UnsupportedTypeError extends Error {
 	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected type for expected${SerializablePath.serialize(this.path)} (${getTypename(this.expected)}) to be supported by the asserter!`;
+		return `Expected type for expected${SerializablePath.serialize(this.path)}, ${getTypename(this.expected)}, to be supported by the asserter!`;
 	}
 
 	constructor(expected: SerializableData,path: SerializablePath) {
@@ -31,7 +31,7 @@ export class IncorrectTypeError extends Error {
 	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected type for observed${SerializablePath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
+		return `Expected type for observed${SerializablePath.serialize(this.path)}, ${getTypename(this.observed)}, to be ${getTypename(this.expected)}!`;
 	}
 
 	constructor(observed: SerializableData, expected: SerializableData,path: SerializablePath) {
@@ -48,7 +48,7 @@ export class IncorrectValueError extends Error {
 	private path: SerializablePath;
 
 	get message(): string {
-		return `Expected value for observed${SerializablePath.serialize(this.path)} (${SerializableData.serialize(this.observed, true)}) to be ${SerializableData.serialize(this.expected, true)}!`;
+		return `Expected value for observed${SerializablePath.serialize(this.path)}, ${SerializableData.serialize(this.observed, true)}, to be ${SerializableData.serialize(this.expected, true)}!`;
 	}
 
 	constructor(observed: SerializableData, expected: SerializableData, path: SerializablePath) {
