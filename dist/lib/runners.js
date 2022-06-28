@@ -202,6 +202,7 @@ function run(options) {
                 success = false;
             }
         }
+        logger === null || logger === void 0 ? void 0 : logger.log(`A total of ${units.length} test units were run.\n`);
         let status = success ? 0 : 1;
         logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
         let report = {

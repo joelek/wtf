@@ -216,6 +216,7 @@ export async function run(options: Options): Promise<number> {
 			success = false;
 		}
 	}
+	logger?.log(`A total of ${units.length} test units were run.\n`);
 	let status = success ? 0 : 1;
 	logger?.log(`Completed with status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
 	let report: Report = {
