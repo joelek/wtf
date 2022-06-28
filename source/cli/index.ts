@@ -29,9 +29,9 @@ async function run(): Promise<number> {
 			continue;
 		}
 		if ((parts = /^--runner=(.*):(.*)$/.exec(arg)) != null) {
-			let suffix = parts[1];
+			let pattern = parts[1];
 			let command = parts[2];
-			let runner = new lib.runners.CustomRunner(suffix, command);
+			let runner = new lib.runners.CustomRunner(pattern, command);
 			let runners = options.runners ?? [];
 			runners.push(runner);
 			options.runners = runners;
@@ -54,7 +54,7 @@ async function run(): Promise<number> {
 		logger.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
 		logger.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
 		logger.log(`\t--reporter=<target> Report to the specified target ("stdout" or "stderr").\n`);
-		logger.log(`\t--runner=<suffix>:<command> Launch the specified command for every filename that ends with the specified suffix.\n`);
+		logger.log(`\t--runner=<pattern>:<command> Launch the specified command for every filename that ends with the specified pattern.\n`);
 		return 1;
 	}
 };

@@ -71,16 +71,16 @@ export interface Runner {
 };
 
 export class CustomRunner implements Runner {
-	private suffix: string;
+	private pattern: string;
 	private command: string;
 
-	constructor(suffix: string, command: string) {
-		this.suffix = suffix;
+	constructor(pattern: string, command: string) {
+		this.pattern = pattern;
 		this.command = command;
 	}
 
 	matches(path: string): boolean {
-		return path.endsWith(this.suffix);
+		return path.endsWith(this.pattern);
 	}
 
 	async run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
