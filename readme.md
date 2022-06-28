@@ -22,7 +22,30 @@ wtf.suite("Arithmetics.", async (suite) => {
 
 ### Test runner
 
-The package includes a test runner that may be launched using the `[npx] wtf` command.
+The package includes a deterministic test runner that may be launched using the `[npx] wtf` command. The test runner may be used to locate, run and collect information from supported test units.
+
+By default, the `./source/` path will be recursively scanned for supported units. File or directory paths may be explicitly specified using the `--path=<path>` argument.
+
+A test unit is identified as supported through having a filename matching one of the configured patterns for which a command is specified. The default commands are:
+
+* The `node` command for all filenames matching the `*.test.js` pattern.
+* The `ts-node` command for all filenames matching the `*.test.ts` pattern.
+
+Commands may be explicitly specified using the `--runner:<pattern>:<command>` argument.
+
+The test runner launches the corresponding command for each test unit and collects the output from the operations. The units are run in sequence as separate processes, providing a clean slate for each unit by eliminating runtime contamination.
+
+The test runner is deterministic if and only if each test unit is deterministic. Units verifying functionality of or through external systems such as file systems, databases or APIs should be constructed with this in consideration.
+
+A unit is considered having executed successfully if the command returns the EXIT_SUCCESS (0) status code. Any non-zero status code is considered a failure. The test runner itself signals the combined outcome of all units through the EXIT_SUCCESS (0) or EXIT_FAILURE (1) status codes.
+
+#### Logging
+
+The test runner can be configured to write log events to a specific target through the `--logger=<target>` argument. The target may be set to `stdout`, `stderr` or empty if no events should be written. By default, the target is set to `stdout`.
+
+#### Reporting
+
+The test runner can be configured to write test reports to a specific target through the `--reporter=<target>` argument. The target may be set to `stdout`, `stderr` or empty if no reports should be written. By default, the target is set to empty.
 
 ### Testing framework
 
@@ -32,24 +55,24 @@ The package includes a testing framework for projects built using TypeScript or 
 import * as wtf from "@joelek/wtf";
 ```
 
-Each unit may specify its suites through the `suite(description, callback)` method. The callback will be supplied with a instance through which the cases of the suite should be defined. Async callbacks are supported but not required.
+Each unit may specify its suites through the `suite(description, callback)` method. The callback will be supplied with a `suite` instance through which the cases of the suite should be defined. Async callbacks are supported but not required.
 
 ```ts
 import * as wtf from "@joelek/wtf";
 
 wtf.suite("Arithmetics.", async (suite) => {
-
+	// ...
 });
 ```
 
-Each suite should specify its cases through the `case(description, callback)` method. The callback will be supplied with an instance through which assertions can be made. Async callbacks are supported but not required.
+Each suite should specify its cases through the `case(description, callback)` method. The callback will be supplied with an `assert` instance through which assertions can be made. Async callbacks are supported but not required.
 
 ```ts
 import * as wtf from "@joelek/wtf";
 
 wtf.suite("Arithmetics.", async (suite) => {
 	suite.case(`The sum of two plus two should equal four.`, async (assert) => {
-
+		// ...
 	});
 });
 ```
@@ -145,3 +168,4 @@ NB: This project targets TypeScript 4 in strict mode.
 * Document features and usage.
 * Consider parallel execution of test units.
 * Get rid of await requirement for assert.throws().
+* Implement support for wildcards in patterns.
