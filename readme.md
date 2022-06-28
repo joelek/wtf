@@ -24,7 +24,7 @@ wtf.suite("Arithmetics.", async (suite) => {
 
 The package includes a deterministic test runner that may be launched using the `[npx] wtf` command. The test runner may be used to locate, run and collect information from supported test units.
 
-By default, the `./source/` path will be recursively scanned for supported units. File or directory paths may be explicitly specified using the `--path=<path>` argument.
+By default, the `./source/` and `./src/` paths will be recursively scanned for supported units. File or directory paths may be explicitly specified using the `--path=<path>` argument.
 
 A test unit is identified as supported through having a filename matching one of the configured patterns for which a command is specified. The default commands are:
 
@@ -168,7 +168,6 @@ NB: This project targets TypeScript 4 in strict mode.
 * Get rid of await requirement for assert.throws().
 * Implement support for logging and reporting over HTTP.
 * Implement support for logging and reporting to files.
-* Add "./src/" to default paths.
 * Stop logging errors for missing paths.
 * Write summary to log when test runner completes.
 * Create runners in lib.

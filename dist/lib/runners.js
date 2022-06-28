@@ -167,7 +167,8 @@ exports.scanPath = scanPath;
 ;
 function createDefaultPaths() {
     return [
-        "./source/"
+        "./source/",
+        "./src/"
     ];
 }
 exports.createDefaultPaths = createDefaultPaths;

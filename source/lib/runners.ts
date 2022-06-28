@@ -179,7 +179,8 @@ export type Options = {
 
 export function createDefaultPaths(): Array<string> {
 	return [
-		"./source/"
+		"./source/",
+		"./src/"
 	];
 };
 
