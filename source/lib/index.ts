@@ -5,6 +5,6 @@ export * as loggers from "./loggers";
 export * as patterns from "./patterns";
 export * as reporters from "./reporters";
 export * as runners from "./runners";
-export * as suites from "./suites";
+export * as units from "./units";
 
-export { suite } from "./suites";
+export { suite } from "./units";

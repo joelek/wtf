@@ -99,14 +99,14 @@ export type TestSuitesReport = {
 	success: boolean;
 };
 
-export class TestSuites {
+export class TestUnit {
 	private testSuites: Array<TestSuite>;
 
 	constructor() {
 		this.testSuites = [];
 	}
 
-	test(description: string, callback: TestSuiteCallback): void {
+	suite(description: string, callback: TestSuiteCallback): void {
 		let testSuite = new TestSuite(description, callback);
 		this.testSuites.push(testSuite);
 	}
@@ -131,12 +131,12 @@ export class TestSuites {
 export const suite = (() => {
 	let logger = loggers.getLogger(process.env[LOGGER_KEY] ?? "stdout");
 	let reporter = reporters.getReporter(process.env[REPORTER_KEY] ?? undefined);
-	let suites = new TestSuites();
+	let unit = new TestUnit();
 	process.on("beforeExit", async () => {
-		let report = await suites.run(logger);
+		let report = await unit.run(logger);
 		reporter?.report(report);
 		let status = report.success ? 0 : 1;
 		process.exit(status);
 	});
-	return suites.test.bind(suites);
+	return unit.suite.bind(unit);
 })();

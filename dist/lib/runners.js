@@ -130,25 +130,25 @@ function scanFilePath(path, runners, logger) {
 exports.scanFilePath = scanFilePath;
 ;
 function scanDirectoryPath(parentPath, runners, logger) {
-    let runnables = [];
+    let units = [];
     let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
     for (let entry of entries) {
         let path = libpath.join(parentPath, entry.name);
         if (entry.isDirectory()) {
-            runnables.push(...scanDirectoryPath(path, runners, logger));
+            units.push(...scanDirectoryPath(path, runners, logger));
             continue;
         }
         if (entry.isFile()) {
-            runnables.push(...scanFilePath(path, runners, logger));
+            units.push(...scanFilePath(path, runners, logger));
             continue;
         }
     }
-    return runnables;
+    return units;
 }
 exports.scanDirectoryPath = scanDirectoryPath;
 ;
 function scanPath(path, runners, logger) {
-    logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for files...\n`);
+    logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for supported test units...\n`);
     if (libfs.existsSync(path)) {
         let stats = libfs.statSync(path);
         if (stats.isDirectory()) {
@@ -187,9 +187,9 @@ function run(options) {
         let paths = (_a = options.paths) !== null && _a !== void 0 ? _a : createDefaultPaths();
         let reporter = reporters.getReporter(options.reporter);
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
-        let runnables = [];
+        let units = [];
         for (let path of paths) {
-            runnables.push(...scanPath(libpath.normalize(path), runners, logger));
+            units.push(...scanPath(libpath.normalize(path), runners, logger));
         }
         let environment = {
             [env_1.LOGGER_KEY]: options.logger,
@@ -197,8 +197,8 @@ function run(options) {
         };
         let reports = [];
         let success = true;
-        for (let runnable of runnables) {
-            let report = yield runnable.runner.run(runnable.path, logger, environment);
+        for (let unit of units) {
+            let report = yield unit.runner.run(unit.path, logger, environment);
             reports.push(report);
             if (!report.success) {
                 success = false;

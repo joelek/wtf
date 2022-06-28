@@ -34,13 +34,13 @@ export declare class JavaScriptRunner extends CustomRunner {
 export declare class TypeScriptRunner extends CustomRunner {
     constructor();
 }
-export declare type Runnable = {
+export declare type Unit = {
     runner: Runner;
     path: string;
 };
-export declare function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
-export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
-export declare function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable>;
+export declare function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit>;
+export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Unit>;
+export declare function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit>;
 export declare type Options = {
     logger?: string;
     paths?: Array<string>;

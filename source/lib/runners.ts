@@ -119,12 +119,12 @@ export class TypeScriptRunner extends CustomRunner {
 	}
 };
 
-export type Runnable = {
+export type Unit = {
 	runner: Runner;
 	path: string;
 };
 
-export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable> {
+export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
 	for (let runner of runners) {
 		if (runner.matches(path)) {
 			let runnable = {
@@ -137,25 +137,25 @@ export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logg
 	return [];
 };
 
-export function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Runnable> {
-	let runnables = [] as Array<Runnable>;
+export function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
+	let units = [] as Array<Unit>;
 	let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
 	for (let entry of entries) {
 		let path = libpath.join(parentPath, entry.name);
 		if (entry.isDirectory()) {
-			runnables.push(...scanDirectoryPath(path, runners, logger));
+			units.push(...scanDirectoryPath(path, runners, logger));
 			continue;
 		}
 		if (entry.isFile()) {
-			runnables.push(...scanFilePath(path, runners, logger));
+			units.push(...scanFilePath(path, runners, logger));
 			continue;
 		}
 	}
-	return runnables;
+	return units;
 };
 
-export function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Runnable> {
-	logger?.log(`Scanning "${path}" for files...\n`);
+export function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
+	logger?.log(`Scanning "${path}" for supported test units...\n`);
 	if (libfs.existsSync(path)) {
 		let stats = libfs.statSync(path);
 		if (stats.isDirectory()) {
@@ -200,9 +200,9 @@ export async function run(options: Options): Promise<number> {
 	let paths = options.paths ?? createDefaultPaths();
 	let reporter = reporters.getReporter(options.reporter);
 	let runners = options.runners ?? createDefaultRunners();
-	let runnables = [] as Array<Runnable>;
+	let units = [] as Array<Unit>;
 	for (let path of paths) {
-		runnables.push(...scanPath(libpath.normalize(path), runners, logger));
+		units.push(...scanPath(libpath.normalize(path), runners, logger));
 	}
 	let environment: Record<string, string | undefined> = {
 		[LOGGER_KEY]: options.logger,
@@ -210,8 +210,8 @@ export async function run(options: Options): Promise<number> {
 	};
 	let reports = [] as Array<RunReport>;
 	let success = true;
-	for (let runnable of runnables) {
-		let report = await runnable.runner.run(runnable.path, logger, environment);
+	for (let unit of units) {
+		let report = await unit.runner.run(unit.path, logger, environment);
 		reports.push(report);
 		if (!report.success) {
 			success = false;

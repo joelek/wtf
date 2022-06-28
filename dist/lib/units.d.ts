@@ -31,10 +31,10 @@ export declare type TestSuitesReport = {
     reports: Array<TestSuiteReport>;
     success: boolean;
 };
-export declare class TestSuites {
+export declare class TestUnit {
     private testSuites;
     constructor();
-    test(description: string, callback: TestSuiteCallback): void;
+    suite(description: string, callback: TestSuiteCallback): void;
     run(logger?: Logger): Promise<TestSuitesReport>;
 }
 export declare const suite: (description: string, callback: TestSuiteCallback) => void;

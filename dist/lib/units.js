@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.suite = exports.TestSuites = exports.TestSuite = exports.TestCase = void 0;
+exports.suite = exports.TestUnit = exports.TestSuite = exports.TestCase = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
 const _1 = require(".");
@@ -84,11 +84,11 @@ class TestSuite {
 }
 exports.TestSuite = TestSuite;
 ;
-class TestSuites {
+class TestUnit {
     constructor() {
         this.testSuites = [];
     }
-    test(description, callback) {
+    suite(description, callback) {
         let testSuite = new TestSuite(description, callback);
         this.testSuites.push(testSuite);
     }
@@ -110,18 +110,18 @@ class TestSuites {
         });
     }
 }
-exports.TestSuites = TestSuites;
+exports.TestUnit = TestUnit;
 ;
 exports.suite = (() => {
     var _a, _b;
     let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
     let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
-    let suites = new TestSuites();
+    let unit = new TestUnit();
     process.on("beforeExit", () => __awaiter(void 0, void 0, void 0, function* () {
-        let report = yield suites.run(logger);
+        let report = yield unit.run(logger);
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         let status = report.success ? 0 : 1;
         process.exit(status);
     }));
-    return suites.test.bind(suites);
+    return unit.suite.bind(unit);
 })();
