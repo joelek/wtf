@@ -22,9 +22,9 @@ export interface Runner {
     run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
 }
 export declare class CustomRunner implements Runner {
-    private suffix;
+    private pattern;
     private command;
-    constructor(suffix: string, command: string);
+    constructor(pattern: string, command: string);
     matches(path: string): boolean;
     run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
 }

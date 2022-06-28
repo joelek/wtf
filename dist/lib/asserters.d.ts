@@ -1,4 +1,5 @@
 import { SerializableData, SerializablePath } from "./data";
+export declare type OptionallyAsync<A> = A | Promise<A>;
 export declare function getTypename(subject: any): string;
 export declare class UnsupportedTypeError extends Error {
     private expected;
@@ -50,6 +51,7 @@ export declare type Constructor<A> = {
 };
 export declare class Asserter {
     private equalsBinaryData;
+    private equalsComparable;
     private equalsArray;
     private equalsBigint;
     private equalsBoolean;
@@ -61,5 +63,5 @@ export declare class Asserter {
     private equalsAny;
     constructor();
     equals(observed: SerializableData, expected: SerializableData): void;
-    throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void>;
+    throws<A>(callback: () => OptionallyAsync<A>): Promise<void>;
 }

@@ -67,12 +67,12 @@ exports.parseIfPossible = parseIfPossible;
 ;
 ;
 class CustomRunner {
-    constructor(suffix, command) {
-        this.suffix = suffix;
+    constructor(pattern, command) {
+        this.pattern = pattern;
         this.command = command;
     }
     matches(path) {
-        return path.endsWith(this.suffix);
+        return path.endsWith(this.pattern);
     }
     run(path, logger, environment) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -84,7 +84,7 @@ class CustomRunner {
             let error = result.error == null ? undefined : result.error.message;
             let status = result.status;
             let success = status === 0;
-            logger === null || logger === void 0 ? void 0 : logger.log(`Command ${command} returned status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
+            logger === null || logger === void 0 ? void 0 : logger.log(`Command ${command} "${path}" returned status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
             return {
                 command,
                 path,

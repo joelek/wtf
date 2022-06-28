@@ -30,7 +30,7 @@ class UnsupportedTypeError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected type for expected${data_1.SerializablePath.serialize(this.path)} (${getTypename(this.expected)}) to be supported by the asserter!`;
+        return `Expected type for expected${data_1.SerializablePath.serialize(this.path)}, ${getTypename(this.expected)}, to be supported by the asserter!`;
     }
 }
 exports.UnsupportedTypeError = UnsupportedTypeError;
@@ -43,7 +43,7 @@ class IncorrectTypeError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected type for observed${data_1.SerializablePath.serialize(this.path)} (${getTypename(this.observed)}) to be ${getTypename(this.expected)}!`;
+        return `Expected type for observed${data_1.SerializablePath.serialize(this.path)}, ${getTypename(this.observed)}, to be ${getTypename(this.expected)}!`;
     }
 }
 exports.IncorrectTypeError = IncorrectTypeError;
@@ -56,7 +56,7 @@ class IncorrectValueError extends Error {
         this.path = path;
     }
     get message() {
-        return `Expected value for observed${data_1.SerializablePath.serialize(this.path)} (${data_1.SerializableData.serialize(this.observed, true)}) to be ${data_1.SerializableData.serialize(this.expected, true)}!`;
+        return `Expected value for observed${data_1.SerializablePath.serialize(this.path)}, ${data_1.SerializableData.serialize(this.observed, true)}, to be ${data_1.SerializableData.serialize(this.expected, true)}!`;
     }
 }
 exports.IncorrectValueError = IncorrectValueError;
@@ -134,6 +134,14 @@ class Asserter {
             }
         }
     }
+    equalsComparable(observed, expected, path) {
+        if (!(data_1.Comparable.is(observed))) {
+            throw new IncorrectTypeError(observed, expected, path);
+        }
+        if (!observed.equals(expected)) {
+            throw new IncorrectValueError(observed, expected, path);
+        }
+    }
     equalsArray(observed, expected, path) {
         if (!data_1.SerializableDataArray.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
@@ -209,6 +217,9 @@ class Asserter {
         }
     }
     equalsAny(observed, expected, path) {
+        if (data_1.Comparable.is(expected)) {
+            return this.equalsComparable(observed, expected, path);
+        }
         if (data_1.SerializableDataArray.is(expected)) {
             return this.equalsArray(observed, expected, path);
         }
@@ -275,9 +286,8 @@ class Asserter {
     equals(observed, expected) {
         this.equalsAny(observed, expected, []);
     }
-    throws(operation) {
+    throws(callback) {
         return __awaiter(this, void 0, void 0, function* () {
-            let callback = operation instanceof Promise ? () => operation : operation;
             try {
                 yield callback();
             }

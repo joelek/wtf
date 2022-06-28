@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SerializablePath = exports.SerializableData = exports.SerializableDataWrapper = exports.SerializableDataObject = exports.SerializableDataArray = void 0;
+exports.SerializablePath = exports.SerializableData = exports.SerializableDataWrapper = exports.SerializableDataObject = exports.SerializableDataArray = exports.Comparable = void 0;
+exports.Comparable = {
+    is(subject) {
+        return subject != null && typeof subject["equals"] === "function";
+    }
+};
 exports.SerializableDataArray = {
     is(subject) {
         return subject != null && subject.constructor === Array;
