@@ -69,7 +69,7 @@ export class TestSuite {
 		this.callback = callback;
 	}
 
-	defineTestCase(description: string, callback: TestCaseCallback): void {
+	case(description: string, callback: TestCaseCallback): void {
 		let testCase = new TestCase(description, callback);
 		this.testCases.push(testCase);
 	}
@@ -106,7 +106,7 @@ export class TestSuites {
 		this.testSuites = [];
 	}
 
-	createTestSuite(description: string, callback: TestSuiteCallback): void {
+	test(description: string, callback: TestSuiteCallback): void {
 		let testSuite = new TestSuite(description, callback);
 		this.testSuites.push(testSuite);
 	}
@@ -128,7 +128,7 @@ export class TestSuites {
 	}
 };
 
-export const createTestSuite = (() => {
+export const suite = (() => {
 	let logger = loggers.getLogger(process.env[LOGGER_KEY] ?? "stdout");
 	let reporter = reporters.getReporter(process.env[REPORTER_KEY] ?? undefined);
 	let suites = new TestSuites();
@@ -138,5 +138,5 @@ export const createTestSuite = (() => {
 		let status = report.success ? 0 : 1;
 		process.exit(status);
 	});
-	return suites.createTestSuite.bind(suites);
+	return suites.test.bind(suites);
 })();

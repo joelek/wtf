@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTestSuite = exports.TestSuites = exports.TestSuite = exports.TestCase = void 0;
+exports.suite = exports.TestSuites = exports.TestSuite = exports.TestCase = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
 const _1 = require(".");
@@ -57,7 +57,7 @@ class TestSuite {
         this.testCases = [];
         this.callback = callback;
     }
-    defineTestCase(description, callback) {
+    case(description, callback) {
         let testCase = new TestCase(description, callback);
         this.testCases.push(testCase);
     }
@@ -88,7 +88,7 @@ class TestSuites {
     constructor() {
         this.testSuites = [];
     }
-    createTestSuite(description, callback) {
+    test(description, callback) {
         let testSuite = new TestSuite(description, callback);
         this.testSuites.push(testSuite);
     }
@@ -112,7 +112,7 @@ class TestSuites {
 }
 exports.TestSuites = TestSuites;
 ;
-exports.createTestSuite = (() => {
+exports.suite = (() => {
     var _a, _b;
     let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
     let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
@@ -123,5 +123,5 @@ exports.createTestSuite = (() => {
         let status = report.success ? 0 : 1;
         process.exit(status);
     }));
-    return suites.createTestSuite.bind(suites);
+    return suites.test.bind(suites);
 })();

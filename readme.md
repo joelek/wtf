@@ -13,9 +13,9 @@ Test runner and testing framework for projects built using TypeScript or JavaScr
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.createTestSuite("MySuite", async (suite) => {
-	suite.defineTestCase(`It should not break!`, async () => {
-		// ...
+wtf.suite("Arithmetics.", async (suite) => {
+	suite.test(`The sum of two plus two should equal four.`, async (assert) => {
+		assert.equals(2 + 2, 4);
 	});
 });
 ```

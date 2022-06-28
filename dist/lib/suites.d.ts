@@ -24,7 +24,7 @@ export declare class TestSuite {
     private testCases;
     private callback;
     constructor(description: string, callback: TestSuiteCallback);
-    defineTestCase(description: string, callback: TestCaseCallback): void;
+    case(description: string, callback: TestCaseCallback): void;
     run(logger?: Logger): Promise<TestSuiteReport>;
 }
 export declare type TestSuitesReport = {
@@ -34,7 +34,7 @@ export declare type TestSuitesReport = {
 export declare class TestSuites {
     private testSuites;
     constructor();
-    createTestSuite(description: string, callback: TestSuiteCallback): void;
+    test(description: string, callback: TestSuiteCallback): void;
     run(logger?: Logger): Promise<TestSuitesReport>;
 }
-export declare const createTestSuite: (description: string, callback: TestSuiteCallback) => void;
+export declare const suite: (description: string, callback: TestSuiteCallback) => void;

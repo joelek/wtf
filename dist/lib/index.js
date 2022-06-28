@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTestSuite = exports.suites = exports.runners = exports.reporters = exports.loggers = exports.data = exports.env = exports.asserters = void 0;
+exports.suite = exports.suites = exports.runners = exports.reporters = exports.loggers = exports.data = exports.env = exports.asserters = void 0;
 exports.asserters = require("./asserters");
 exports.env = require("./env");
 exports.data = require("./data");
@@ -9,4 +9,4 @@ exports.reporters = require("./reporters");
 exports.runners = require("./runners");
 exports.suites = require("./suites");
 var suites_1 = require("./suites");
-Object.defineProperty(exports, "createTestSuite", { enumerable: true, get: function () { return suites_1.createTestSuite; } });
+Object.defineProperty(exports, "suite", { enumerable: true, get: function () { return suites_1.suite; } });
