@@ -244,9 +244,6 @@ class Asserter {
         if (expected === undefined) {
             return this.equalsUndefined(observed, expected, path);
         }
-        if (expected instanceof Buffer) {
-            return this.equalsBinaryData(Buffer, observed, expected, path);
-        }
         if (expected instanceof Int8Array) {
             return this.equalsBinaryData(Int8Array, observed, expected, path);
         }

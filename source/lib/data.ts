@@ -1,5 +1,4 @@
 export type BinaryData =
-	Buffer |
 	Int8Array |
 	Uint8Array |
 	Uint8ClampedArray |

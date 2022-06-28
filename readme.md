@@ -81,7 +81,6 @@ wtf.suite("Arithmetics.", async (suite) => {
 
 The `assert` instance can be used to assert that values observed equal values expected through its `equals(observed, expected)` method. The method supports the data types listed below.
 
-* Buffer (NodeJS)
 * Int8Array
 * Uint8Array
 * Uint8ClampedArray
@@ -174,4 +173,3 @@ NB: This project targets TypeScript 4 in strict mode.
 * Write summary to log when test runner completes.
 * Create runners in lib.
 * Add support for loading config files.
-* Remove Buffer support.
