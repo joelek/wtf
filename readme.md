@@ -165,7 +165,13 @@ NB: This project targets TypeScript 4 in strict mode.
 ## Roadmap
 
 * Write more test cases.
-* Document features and usage.
 * Consider parallel execution of test units.
 * Get rid of await requirement for assert.throws().
 * Implement support for logging and reporting over HTTP.
+* Implement support for logging and reporting to files.
+* Add "./src/" to default paths.
+* Stop logging errors for missing paths.
+* Write summary to log when test runner completes.
+* Create runners in lib.
+* Add support for loading config files.
+* Remove Buffer support.
