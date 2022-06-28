@@ -66,28 +66,19 @@ export type RunReport = {
 	error?: string;
 };
 
-export interface Runner {
-	matches(path: string): boolean;
-	run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
+export type Runner = {
+	pattern: string;
+	command: string;
 };
 
-export class CustomRunner implements Runner {
-	private pattern: string;
-	private command: string;
-
-	constructor(pattern: string, command: string) {
-		this.pattern = pattern;
-		this.command = command;
-	}
-
-	matches(path: string): boolean {
+export const Runner = {
+	matches(runner: Runner, path: string): boolean {
 		let basename = libpath.basename(path);
-		let matchers = PatternMatcher.parse(this.pattern);
+		let matchers = PatternMatcher.parse(runner.pattern);
 		return PatternMatcher.matches(basename, matchers);
-	}
-
-	async run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
-		let command = this.command;
+	},
+	async run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
+		let command = runner.command;
 		logger?.log(`Spawning ${command} "${path}"...\n`);
 		let result = await spawn(command, [path], logger, environment);
 		let stdout = parseIfPossible(result.stdout.toString());
@@ -107,18 +98,6 @@ export class CustomRunner implements Runner {
 	}
 };
 
-export class JavaScriptRunner extends CustomRunner {
-	constructor() {
-		super("*.test.js", "node");
-	}
-};
-
-export class TypeScriptRunner extends CustomRunner {
-	constructor() {
-		super("*.test.ts", "ts-node");
-	}
-};
-
 export type Unit = {
 	runner: Runner;
 	path: string;
@@ -126,7 +105,7 @@ export type Unit = {
 
 export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
 	for (let runner of runners) {
-		if (runner.matches(path)) {
+		if (Runner.matches(runner, path)) {
 			let runnable = {
 				runner,
 				path
@@ -184,8 +163,14 @@ export function createDefaultPaths(): Array<string> {
 
 export function createDefaultRunners(): Array<Runner> {
 	return [
-		new JavaScriptRunner(),
-		new TypeScriptRunner()
+		{
+			pattern: "*.test.js",
+			command: "node"
+		},
+		{
+			pattern: "*.test.ts",
+			command: "ts-node"
+		}
 	];
 };
 
@@ -210,7 +195,7 @@ export async function run(options: Options): Promise<number> {
 	let reports = [] as Array<RunReport>;
 	let success = true;
 	for (let unit of units) {
-		let report = await unit.runner.run(unit.path, logger, environment);
+		let report = await Runner.run(unit.runner, unit.path, logger, environment);
 		reports.push(report);
 		if (!report.success) {
 			success = false;

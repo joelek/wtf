@@ -42,9 +42,11 @@ function run() {
             if ((parts = /^--runner=(.*):(.*)$/.exec(arg)) != null) {
                 let pattern = parts[1];
                 let command = parts[2];
-                let runner = new lib.runners.CustomRunner(pattern, command);
                 let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : [];
-                runners.push(runner);
+                runners.push({
+                    pattern,
+                    command
+                });
                 options.runners = runners;
                 continue;
             }

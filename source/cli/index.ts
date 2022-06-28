@@ -31,9 +31,11 @@ async function run(): Promise<number> {
 		if ((parts = /^--runner=(.*):(.*)$/.exec(arg)) != null) {
 			let pattern = parts[1];
 			let command = parts[2];
-			let runner = new lib.runners.CustomRunner(pattern, command);
 			let runners = options.runners ?? [];
-			runners.push(runner);
+			runners.push({
+				pattern,
+				command
+			});
 			options.runners = runners;
 			continue;
 		}

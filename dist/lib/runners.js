@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.TypeScriptRunner = exports.JavaScriptRunner = exports.CustomRunner = exports.parseIfPossible = exports.spawn = void 0;
+exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.Runner = exports.parseIfPossible = exports.spawn = void 0;
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
@@ -66,20 +66,15 @@ function parseIfPossible(string) {
 }
 exports.parseIfPossible = parseIfPossible;
 ;
-;
-class CustomRunner {
-    constructor(pattern, command) {
-        this.pattern = pattern;
-        this.command = command;
-    }
-    matches(path) {
+exports.Runner = {
+    matches(runner, path) {
         let basename = libpath.basename(path);
-        let matchers = patterns_1.PatternMatcher.parse(this.pattern);
+        let matchers = patterns_1.PatternMatcher.parse(runner.pattern);
         return patterns_1.PatternMatcher.matches(basename, matchers);
-    }
-    run(path, logger, environment) {
+    },
+    run(runner, path, logger, environment) {
         return __awaiter(this, void 0, void 0, function* () {
-            let command = this.command;
+            let command = runner.command;
             logger === null || logger === void 0 ? void 0 : logger.log(`Spawning ${command} "${path}"...\n`);
             let result = yield spawn(command, [path], logger, environment);
             let stdout = parseIfPossible(result.stdout.toString());
@@ -98,26 +93,10 @@ class CustomRunner {
             };
         });
     }
-}
-exports.CustomRunner = CustomRunner;
-;
-class JavaScriptRunner extends CustomRunner {
-    constructor() {
-        super("*.test.js", "node");
-    }
-}
-exports.JavaScriptRunner = JavaScriptRunner;
-;
-class TypeScriptRunner extends CustomRunner {
-    constructor() {
-        super("*.test.ts", "ts-node");
-    }
-}
-exports.TypeScriptRunner = TypeScriptRunner;
-;
+};
 function scanFilePath(path, runners, logger) {
     for (let runner of runners) {
-        if (runner.matches(path)) {
+        if (exports.Runner.matches(runner, path)) {
             let runnable = {
                 runner,
                 path
@@ -172,8 +151,14 @@ exports.createDefaultPaths = createDefaultPaths;
 ;
 function createDefaultRunners() {
     return [
-        new JavaScriptRunner(),
-        new TypeScriptRunner()
+        {
+            pattern: "*.test.js",
+            command: "node"
+        },
+        {
+            pattern: "*.test.ts",
+            command: "ts-node"
+        }
     ];
 }
 exports.createDefaultRunners = createDefaultRunners;
@@ -196,7 +181,7 @@ function run(options) {
         let reports = [];
         let success = true;
         for (let unit of units) {
-            let report = yield unit.runner.run(unit.path, logger, environment);
+            let report = yield exports.Runner.run(unit.runner, unit.path, logger, environment);
             reports.push(report);
             if (!report.success) {
                 success = false;

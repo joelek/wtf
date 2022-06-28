@@ -17,23 +17,14 @@ export declare type RunReport = {
     success: boolean;
     error?: string;
 };
-export interface Runner {
-    matches(path: string): boolean;
-    run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
-}
-export declare class CustomRunner implements Runner {
-    private pattern;
-    private command;
-    constructor(pattern: string, command: string);
-    matches(path: string): boolean;
-    run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
-}
-export declare class JavaScriptRunner extends CustomRunner {
-    constructor();
-}
-export declare class TypeScriptRunner extends CustomRunner {
-    constructor();
-}
+export declare type Runner = {
+    pattern: string;
+    command: string;
+};
+export declare const Runner: {
+    matches(runner: Runner, path: string): boolean;
+    run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
+};
 export declare type Unit = {
     runner: Runner;
     path: string;
