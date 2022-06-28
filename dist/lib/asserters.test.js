@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const suites_1 = require("./suites");
-(0, suites_1.createTestSuite)("", (suite) => __awaiter(void 0, void 0, void 0, function* () {
+const wtf = require("./");
+wtf.createTestSuite("", (suite) => __awaiter(void 0, void 0, void 0, function* () {
     suite.defineTestCase(`It should assert that an operation throws an error.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         yield assert.throws(() => {
             assert.equals(1, 2);

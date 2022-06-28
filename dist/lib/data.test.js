@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const wtf = require("./");
 const data = require("./data");
-const suites_1 = require("./suites");
-(0, suites_1.createTestSuite)("Uint8Array", (suite) => __awaiter(void 0, void 0, void 0, function* () {
+wtf.createTestSuite("Uint8Array", (suite) => __awaiter(void 0, void 0, void 0, function* () {
     const UNWRAPPED = Uint8Array.of(1, 2);
     const WRAPPED = {
         type: "Uint8Array",
@@ -24,7 +24,7 @@ const suites_1 = require("./suites");
         assert.equals(data.SerializableDataWrapper.unwrap(WRAPPED), UNWRAPPED);
     }));
 }));
-(0, suites_1.createTestSuite)("Uint16Array", (suite) => __awaiter(void 0, void 0, void 0, function* () {
+wtf.createTestSuite("Uint16Array", (suite) => __awaiter(void 0, void 0, void 0, function* () {
     const UNWRAPPED = Uint16Array.of(1, 2);
     const WRAPPED = {
         type: "Uint16Array",

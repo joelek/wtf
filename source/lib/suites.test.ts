@@ -1,7 +1,7 @@
+import * as wtf from "./";
 import * as suites from "./suites";
-import { createTestSuite } from "./suites";
 
-createTestSuite("Suite", async (suite) => {
+wtf.createTestSuite("Suite", async (suite) => {
 	suite.defineTestCase(`It should not capture an error when a test runs successfully.`, async (assert) => {
 		let testCase = new suites.TestCase("", async () => {});
 		let report = await testCase.run();
