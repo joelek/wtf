@@ -92,7 +92,7 @@ export class CustomRunner implements Runner {
 		let error = result.error == null ? undefined : result.error.message;
 		let status = result.status;
 		let success = status === 0;
-		logger?.log(`Command ${command} returned status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
+		logger?.log(`Command ${command} "${path}" returned status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
 		return {
 			command,
 			path,
