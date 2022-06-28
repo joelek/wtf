@@ -20,8 +20,7 @@
 		"clean": "rm -rf ./build/ ./node_modules/",
 		"compile": "rm -rf ./build/* && npx tsc --build",
 		"package": "rm -rf ./dist/* && cp -r ./build/* ./dist/",
-		"preversion": "npm run build && git add ./",
-		"postversion": "git push && git push --tags"
+		"postversion": "npm run build && git add ./ && git commit --amend --no-edit && git push && git push --tags"
 	},
 	"version": "0.0.0"
 }
