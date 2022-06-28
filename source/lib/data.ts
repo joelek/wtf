@@ -12,7 +12,17 @@ export type BinaryData =
 	BigInt64Array |
 	BigUint64Array;
 
-export type SerializableData = BinaryData | bigint | boolean | null | number | string | undefined | SerializableData[] | {
+export type Comparable = {
+	equals(that: Comparable): boolean;
+};
+
+export const Comparable = {
+	is(subject: SerializableData): subject is Comparable {
+		return subject != null && typeof (subject as any)["equals"] === "function";
+	}
+};
+
+export type SerializableData = BinaryData | Comparable | bigint | boolean | null | number | string | undefined | SerializableData[] | {
 	[key: string]: SerializableData;
 };
 

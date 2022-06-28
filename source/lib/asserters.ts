@@ -1,4 +1,4 @@
-import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath, BinaryData } from "./data";
+import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath, BinaryData, Comparable } from "./data";
 
 export function getTypename(subject: any): string {
 	if (subject === null) {
@@ -146,6 +146,15 @@ export class Asserter {
 		}
 	}
 
+	private equalsComparable(observed: SerializableData, expected: SerializableData & Comparable, path: SerializablePath): void {
+		if (!(Comparable.is(observed))) {
+			throw new IncorrectTypeError(observed, expected, path);
+		}
+		if (!observed.equals(expected)) {
+			throw new IncorrectValueError(observed, expected, path);
+		}
+	}
+
 	private equalsArray(observed: SerializableData, expected: SerializableData & SerializableDataArray, path: SerializablePath): void {
 		if (!SerializableDataArray.is(observed)) {
 			throw new IncorrectTypeError(observed, expected, path);
@@ -229,6 +238,9 @@ export class Asserter {
 	}
 
 	private equalsAny(observed: SerializableData, expected: SerializableData, path: SerializablePath): void {
+		if (Comparable.is(expected)) {
+			return this.equalsComparable(observed, expected, path);
+		}
 		if (SerializableDataArray.is(expected)) {
 			return this.equalsArray(observed, expected, path);
 		}
