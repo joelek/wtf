@@ -54,7 +54,7 @@ async function run(): Promise<number> {
 		logger.log(`\t--logger=<target> Log events to the specified target ("stdout" or "stderr").\n`);
 		logger.log(`\t--path=<path> Include the specified path when scanning for files.\n`);
 		logger.log(`\t--reporter=<target> Report to the specified target ("stdout" or "stderr").\n`);
-		logger.log(`\t--runner=<pattern>:<command> Launch the specified command for every filename that ends with the specified pattern.\n`);
+		logger.log(`\t--runner=<pattern>:<command> Launch the specified command for every filename that matches the specified pattern.\n`);
 		return 1;
 	}
 };

@@ -6,6 +6,7 @@ import * as reporters from "./reporters";
 import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
+import { PatternMatcher } from "./patterns";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -80,7 +81,9 @@ export class CustomRunner implements Runner {
 	}
 
 	matches(path: string): boolean {
-		return path.endsWith(this.pattern);
+		let basename = libpath.basename(path);
+		let matchers = PatternMatcher.parse(this.pattern);
+		return PatternMatcher.matches(basename, matchers);
 	}
 
 	async run(path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
@@ -106,13 +109,13 @@ export class CustomRunner implements Runner {
 
 export class JavaScriptRunner extends CustomRunner {
 	constructor() {
-		super(".test.js", "node");
+		super("*.test.js", "node");
 	}
 };
 
 export class TypeScriptRunner extends CustomRunner {
 	constructor() {
-		super(".test.ts", "ts-node");
+		super("*.test.ts", "ts-node");
 	}
 };
 
