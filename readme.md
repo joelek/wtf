@@ -31,7 +31,7 @@ A test unit is identified as supported through having a filename matching one of
 * The `node` command for all filenames matching the `*.test.js` pattern.
 * The `ts-node` command for all filenames matching the `*.test.ts` pattern.
 
-Commands may be explicitly specified using the `--runner:<pattern>:<command>` argument.
+Commands may be explicitly specified using the `--runner=<pattern>:<command>` argument.
 
 The test runner launches the corresponding command for each test unit and collects the output from the operations. The units are run in sequence as separate processes, providing a clean slate for each unit by eliminating runtime contamination.
 
@@ -118,7 +118,7 @@ Equality for instances of classes implementing the `equals()` method will not be
 
 #### Throws
 
-The `assert` instance can be use to assert that operations throw errors through its `throws(callback)` method. Async callbacks are supported but not required but the method itself need to be awaited.
+The `assert` instance can be use to assert that operations throw errors through its `throws(callback)` method. Async callbacks are supported but not required but the method itself needs to be awaited.
 
 ```ts
 import * as wtf from "@joelek/wtf";
