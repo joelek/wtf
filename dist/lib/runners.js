@@ -148,8 +148,8 @@ function scanDirectoryPath(parentPath, runners, logger) {
 exports.scanDirectoryPath = scanDirectoryPath;
 ;
 function scanPath(path, runners, logger) {
-    logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for supported test units...\n`);
     if (libfs.existsSync(path)) {
+        logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for supported test units...\n`);
         let stats = libfs.statSync(path);
         if (stats.isDirectory()) {
             return scanDirectoryPath(path, runners, logger);
@@ -157,9 +157,6 @@ function scanPath(path, runners, logger) {
         if (stats.isFile()) {
             return scanFilePath(path, runners, logger);
         }
-    }
-    else {
-        logger === null || logger === void 0 ? void 0 : logger.log(`Path "${path}" does not exist!\n`);
     }
     return [];
 }

@@ -168,7 +168,6 @@ NB: This project targets TypeScript 4 in strict mode.
 * Get rid of await requirement for assert.throws().
 * Implement support for logging and reporting over HTTP.
 * Implement support for logging and reporting to files.
-* Stop logging errors for missing paths.
 * Write summary to log when test runner completes.
 * Create runners in lib.
 * Add support for loading config files.

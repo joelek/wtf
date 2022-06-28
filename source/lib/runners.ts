@@ -155,8 +155,8 @@ export function scanDirectoryPath(parentPath: string, runners: Array<Runner>, lo
 };
 
 export function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
-	logger?.log(`Scanning "${path}" for supported test units...\n`);
 	if (libfs.existsSync(path)) {
+		logger?.log(`Scanning "${path}" for supported test units...\n`);
 		let stats = libfs.statSync(path);
 		if (stats.isDirectory()) {
 			return scanDirectoryPath(path, runners, logger);
@@ -164,8 +164,6 @@ export function scanPath(path: string, runners: Array<Runner>, logger?: Logger):
 		if (stats.isFile()) {
 			return scanFilePath(path, runners, logger);
 		}
-	} else {
-		logger?.log(`Path "${path}" does not exist!\n`);
 	}
 	return [];
 };
