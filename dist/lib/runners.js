@@ -17,6 +17,7 @@ const loggers = require("./loggers");
 const reporters = require("./reporters");
 const data_1 = require("./data");
 const env_1 = require("./env");
+const patterns_1 = require("./patterns");
 function spawn(command, parameters, logger, environment) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -72,7 +73,9 @@ class CustomRunner {
         this.command = command;
     }
     matches(path) {
-        return path.endsWith(this.pattern);
+        let basename = libpath.basename(path);
+        let matchers = patterns_1.PatternMatcher.parse(this.pattern);
+        return patterns_1.PatternMatcher.matches(basename, matchers);
     }
     run(path, logger, environment) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -100,14 +103,14 @@ exports.CustomRunner = CustomRunner;
 ;
 class JavaScriptRunner extends CustomRunner {
     constructor() {
-        super(".test.js", "node");
+        super("*.test.js", "node");
     }
 }
 exports.JavaScriptRunner = JavaScriptRunner;
 ;
 class TypeScriptRunner extends CustomRunner {
     constructor() {
-        super(".test.ts", "ts-node");
+        super("*.test.ts", "ts-node");
     }
 }
 exports.TypeScriptRunner = TypeScriptRunner;
