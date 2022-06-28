@@ -1,5 +1,7 @@
 import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath, BinaryData, Comparable } from "./data";
 
+export type OptionallyAsync<A> = A | Promise<A>;
+
 export function getTypename(subject: any): string {
 	if (subject === null) {
 		return "null";
@@ -310,8 +312,7 @@ export class Asserter {
 		this.equalsAny(observed, expected, []);
 	}
 
-	async throws<A>(operation: Promise<A> | (() => Promise<A>) | (() => A)): Promise<void> {
-		let callback = operation instanceof Promise ? () => operation : operation;
+	async throws<A>(callback: () => OptionallyAsync<A>): Promise<void> {
 		try {
 			await callback();
 		} catch (error) {
