@@ -23,5 +23,5 @@
 		"package": "rm -rf ./dist/* && cp -r ./build/* ./dist/",
 		"postversion": "npm run build && git add ./ && git commit --amend --no-edit && git push && git push --tags"
 	},
-	"version": "0.2.0"
+	"version": "0.2.1"
 }
