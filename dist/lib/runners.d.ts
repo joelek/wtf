@@ -25,13 +25,13 @@ export declare const Runner: {
     matches(runner: Runner, path: string): boolean;
     run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
 };
-export declare type Unit = {
+export declare type File = {
     runner: Runner;
     path: string;
 };
-export declare function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit>;
-export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Unit>;
-export declare function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit>;
+export declare function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<File>;
+export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<File>;
+export declare function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<File>;
 export declare type Options = {
     logger?: string;
     paths?: Array<string>;

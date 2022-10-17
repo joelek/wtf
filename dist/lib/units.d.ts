@@ -31,7 +31,7 @@ export declare type TestGroupsReport = {
     reports: Array<TestGroupReport>;
     success: boolean;
 };
-export declare class TestUnit {
+export declare class TestFile {
     private testGroups;
     constructor();
     group(description: string, callback: TestGroupCallback): void;

@@ -66,7 +66,7 @@ function run() {
             logger.log(`\n`);
             logger.log(`Arguments:\n`);
             logger.log(`\t--logger=<target> Log events to the specified target ("stdout", "stderr" or "").\n`);
-            logger.log(`\t--path=<path> Include the specified path when scanning for supported test units.\n`);
+            logger.log(`\t--path=<path> Include the specified path when scanning for supported test files.\n`);
             logger.log(`\t--reporter=<target> Report to the specified target ("stdout", "stderr" or "").\n`);
             logger.log(`\t--runner=<pattern>:<command> Launch the specified command for every filename that matches the specified pattern.\n`);
             return 1;

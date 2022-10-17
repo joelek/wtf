@@ -109,26 +109,26 @@ function scanFilePath(path, runners, logger) {
 exports.scanFilePath = scanFilePath;
 ;
 function scanDirectoryPath(parentPath, runners, logger) {
-    let units = [];
+    let files = [];
     let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
     for (let entry of entries) {
         let path = libpath.join(parentPath, entry.name);
         if (entry.isDirectory()) {
-            units.push(...scanDirectoryPath(path, runners, logger));
+            files.push(...scanDirectoryPath(path, runners, logger));
             continue;
         }
         if (entry.isFile()) {
-            units.push(...scanFilePath(path, runners, logger));
+            files.push(...scanFilePath(path, runners, logger));
             continue;
         }
     }
-    return units;
+    return files;
 }
 exports.scanDirectoryPath = scanDirectoryPath;
 ;
 function scanPath(path, runners, logger) {
     if (libfs.existsSync(path)) {
-        logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for supported test units...\n`);
+        logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for supported test files...\n`);
         let stats = libfs.statSync(path);
         if (stats.isDirectory()) {
             return scanDirectoryPath(path, runners, logger);
@@ -170,9 +170,9 @@ function run(options) {
         let paths = (_a = options.paths) !== null && _a !== void 0 ? _a : createDefaultPaths();
         let reporter = reporters.getReporter(options.reporter);
         let runners = (_b = options.runners) !== null && _b !== void 0 ? _b : createDefaultRunners();
-        let units = [];
+        let files = [];
         for (let path of paths) {
-            units.push(...scanPath(libpath.normalize(path), runners, logger));
+            files.push(...scanPath(libpath.normalize(path), runners, logger));
         }
         let environment = {
             [env_1.LOGGER_KEY]: options.logger,
@@ -180,14 +180,14 @@ function run(options) {
         };
         let reports = [];
         let success = true;
-        for (let unit of units) {
-            let report = yield exports.Runner.run(unit.runner, unit.path, logger, environment);
+        for (let file of files) {
+            let report = yield exports.Runner.run(file.runner, file.path, logger, environment);
             reports.push(report);
             if (!report.success) {
                 success = false;
             }
         }
-        logger === null || logger === void 0 ? void 0 : logger.log(`A total of ${units.length} test units were run.\n`);
+        logger === null || logger === void 0 ? void 0 : logger.log(`A total of ${files.length} test files were run.\n`);
         let status = success ? 0 : 1;
         logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
         let report = {

@@ -98,12 +98,12 @@ export const Runner = {
 	}
 };
 
-export type Unit = {
+export type File = {
 	runner: Runner;
 	path: string;
 };
 
-export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
+export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<File> {
 	for (let runner of runners) {
 		if (Runner.matches(runner, path)) {
 			let runnable = {
@@ -116,26 +116,26 @@ export function scanFilePath(path: string, runners: Array<Runner>, logger?: Logg
 	return [];
 };
 
-export function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
-	let units = [] as Array<Unit>;
+export function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<File> {
+	let files = [] as Array<File>;
 	let entries = libfs.readdirSync(parentPath, { withFileTypes: true });
 	for (let entry of entries) {
 		let path = libpath.join(parentPath, entry.name);
 		if (entry.isDirectory()) {
-			units.push(...scanDirectoryPath(path, runners, logger));
+			files.push(...scanDirectoryPath(path, runners, logger));
 			continue;
 		}
 		if (entry.isFile()) {
-			units.push(...scanFilePath(path, runners, logger));
+			files.push(...scanFilePath(path, runners, logger));
 			continue;
 		}
 	}
-	return units;
+	return files;
 };
 
-export function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<Unit> {
+export function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<File> {
 	if (libfs.existsSync(path)) {
-		logger?.log(`Scanning "${path}" for supported test units...\n`);
+		logger?.log(`Scanning "${path}" for supported test files...\n`);
 		let stats = libfs.statSync(path);
 		if (stats.isDirectory()) {
 			return scanDirectoryPath(path, runners, logger);
@@ -184,9 +184,9 @@ export async function run(options: Options): Promise<number> {
 	let paths = options.paths ?? createDefaultPaths();
 	let reporter = reporters.getReporter(options.reporter);
 	let runners = options.runners ?? createDefaultRunners();
-	let units = [] as Array<Unit>;
+	let files = [] as Array<File>;
 	for (let path of paths) {
-		units.push(...scanPath(libpath.normalize(path), runners, logger));
+		files.push(...scanPath(libpath.normalize(path), runners, logger));
 	}
 	let environment: Record<string, string | undefined> = {
 		[LOGGER_KEY]: options.logger,
@@ -194,14 +194,14 @@ export async function run(options: Options): Promise<number> {
 	};
 	let reports = [] as Array<RunReport>;
 	let success = true;
-	for (let unit of units) {
-		let report = await Runner.run(unit.runner, unit.path, logger, environment);
+	for (let file of files) {
+		let report = await Runner.run(file.runner, file.path, logger, environment);
 		reports.push(report);
 		if (!report.success) {
 			success = false;
 		}
 	}
-	logger?.log(`A total of ${units.length} test units were run.\n`);
+	logger?.log(`A total of ${files.length} test files were run.\n`);
 	let status = success ? 0 : 1;
 	logger?.log(`Completed with status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
 	let report: Report = {

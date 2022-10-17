@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.group = exports.TestUnit = exports.TestGroup = exports.TestCase = void 0;
+exports.group = exports.TestFile = exports.TestGroup = exports.TestCase = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
 const _1 = require(".");
@@ -33,7 +33,7 @@ class TestCase {
                 };
             }
             catch (throwable) {
-                logger === null || logger === void 0 ? void 0 : logger.log(`Test "${description}" raised an error!\n`);
+                logger === null || logger === void 0 ? void 0 : logger.log(`Test case "${description}" raised an error!\n`);
                 let error;
                 if (throwable instanceof Error) {
                     logger === null || logger === void 0 ? void 0 : logger.log(`${(_a = throwable.stack) !== null && _a !== void 0 ? _a : throwable.message}\n`);
@@ -84,7 +84,7 @@ class TestGroup {
 }
 exports.TestGroup = TestGroup;
 ;
-class TestUnit {
+class TestFile {
     constructor() {
         this.testGroups = [];
     }
@@ -110,18 +110,18 @@ class TestUnit {
         });
     }
 }
-exports.TestUnit = TestUnit;
+exports.TestFile = TestFile;
 ;
 exports.group = (() => {
     var _a, _b;
     let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
     let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
-    let unit = new TestUnit();
+    let file = new TestFile();
     process.on("beforeExit", () => __awaiter(void 0, void 0, void 0, function* () {
-        let report = yield unit.run(logger);
+        let report = yield file.run(logger);
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         let status = report.success ? 0 : 1;
         process.exit(status);
     }));
-    return unit.group.bind(unit);
+    return file.group.bind(file);
 })();

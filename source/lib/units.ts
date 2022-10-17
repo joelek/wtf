@@ -34,7 +34,7 @@ export class TestCase {
 				success
 			};
 		} catch (throwable) {
-			logger?.log(`Test "${description}" raised an error!\n`);
+			logger?.log(`Test case "${description}" raised an error!\n`);
 			let error: string | undefined;
 			if (throwable instanceof Error) {
 				logger?.log(`${throwable.stack ?? throwable.message}\n`);
@@ -99,7 +99,7 @@ export type TestGroupsReport = {
 	success: boolean;
 };
 
-export class TestUnit {
+export class TestFile {
 	private testGroups: Array<TestGroup>;
 
 	constructor() {
@@ -131,12 +131,12 @@ export class TestUnit {
 export const group = (() => {
 	let logger = loggers.getLogger(process.env[LOGGER_KEY] ?? "stdout");
 	let reporter = reporters.getReporter(process.env[REPORTER_KEY] ?? undefined);
-	let unit = new TestUnit();
+	let file = new TestFile();
 	process.on("beforeExit", async () => {
-		let report = await unit.run(logger);
+		let report = await file.run(logger);
 		reporter?.report(report);
 		let status = report.success ? 0 : 1;
 		process.exit(status);
 	});
-	return unit.group.bind(unit);
+	return file.group.bind(file);
 })();
