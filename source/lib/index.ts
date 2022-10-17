@@ -7,4 +7,4 @@ export * as reporters from "./reporters";
 export * as runners from "./runners";
 export * as units from "./units";
 
-export { suite } from "./units";
+export { group } from "./units";

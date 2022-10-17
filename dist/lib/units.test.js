@@ -11,13 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const wtf = require("./");
 const units = require("./units");
-wtf.suite("TestCase", (suite) => __awaiter(void 0, void 0, void 0, function* () {
-    suite.case(`It should not capture an error when a test runs successfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+wtf.group("TestCase", (group) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should not capture an error when a test runs successfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         let testCase = new units.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { }));
         let report = yield testCase.run();
         assert.equals(report.error, undefined);
     }));
-    suite.case(`It should capture an error when a test runs unsuccessfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should capture an error when a test runs unsuccessfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         let testCase = new units.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { throw new Error(); }));
         let report = yield testCase.run();
         assert.equals(report.error, "");

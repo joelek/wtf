@@ -50,20 +50,20 @@ export class TestCase {
 	}
 };
 
-export type TestSuiteCallback = (suite: TestSuite) => OptionallyAsync<void>;
+export type TestGroupCallback = (group: TestGroup) => OptionallyAsync<void>;
 
-export type TestSuiteReport = {
+export type TestGroupReport = {
 	description: string;
 	reports: Array<TestCaseReport>;
 	success: boolean;
 };
 
-export class TestSuite {
+export class TestGroup {
 	private description: string;
 	private testCases: Array<TestCase>;
-	private callback: TestSuiteCallback;
+	private callback: TestGroupCallback;
 
-	constructor(description: string, callback: TestSuiteCallback) {
+	constructor(description: string, callback: TestGroupCallback) {
 		this.description = description;
 		this.testCases = [];
 		this.callback = callback;
@@ -74,7 +74,7 @@ export class TestSuite {
 		this.testCases.push(testCase);
 	}
 
-	async run(logger?: Logger): Promise<TestSuiteReport> {
+	async run(logger?: Logger): Promise<TestGroupReport> {
 		await this.callback(this);
 		let description = this.description;
 		let reports = [] as Array<TestCaseReport>;
@@ -94,28 +94,28 @@ export class TestSuite {
 	}
 };
 
-export type TestSuitesReport = {
-	reports: Array<TestSuiteReport>;
+export type TestGroupsReport = {
+	reports: Array<TestGroupReport>;
 	success: boolean;
 };
 
 export class TestUnit {
-	private testSuites: Array<TestSuite>;
+	private testGroups: Array<TestGroup>;
 
 	constructor() {
-		this.testSuites = [];
+		this.testGroups = [];
 	}
 
-	suite(description: string, callback: TestSuiteCallback): void {
-		let testSuite = new TestSuite(description, callback);
-		this.testSuites.push(testSuite);
+	group(description: string, callback: TestGroupCallback): void {
+		let testGroup = new TestGroup(description, callback);
+		this.testGroups.push(testGroup);
 	}
 
-	async run(logger?: Logger): Promise<TestSuitesReport> {
-		let reports = [] as Array<TestSuiteReport>;
+	async run(logger?: Logger): Promise<TestGroupsReport> {
+		let reports = [] as Array<TestGroupReport>;
 		let success = true;
-		for (let testSuite of this.testSuites) {
-			let report = await testSuite.run(logger);
+		for (let testGroup of this.testGroups) {
+			let report = await testGroup.run(logger);
 			reports.push(report);
 			if (!report.success) {
 				success = false;
@@ -128,7 +128,7 @@ export class TestUnit {
 	}
 };
 
-export const suite = (() => {
+export const group = (() => {
 	let logger = loggers.getLogger(process.env[LOGGER_KEY] ?? "stdout");
 	let reporter = reporters.getReporter(process.env[REPORTER_KEY] ?? undefined);
 	let unit = new TestUnit();
@@ -138,5 +138,5 @@ export const suite = (() => {
 		let status = report.success ? 0 : 1;
 		process.exit(status);
 	});
-	return unit.suite.bind(unit);
+	return unit.group.bind(unit);
 })();

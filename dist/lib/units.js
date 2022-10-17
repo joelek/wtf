@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.suite = exports.TestUnit = exports.TestSuite = exports.TestCase = void 0;
+exports.group = exports.TestUnit = exports.TestGroup = exports.TestCase = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
 const _1 = require(".");
@@ -51,7 +51,7 @@ class TestCase {
 }
 exports.TestCase = TestCase;
 ;
-class TestSuite {
+class TestGroup {
     constructor(description, callback) {
         this.description = description;
         this.testCases = [];
@@ -82,22 +82,22 @@ class TestSuite {
         });
     }
 }
-exports.TestSuite = TestSuite;
+exports.TestGroup = TestGroup;
 ;
 class TestUnit {
     constructor() {
-        this.testSuites = [];
+        this.testGroups = [];
     }
-    suite(description, callback) {
-        let testSuite = new TestSuite(description, callback);
-        this.testSuites.push(testSuite);
+    group(description, callback) {
+        let testGroup = new TestGroup(description, callback);
+        this.testGroups.push(testGroup);
     }
     run(logger) {
         return __awaiter(this, void 0, void 0, function* () {
             let reports = [];
             let success = true;
-            for (let testSuite of this.testSuites) {
-                let report = yield testSuite.run(logger);
+            for (let testGroup of this.testGroups) {
+                let report = yield testGroup.run(logger);
                 reports.push(report);
                 if (!report.success) {
                     success = false;
@@ -112,7 +112,7 @@ class TestUnit {
 }
 exports.TestUnit = TestUnit;
 ;
-exports.suite = (() => {
+exports.group = (() => {
     var _a, _b;
     let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
     let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
@@ -123,5 +123,5 @@ exports.suite = (() => {
         let status = report.success ? 0 : 1;
         process.exit(status);
     }));
-    return unit.suite.bind(unit);
+    return unit.group.bind(unit);
 })();

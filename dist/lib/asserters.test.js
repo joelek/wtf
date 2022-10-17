@@ -22,18 +22,18 @@ class NeverEqual {
     }
 }
 ;
-wtf.suite("equals", (suite) => __awaiter(void 0, void 0, void 0, function* () {
-    suite.case(`It should throw an error for two instances of NeverEqual.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+wtf.group("equals", (group) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should throw an error for two instances of NeverEqual.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         yield assert.throws(() => {
             assert.equals(new NeverEqual(), new NeverEqual());
         });
     }));
-    suite.case(`It should not throw an error for two instances of AlwaysEqual.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should not throw an error for two instances of AlwaysEqual.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         assert.equals(new AlwaysEqual(), new AlwaysEqual());
     }));
 }));
-wtf.suite("throws", (suite) => __awaiter(void 0, void 0, void 0, function* () {
-    suite.case(`It should assert that an operation throws an error.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+wtf.group("throws", (group) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should assert that an operation throws an error.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         yield assert.throws(() => {
             assert.equals(1, 2);
         });

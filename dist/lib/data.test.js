@@ -11,29 +11,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const wtf = require("./");
 const data = require("./data");
-wtf.suite("Uint8Array", (suite) => __awaiter(void 0, void 0, void 0, function* () {
+wtf.group("Uint8Array", (group) => __awaiter(void 0, void 0, void 0, function* () {
     const UNWRAPPED = Uint8Array.of(1, 2);
     const WRAPPED = {
         type: "Uint8Array",
         data: [1, 2]
     };
-    suite.case(`It should wrap Uint8Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should wrap Uint8Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         assert.equals(data.SerializableDataWrapper.wrap(UNWRAPPED), WRAPPED);
     }));
-    suite.case(`It should unwrap Uint8Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should unwrap Uint8Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         assert.equals(data.SerializableDataWrapper.unwrap(WRAPPED), UNWRAPPED);
     }));
 }));
-wtf.suite("Uint16Array", (suite) => __awaiter(void 0, void 0, void 0, function* () {
+wtf.group("Uint16Array", (group) => __awaiter(void 0, void 0, void 0, function* () {
     const UNWRAPPED = Uint16Array.of(1, 2);
     const WRAPPED = {
         type: "Uint16Array",
         data: [1, 2]
     };
-    suite.case(`It should wrap Uint16Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should wrap Uint16Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         assert.equals(data.SerializableDataWrapper.wrap(UNWRAPPED), WRAPPED);
     }));
-    suite.case(`It should unwrap Uint16Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    group.case(`It should unwrap Uint16Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
         assert.equals(data.SerializableDataWrapper.unwrap(WRAPPED), UNWRAPPED);
     }));
 }));
