@@ -78,7 +78,7 @@ export class StaticPatternMatcher implements PatternMatcher {
 			return false;
 		}
 		try {
-			new Asserter().equals({ ...this }, { ...that});
+			new Asserter().equals({ ...this }, { ...that });
 		} catch (error) {
 			return false;
 		}
@@ -120,7 +120,7 @@ export class DynamicPatternMatcher implements PatternMatcher {
 			return false;
 		}
 		try {
-			new Asserter().equals({ ...this }, { ...that});
+			new Asserter().equals({ ...this }, { ...that });
 		} catch (error) {
 			return false;
 		}
