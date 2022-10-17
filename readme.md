@@ -166,6 +166,5 @@ NB: This project targets TypeScript 4 in strict mode.
 * Write more test cases.
 * Consider parallel execution of test units.
 * Get rid of await requirement for assert.throws().
-* Implement support for logging and reporting over HTTP.
 * Implement support for logging and reporting to files.
 * Add support for loading config files.
