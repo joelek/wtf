@@ -11,8 +11,8 @@ Deterministic test runner and testing framework for projects built using TypeScr
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.suite("Arithmetics.", async (suite) => {
-	suite.case(`The sum of two plus two should equal four.`, async (assert) => {
+wtf.group("Arithmetics.", async (group) => {
+	group.case(`The sum of two plus two should equal four.`, async (assert) => {
 		assert.equals(2 + 2, 4);
 	});
 });
@@ -22,22 +22,22 @@ wtf.suite("Arithmetics.", async (suite) => {
 
 ### Test runner
 
-The package includes a deterministic test runner that may be launched using the `[npx] wtf` command. The test runner may be used to locate, run and collect information from supported test units.
+The package includes a deterministic test runner that may be launched using the `[npx] wtf` command. The test runner may be used to locate, run and collect information from supported test files.
 
-By default, the `./source/` and `./src/` paths will be recursively scanned for supported units. File or directory paths may be explicitly specified using the `--path=<path>` argument.
+By default, the `./source/` and `./src/` paths will be recursively scanned for supported files. File or directory paths may be explicitly specified using the `--path=<path>` argument.
 
-A test unit is identified as supported through having a filename matching one of the configured patterns for which a command is specified. The default commands are:
+A test file is identified as supported through having a filename matching one of the configured patterns for which a command is specified. The default commands are:
 
 * The `node` command for all filenames matching the `*.test.js` pattern.
 * The `ts-node` command for all filenames matching the `*.test.ts` pattern.
 
 Commands may be explicitly specified using the `--runner=<pattern>:<command>` argument.
 
-The test runner launches the corresponding command for each test unit and collects the output from the operations. The units are run in sequence as separate processes, providing a clean slate for each unit by eliminating runtime contamination.
+The test runner launches the corresponding command for each test file and collects the output from the operations. The files are run in sequence as separate processes, providing a clean slate for each file by eliminating runtime contamination.
 
-The test runner is deterministic if and only if each test unit is deterministic. Units verifying functionality of or through external systems such as file systems, databases or APIs should be constructed with this in consideration.
+The test runner is deterministic if and only if each test file is deterministic. Files verifying functionality of or through external systems such as file systems, databases or APIs should be constructed with this in consideration.
 
-A unit is considered having executed successfully if the command returns the EXIT_SUCCESS (0) status code. Any non-zero status code is considered a failure. The test runner itself signals the combined outcome of all units through the EXIT_SUCCESS (0) or EXIT_FAILURE (1) status codes.
+A file is considered having executed successfully if the command returns the EXIT_SUCCESS (0) status code. Any non-zero status code is considered a failure. The test runner itself signals the combined outcome of all files through the EXIT_SUCCESS (0) or EXIT_FAILURE (1) status codes.
 
 #### Logging
 
@@ -49,29 +49,29 @@ The test runner can be configured to write test reports to a specific target thr
 
 ### Testing framework
 
-The package includes a testing framework for projects built using TypeScript or JavaScript. The framework may be used to create test units that conform to the conventions expected by the test runner.
+The package includes a testing framework for projects built using TypeScript or JavaScript. The framework may be used to create test files that conform to the conventions expected by the test runner.
 
 ```ts
 import * as wtf from "@joelek/wtf";
 ```
 
-Each unit may specify its suites through the `suite(description, callback)` method. The callback will be supplied with a `suite` instance through which the cases of the suite should be defined. Async callbacks are supported but not required.
+Each file may specify its groups through the `group(description, callback)` method. The callback will be supplied with a `group` instance through which the cases of the group should be defined. Async callbacks are supported but not required.
 
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.suite("Arithmetics.", async (suite) => {
+wtf.group("Arithmetics.", async (group) => {
 	// ...
 });
 ```
 
-Each suite should specify its cases through the `case(description, callback)` method. The callback will be supplied with an `assert` instance through which assertions can be made. Async callbacks are supported but not required.
+Each group should specify its cases through the `case(description, callback)` method. The callback will be supplied with an `assert` instance through which assertions can be made. Async callbacks are supported but not required.
 
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.suite("Arithmetics.", async (suite) => {
-	suite.case(`The sum of two plus two should equal four.`, async (assert) => {
+wtf.group("Arithmetics.", async (group) => {
+	group.case(`The sum of two plus two should equal four.`, async (assert) => {
 		// ...
 	});
 });
@@ -104,8 +104,8 @@ The `assert` instance can be used to assert that values observed equal values ex
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.suite("Arithmetics.", async (suite) => {
-	suite.case(`The sum of two plus two should equal four.`, async (assert) => {
+wtf.group("Arithmetics.", async (group) => {
+	group.case(`The sum of two plus two should equal four.`, async (assert) => {
 		assert.equals(2 + 2, 4);
 	});
 });
@@ -122,8 +122,8 @@ The `assert` instance can be use to assert that operations throw errors through 
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.suite("Arithmetics.", async (suite) => {
-	suite.case(`The sum of two plus two should not equal five.`, async (assert) => {
+wtf.group("Arithmetics.", async (group) => {
+	group.case(`The sum of two plus two should not equal five.`, async (assert) => {
 		await assert.throws(async () => {
 			assert.equals(2 + 2, 5);
 		});
@@ -164,7 +164,7 @@ NB: This project targets TypeScript 4 in strict mode.
 ## Roadmap
 
 * Write more test cases.
-* Consider parallel execution of test units.
+* Consider parallel execution of test files.
 * Get rid of await requirement for assert.throws().
 * Implement support for logging and reporting to files.
 * Add support for loading config files.
