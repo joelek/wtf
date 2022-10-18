@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.group = exports.TestFile = exports.TestGroup = exports.TestCase = void 0;
+exports.test = exports.TestCollection = exports.TestCase = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
 const _1 = require(".");
@@ -51,20 +51,16 @@ class TestCase {
 }
 exports.TestCase = TestCase;
 ;
-class TestGroup {
-    constructor(description, callback) {
-        this.description = description;
+class TestCollection {
+    constructor() {
         this.testCases = [];
-        this.callback = callback;
     }
-    case(description, callback) {
+    test(description, callback) {
         let testCase = new TestCase(description, callback);
         this.testCases.push(testCase);
     }
     run(logger) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.callback(this);
-            let description = this.description;
             let reports = [];
             let success = true;
             for (let testCase of this.testCases) {
@@ -75,53 +71,24 @@ class TestGroup {
                 }
             }
             return {
-                description,
                 reports,
                 success
             };
         });
     }
 }
-exports.TestGroup = TestGroup;
+exports.TestCollection = TestCollection;
 ;
-class TestFile {
-    constructor() {
-        this.testGroups = [];
-    }
-    group(description, callback) {
-        let testGroup = new TestGroup(description, callback);
-        this.testGroups.push(testGroup);
-    }
-    run(logger) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let reports = [];
-            let success = true;
-            for (let testGroup of this.testGroups) {
-                let report = yield testGroup.run(logger);
-                reports.push(report);
-                if (!report.success) {
-                    success = false;
-                }
-            }
-            return {
-                reports,
-                success
-            };
-        });
-    }
-}
-exports.TestFile = TestFile;
-;
-exports.group = (() => {
+exports.test = (() => {
     var _a, _b;
     let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
     let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
-    let file = new TestFile();
+    let collection = new TestCollection();
     process.on("beforeExit", () => __awaiter(void 0, void 0, void 0, function* () {
-        let report = yield file.run(logger);
+        let report = yield collection.run(logger);
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         let status = report.success ? 0 : 1;
         process.exit(status);
     }));
-    return file.group.bind(file);
+    return collection.test.bind(collection);
 })();

@@ -7,4 +7,4 @@ export * as reporters from "./reporters";
 export * as runners from "./runners";
 export * as files from "./files";
 
-export { group } from "./files";
+export { test } from "./files";

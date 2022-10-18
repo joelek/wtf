@@ -11,10 +11,8 @@ Deterministic test runner and testing framework for projects built using TypeScr
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.group("Arithmetics.", async (group) => {
-	group.case(`The sum of two plus two should equal four.`, async (assert) => {
-		assert.equals(2 + 2, 4);
-	});
+wtf.test(`The sum of two plus two should equal four.`, async (assert) => {
+	assert.equals(2 + 2, 4);
 });
 ```
 
@@ -55,25 +53,13 @@ The package includes a testing framework for projects built using TypeScript or 
 import * as wtf from "@joelek/wtf";
 ```
 
-Each file may specify its groups through the `group(description, callback)` method. The callback will be supplied with a `group` instance through which the cases of the group should be defined. Async callbacks are supported but not required.
+Each file may specify its test cases through the `test(description, callback)` method. The callback will be supplied with an `assert` instance through which assertions can be made. Async callbacks are supported but not required.
 
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.group("Arithmetics.", async (group) => {
+wtf.test(`The sum of two plus two should equal four.`, async (assert) => {
 	// ...
-});
-```
-
-Each group should specify its cases through the `case(description, callback)` method. The callback will be supplied with an `assert` instance through which assertions can be made. Async callbacks are supported but not required.
-
-```ts
-import * as wtf from "@joelek/wtf";
-
-wtf.group("Arithmetics.", async (group) => {
-	group.case(`The sum of two plus two should equal four.`, async (assert) => {
-		// ...
-	});
 });
 ```
 
@@ -104,10 +90,8 @@ The `assert` instance can be used to assert that values observed equal values ex
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.group("Arithmetics.", async (group) => {
-	group.case(`The sum of two plus two should equal four.`, async (assert) => {
-		assert.equals(2 + 2, 4);
-	});
+wtf.test(`The sum of two plus two should equal four.`, async (assert) => {
+	assert.equals(2 + 2, 4);
 });
 ```
 
@@ -122,11 +106,9 @@ The `assert` instance can be use to assert that operations throw errors through 
 ```ts
 import * as wtf from "@joelek/wtf";
 
-wtf.group("Arithmetics.", async (group) => {
-	group.case(`The sum of two plus two should not equal five.`, async (assert) => {
-		await assert.throws(async () => {
-			assert.equals(2 + 2, 5);
-		});
+wtf.test(`The sum of two plus two should not equal five.`, async (assert) => {
+	await assert.throws(async () => {
+		assert.equals(2 + 2, 5);
 	});
 });
 ```

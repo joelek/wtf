@@ -13,28 +13,14 @@ export declare class TestCase {
     constructor(description: string, callback: TestCaseCallback);
     run(logger?: Logger): Promise<TestCaseReport>;
 }
-export declare type TestGroupCallback = (group: TestGroup) => OptionallyAsync<void>;
-export declare type TestGroupReport = {
-    description: string;
+export declare type TestCollectionReport = {
     reports: Array<TestCaseReport>;
     success: boolean;
 };
-export declare class TestGroup {
-    private description;
+export declare class TestCollection {
     private testCases;
-    private callback;
-    constructor(description: string, callback: TestGroupCallback);
-    case(description: string, callback: TestCaseCallback): void;
-    run(logger?: Logger): Promise<TestGroupReport>;
-}
-export declare type TestGroupsReport = {
-    reports: Array<TestGroupReport>;
-    success: boolean;
-};
-export declare class TestFile {
-    private testGroups;
     constructor();
-    group(description: string, callback: TestGroupCallback): void;
-    run(logger?: Logger): Promise<TestGroupsReport>;
+    test(description: string, callback: TestCaseCallback): void;
+    run(logger?: Logger): Promise<TestCollectionReport>;
 }
-export declare const group: (description: string, callback: TestGroupCallback) => void;
+export declare const test: (description: string, callback: TestCaseCallback) => void;

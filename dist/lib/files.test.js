@@ -11,15 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const wtf = require(".");
 const files = require("./files");
-wtf.group("TestCase", (group) => __awaiter(void 0, void 0, void 0, function* () {
-    group.case(`It should not capture an error when a test runs successfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
-        let testCase = new files.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { }));
-        let report = yield testCase.run();
-        assert.equals(report.error, undefined);
-    }));
-    group.case(`It should capture an error when a test runs unsuccessfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
-        let testCase = new files.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { throw new Error(); }));
-        let report = yield testCase.run();
-        assert.equals(report.error, "");
-    }));
+wtf.test(`It should not capture an error when a test runs successfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    let testCase = new files.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { }));
+    let report = yield testCase.run();
+    assert.equals(report.error, undefined);
+}));
+wtf.test(`It should capture an error when a test runs unsuccessfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    let testCase = new files.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { throw new Error(); }));
+    let report = yield testCase.run();
+    assert.equals(report.error, "");
 }));

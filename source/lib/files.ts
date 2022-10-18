@@ -50,33 +50,24 @@ export class TestCase {
 	}
 };
 
-export type TestGroupCallback = (group: TestGroup) => OptionallyAsync<void>;
-
-export type TestGroupReport = {
-	description: string;
+export type TestCollectionReport = {
 	reports: Array<TestCaseReport>;
 	success: boolean;
 };
 
-export class TestGroup {
-	private description: string;
+export class TestCollection {
 	private testCases: Array<TestCase>;
-	private callback: TestGroupCallback;
 
-	constructor(description: string, callback: TestGroupCallback) {
-		this.description = description;
+	constructor() {
 		this.testCases = [];
-		this.callback = callback;
 	}
 
-	case(description: string, callback: TestCaseCallback): void {
+	test(description: string, callback: TestCaseCallback): void {
 		let testCase = new TestCase(description, callback);
 		this.testCases.push(testCase);
 	}
 
-	async run(logger?: Logger): Promise<TestGroupReport> {
-		await this.callback(this);
-		let description = this.description;
+	async run(logger?: Logger): Promise<TestCollectionReport> {
 		let reports = [] as Array<TestCaseReport>;
 		let success = true;
 		for (let testCase of this.testCases) {
@@ -87,56 +78,21 @@ export class TestGroup {
 			}
 		}
 		return {
-			description,
 			reports,
 			success
 		};
 	}
 };
 
-export type TestGroupsReport = {
-	reports: Array<TestGroupReport>;
-	success: boolean;
-};
-
-export class TestFile {
-	private testGroups: Array<TestGroup>;
-
-	constructor() {
-		this.testGroups = [];
-	}
-
-	group(description: string, callback: TestGroupCallback): void {
-		let testGroup = new TestGroup(description, callback);
-		this.testGroups.push(testGroup);
-	}
-
-	async run(logger?: Logger): Promise<TestGroupsReport> {
-		let reports = [] as Array<TestGroupReport>;
-		let success = true;
-		for (let testGroup of this.testGroups) {
-			let report = await testGroup.run(logger);
-			reports.push(report);
-			if (!report.success) {
-				success = false;
-			}
-		}
-		return {
-			reports,
-			success
-		};
-	}
-};
-
-export const group = (() => {
+export const test = (() => {
 	let logger = loggers.getLogger(process.env[LOGGER_KEY] ?? "stdout");
 	let reporter = reporters.getReporter(process.env[REPORTER_KEY] ?? undefined);
-	let file = new TestFile();
+	let collection = new TestCollection();
 	process.on("beforeExit", async () => {
-		let report = await file.run(logger);
+		let report = await collection.run(logger);
 		reporter?.report(report);
 		let status = report.success ? 0 : 1;
 		process.exit(status);
 	});
-	return file.group.bind(file);
+	return collection.test.bind(collection);
 })();
