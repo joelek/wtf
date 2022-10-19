@@ -150,3 +150,4 @@ NB: This project targets TypeScript 4 in strict mode.
 * Get rid of await requirement for assert.throws().
 * Implement support for logging and reporting to files.
 * Add support for loading config files.
+* Add support for identity assertions.
