@@ -195,8 +195,8 @@ export async function run(options: Options): Promise<number> {
 	}
 	let environment: Record<string, string | undefined> = {
 		...process.env,
-		[LOGGER_KEY]: options.logger,
-		[REPORTER_KEY]: options.reporter
+		[LOGGER_KEY]: "stdout",
+		[REPORTER_KEY]: "stderr"
 	};
 	let reports = [] as Array<RunReport>;
 	let success = true;
