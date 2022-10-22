@@ -15,6 +15,24 @@ export type TestCaseReport = {
 	error?: string;
 };
 
+export const TestCaseReport = {
+	is(subject: any): subject is TestCaseReport {
+		let description = subject?.description;
+		if (!(typeof description === "string")) {
+			return false;
+		}
+		let success = subject?.success;
+		if (!(typeof success === "boolean")) {
+			return false;
+		}
+		let error = subject?.error;
+		if (!(typeof error === "string" || typeof error === "undefined")) {
+			return false;
+		}
+		return true;
+	}
+};
+
 export class TestCase {
 	private description: string;
 	private callback: TestCaseCallback;
@@ -54,6 +72,25 @@ export class TestCase {
 export type TestCollectionReport = {
 	reports: Array<TestCaseReport>;
 	success: boolean;
+};
+
+export const TestCollectionReport = {
+	is(subject: any): subject is TestCollectionReport {
+		let reports = subject?.reports;
+		if (!(typeof reports === "object" && reports instanceof Array)) {
+			return false;
+		}
+		for (let report of reports) {
+			if (!(TestCaseReport.is(report))) {
+				return false;
+			}
+		}
+		let success = subject?.success;
+		if (!(typeof success === "boolean")) {
+			return false;
+		}
+		return true;
+	}
 };
 
 export class TestCollection {
