@@ -7,6 +7,9 @@ export declare type TestCaseReport = {
     success: boolean;
     error?: string;
 };
+export declare const TestCaseReport: {
+    is(subject: any): subject is TestCaseReport;
+};
 export declare class TestCase {
     private description;
     private callback;
@@ -16,6 +19,9 @@ export declare class TestCase {
 export declare type TestCollectionReport = {
     reports: Array<TestCaseReport>;
     success: boolean;
+};
+export declare const TestCollectionReport: {
+    is(subject: any): subject is TestCollectionReport;
 };
 export declare class TestCollection {
     private testCases;

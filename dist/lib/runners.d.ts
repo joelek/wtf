@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { SerializableData } from "./data";
 import { Logger } from "./loggers";
+import { TestCaseReport } from "./files";
 export declare type SpawnResult = {
     stdout: Buffer;
     stderr: Buffer;
@@ -9,18 +10,24 @@ export declare type SpawnResult = {
 };
 export declare function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult>;
 export declare function parseIfPossible(string: string): SerializableData;
+export declare type Counter = {
+    pass: number;
+    fail: number;
+};
 export declare type RunReport = {
     command: string;
     path: string;
     stdout: SerializableData;
     stderr: SerializableData;
     success: boolean;
+    counter?: Counter;
     error?: string;
 };
 export declare type Runner = {
     pattern: string;
     command: string;
 };
+export declare function getCounterFromReport(reports: Array<TestCaseReport>): Counter;
 export declare const Runner: {
     matches(runner: Runner, path: string): boolean;
     run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
@@ -43,5 +50,6 @@ export declare function createDefaultRunners(): Array<Runner>;
 export declare type Report = {
     reports: Array<RunReport>;
     success: boolean;
+    counter?: Counter;
 };
 export declare function run(options: Options): Promise<number>;

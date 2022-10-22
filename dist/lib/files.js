@@ -9,11 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.test = exports.TestCollection = exports.TestCase = void 0;
+exports.test = exports.TestCollection = exports.TestCollectionReport = exports.TestCase = exports.TestCaseReport = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
 const _1 = require(".");
 const asserters_1 = require("./asserters");
+const terminal = require("./terminal");
+exports.TestCaseReport = {
+    is(subject) {
+        let description = subject === null || subject === void 0 ? void 0 : subject.description;
+        if (!(typeof description === "string")) {
+            return false;
+        }
+        let success = subject === null || subject === void 0 ? void 0 : subject.success;
+        if (!(typeof success === "boolean")) {
+            return false;
+        }
+        let error = subject === null || subject === void 0 ? void 0 : subject.error;
+        if (!(typeof error === "string" || typeof error === "undefined")) {
+            return false;
+        }
+        return true;
+    }
+};
 class TestCase {
     constructor(description, callback) {
         this.description = description;
@@ -33,7 +51,7 @@ class TestCase {
                 };
             }
             catch (throwable) {
-                logger === null || logger === void 0 ? void 0 : logger.log(`Test case "${description}" raised an error!\n`);
+                logger === null || logger === void 0 ? void 0 : logger.log(`Test case ${terminal.stylize("\"" + description + "\"", terminal.FG_RED)} raised an error!\n`);
                 let error;
                 if (throwable instanceof Error) {
                     logger === null || logger === void 0 ? void 0 : logger.log(`${(_a = throwable.stack) !== null && _a !== void 0 ? _a : throwable.message}\n`);
@@ -51,6 +69,24 @@ class TestCase {
 }
 exports.TestCase = TestCase;
 ;
+exports.TestCollectionReport = {
+    is(subject) {
+        let reports = subject === null || subject === void 0 ? void 0 : subject.reports;
+        if (!(typeof reports === "object" && reports instanceof Array)) {
+            return false;
+        }
+        for (let report of reports) {
+            if (!(exports.TestCaseReport.is(report))) {
+                return false;
+            }
+        }
+        let success = subject === null || subject === void 0 ? void 0 : subject.success;
+        if (!(typeof success === "boolean")) {
+            return false;
+        }
+        return true;
+    }
+};
 class TestCollection {
     constructor() {
         this.testCases = [];

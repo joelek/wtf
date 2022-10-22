@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.Runner = exports.parseIfPossible = exports.spawn = void 0;
+exports.run = exports.createDefaultRunners = exports.createDefaultPaths = exports.scanPath = exports.scanDirectoryPath = exports.scanFilePath = exports.Runner = exports.getCounterFromReport = exports.parseIfPossible = exports.spawn = void 0;
 const libcp = require("child_process");
 const libfs = require("fs");
 const libpath = require("path");
@@ -18,19 +18,25 @@ const reporters = require("./reporters");
 const data_1 = require("./data");
 const env_1 = require("./env");
 const patterns_1 = require("./patterns");
+const terminal = require("./terminal");
+const files_1 = require("./files");
 function spawn(command, parameters, logger, environment) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
-            let childProcess = libcp.spawn(command, parameters, { shell: true, env: Object.assign(Object.assign({}, process.env), environment) });
+            let childProcess = libcp.spawn(command, parameters, { shell: true, env: environment });
             let stdoutChunks = [];
             let stderrChunks = [];
             childProcess.stdout.on("data", (chunk) => {
                 stdoutChunks.push(chunk);
-                logger === null || logger === void 0 ? void 0 : logger.log(chunk);
+                if ((environment === null || environment === void 0 ? void 0 : environment[env_1.REPORTER_KEY]) !== "stdout") {
+                    logger === null || logger === void 0 ? void 0 : logger.log(chunk);
+                }
             });
             childProcess.stderr.on("data", (chunk) => {
                 stderrChunks.push(chunk);
-                logger === null || logger === void 0 ? void 0 : logger.log(chunk);
+                if ((environment === null || environment === void 0 ? void 0 : environment[env_1.REPORTER_KEY]) !== "stderr") {
+                    logger === null || logger === void 0 ? void 0 : logger.log(chunk);
+                }
             });
             childProcess.on("error", (error) => {
                 let stdout = Buffer.concat(stdoutChunks);
@@ -66,6 +72,24 @@ function parseIfPossible(string) {
 }
 exports.parseIfPossible = parseIfPossible;
 ;
+function getCounterFromReport(reports) {
+    let pass = 0;
+    let fail = 0;
+    for (let report of reports) {
+        if (report.success) {
+            pass += 1;
+        }
+        else {
+            fail += 1;
+        }
+    }
+    return {
+        pass,
+        fail
+    };
+}
+exports.getCounterFromReport = getCounterFromReport;
+;
 exports.Runner = {
     matches(runner, path) {
         let basename = libpath.basename(path);
@@ -75,20 +99,29 @@ exports.Runner = {
     run(runner, path, logger, environment) {
         return __awaiter(this, void 0, void 0, function* () {
             let command = runner.command;
-            logger === null || logger === void 0 ? void 0 : logger.log(`Spawning ${command} "${path}"...\n`);
+            logger === null || logger === void 0 ? void 0 : logger.log(`Spawning ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" + path + "\"", terminal.FG_YELLOW)}...\n`);
             let result = yield spawn(command, [path], logger, environment);
             let stdout = parseIfPossible(result.stdout.toString());
             let stderr = parseIfPossible(result.stderr.toString());
             let error = result.error == null ? undefined : result.error.message;
             let status = result.status;
             let success = status === 0;
-            logger === null || logger === void 0 ? void 0 : logger.log(`Command ${command} "${path}" returned status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
+            let counter;
+            if (files_1.TestCollectionReport.is(stderr)) {
+                counter = getCounterFromReport(stderr.reports);
+            }
+            else if (files_1.TestCollectionReport.is(stdout)) {
+                counter = getCounterFromReport(stdout.reports);
+            }
+            let total = typeof counter !== "undefined" ? counter.pass + counter.fail : undefined;
+            logger === null || logger === void 0 ? void 0 : logger.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" + path + "\"", terminal.FG_YELLOW)} ran ${terminal.stylize(total !== null && total !== void 0 ? total : "?", terminal.FG_CYAN)} test cases and returned status ${status !== null && status !== void 0 ? status : ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
             return {
                 command,
                 path,
                 stdout,
                 stderr,
                 success,
+                counter,
                 error
             };
         });
@@ -128,7 +161,7 @@ exports.scanDirectoryPath = scanDirectoryPath;
 ;
 function scanPath(path, runners, logger) {
     if (libfs.existsSync(path)) {
-        logger === null || logger === void 0 ? void 0 : logger.log(`Scanning "${path}" for supported test files...\n`);
+        logger === null || logger === void 0 ? void 0 : logger.log(`Scanning ${terminal.stylize("\"" + path + "\"", terminal.FG_YELLOW)} for supported test files...\n`);
         let stats = libfs.statSync(path);
         if (stats.isDirectory()) {
             return scanDirectoryPath(path, runners, logger);
@@ -174,25 +207,35 @@ function run(options) {
         for (let path of paths) {
             files.push(...scanPath(libpath.normalize(path), runners, logger));
         }
-        let environment = {
-            [env_1.LOGGER_KEY]: options.logger,
-            [env_1.REPORTER_KEY]: options.reporter
-        };
+        let environment = Object.assign(Object.assign({}, process.env), { [env_1.LOGGER_KEY]: "stdout", [env_1.REPORTER_KEY]: "stderr" });
         let reports = [];
         let success = true;
+        let counter;
         for (let file of files) {
             let report = yield exports.Runner.run(file.runner, file.path, logger, environment);
             reports.push(report);
             if (!report.success) {
                 success = false;
             }
+            if (typeof report.counter !== "undefined") {
+                if (typeof counter === "undefined") {
+                    counter = {
+                        pass: 0,
+                        fail: 0
+                    };
+                }
+                counter.pass += report.counter.pass;
+                counter.fail += report.counter.fail;
+            }
         }
-        logger === null || logger === void 0 ? void 0 : logger.log(`A total of ${files.length} test files were run.\n`);
+        let total = typeof counter !== "undefined" ? counter.pass + counter.fail : undefined;
+        logger === null || logger === void 0 ? void 0 : logger.log(`A total of ${terminal.stylize(total !== null && total !== void 0 ? total : "?", terminal.FG_CYAN)} test cases across ${files.length} test files were run.\n`);
         let status = success ? 0 : 1;
-        logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${success ? "success" : "failure"}).\n`);
+        logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
         let report = {
             reports,
-            success
+            success,
+            counter
         };
         reporter === null || reporter === void 0 ? void 0 : reporter.report(report);
         return status;
