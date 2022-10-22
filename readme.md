@@ -151,7 +151,6 @@ NB: This project targets TypeScript 4 in strict mode.
 * Implement support for logging and reporting to files.
 * Add support for loading config files.
 * Add support for identity assertions.
-* Log number of test cases executed.
 * Log output after spawning command.
 * Log a single line per spawned command on success.
 * Add support for limiting test execution time.

@@ -8,6 +8,7 @@ import { Logger } from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { PatternMatcher } from "./patterns";
 import * as terminal from "./terminal";
+import { TestCollectionReport } from "./files";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -68,6 +69,7 @@ export type RunReport = {
 	stdout: SerializableData;
 	stderr: SerializableData;
 	success: boolean;
+	counter?: number;
 	error?: string;
 };
 
@@ -91,13 +93,20 @@ export const Runner = {
 		let error = result.error == null ? undefined : result.error.message;
 		let status = result.status;
 		let success = status === 0;
-		logger?.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)} returned status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
+		let counter: number | undefined;
+		if (TestCollectionReport.is(stderr)) {
+			counter = stderr.reports.length;
+		} else if (TestCollectionReport.is(stdout)) {
+			counter = stdout.reports.length;
+		}
+		logger?.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)} ran ${terminal.stylize(counter ?? "?", terminal.FG_CYAN)} test cases and returned status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 		return {
 			command,
 			path,
 			stdout,
 			stderr,
 			success,
+			counter,
 			error
 		};
 	}
@@ -182,6 +191,7 @@ export function createDefaultRunners(): Array<Runner> {
 export type Report = {
 	reports: Array<RunReport>;
 	success: boolean;
+	counter?: number;
 };
 
 export async function run(options: Options): Promise<number> {
@@ -200,19 +210,24 @@ export async function run(options: Options): Promise<number> {
 	};
 	let reports = [] as Array<RunReport>;
 	let success = true;
+	let counter: number | undefined;
 	for (let file of files) {
 		let report = await Runner.run(file.runner, file.path, logger, environment);
 		reports.push(report);
 		if (!report.success) {
 			success = false;
 		}
+		if (typeof report.counter !== "undefined") {
+			counter = (counter ?? 0) + report.counter;
+		}
 	}
-	logger?.log(`A total of ${terminal.stylize(files.length, terminal.FG_CYAN)} test files were run.\n`);
+	logger?.log(`A total of ${terminal.stylize(counter ?? "?", terminal.FG_CYAN)} test cases across ${files.length} test files were run.\n`);
 	let status = success ? 0 : 1;
 	logger?.log(`Completed with status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 	let report: Report = {
 		reports,
-		success
+		success,
+		counter
 	};
 	reporter?.report(report);
 	return status;
