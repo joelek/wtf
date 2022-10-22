@@ -18,16 +18,24 @@ export type SpawnResult = {
 
 export async function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult> {
 	return new Promise((resolve, reject) => {
-		let childProcess = libcp.spawn(command, parameters, { shell: true, env: { ...process.env, ...environment } });
+		let env = {
+			...process.env,
+			...environment
+		};
+		let childProcess = libcp.spawn(command, parameters, { shell: true, env: env });
 		let stdoutChunks = [] as Array<Buffer>;
 		let stderrChunks = [] as Array<Buffer>;
 		childProcess.stdout.on("data", (chunk) => {
 			stdoutChunks.push(chunk);
-			logger?.log(chunk);
+			if (env[REPORTER_KEY] !== "stdout") {
+				logger?.log(chunk);
+			}
 		});
 		childProcess.stderr.on("data", (chunk) => {
 			stderrChunks.push(chunk);
-			logger?.log(chunk);
+			if (env[REPORTER_KEY] !== "stderr") {
+				logger?.log(chunk);
+			}
 		});
 		childProcess.on("error", (error) => {
 			let stdout = Buffer.concat(stdoutChunks);
