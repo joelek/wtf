@@ -8,7 +8,7 @@ import { Logger } from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { PatternMatcher } from "./patterns";
 import * as terminal from "./terminal";
-import { TestCollectionReport } from "./files";
+import { TestCaseReport, TestCollectionReport } from "./files";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -63,19 +63,40 @@ export function parseIfPossible(string: string): SerializableData {
 	return string;
 };
 
+export type Counter = {
+	pass: number;
+	fail: number;
+};
+
 export type RunReport = {
 	command: string;
 	path: string;
 	stdout: SerializableData;
 	stderr: SerializableData;
 	success: boolean;
-	counter?: number;
+	counter?: Counter;
 	error?: string;
 };
 
 export type Runner = {
 	pattern: string;
 	command: string;
+};
+
+export function getCounterFromReport(reports: Array<TestCaseReport>): Counter {
+	let pass = 0;
+	let fail = 0;
+	for (let report of reports) {
+		if (report.success) {
+			pass += 1;
+		} else {
+			fail += 1;
+		}
+	}
+	return {
+		pass,
+		fail
+	};
 };
 
 export const Runner = {
@@ -93,13 +114,14 @@ export const Runner = {
 		let error = result.error == null ? undefined : result.error.message;
 		let status = result.status;
 		let success = status === 0;
-		let counter: number | undefined;
+		let counter: Counter | undefined;
 		if (TestCollectionReport.is(stderr)) {
-			counter = stderr.reports.length;
+			counter = getCounterFromReport(stderr.reports);
 		} else if (TestCollectionReport.is(stdout)) {
-			counter = stdout.reports.length;
+			counter = getCounterFromReport(stdout.reports);
 		}
-		logger?.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)} ran ${terminal.stylize(counter ?? "?", terminal.FG_CYAN)} test cases and returned status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
+		let total = typeof counter !== "undefined" ? counter.pass + counter.fail : undefined;
+		logger?.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)} ran ${terminal.stylize(total ?? "?", terminal.FG_CYAN)} test cases and returned status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 		return {
 			command,
 			path,
@@ -191,7 +213,7 @@ export function createDefaultRunners(): Array<Runner> {
 export type Report = {
 	reports: Array<RunReport>;
 	success: boolean;
-	counter?: number;
+	counter?: Counter;
 };
 
 export async function run(options: Options): Promise<number> {
@@ -210,7 +232,7 @@ export async function run(options: Options): Promise<number> {
 	};
 	let reports = [] as Array<RunReport>;
 	let success = true;
-	let counter: number | undefined;
+	let counter: Counter | undefined;
 	for (let file of files) {
 		let report = await Runner.run(file.runner, file.path, logger, environment);
 		reports.push(report);
@@ -218,10 +240,18 @@ export async function run(options: Options): Promise<number> {
 			success = false;
 		}
 		if (typeof report.counter !== "undefined") {
-			counter = (counter ?? 0) + report.counter;
+			if (typeof counter === "undefined") {
+				counter = {
+					pass: 0,
+					fail: 0
+				};
+			}
+			counter.pass += report.counter.pass;
+			counter.fail += report.counter.fail;
 		}
 	}
-	logger?.log(`A total of ${terminal.stylize(counter ?? "?", terminal.FG_CYAN)} test cases across ${files.length} test files were run.\n`);
+	let total = typeof counter !== "undefined" ? counter.pass + counter.fail : undefined;
+	logger?.log(`A total of ${terminal.stylize(total ?? "?", terminal.FG_CYAN)} test cases across ${files.length} test files were run.\n`);
 	let status = success ? 0 : 1;
 	logger?.log(`Completed with status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 	let report: Report = {
