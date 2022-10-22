@@ -18,22 +18,18 @@ export type SpawnResult = {
 
 export async function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult> {
 	return new Promise((resolve, reject) => {
-		let env = {
-			...process.env,
-			...environment
-		};
-		let childProcess = libcp.spawn(command, parameters, { shell: true, env: env });
+		let childProcess = libcp.spawn(command, parameters, { shell: true, env: environment });
 		let stdoutChunks = [] as Array<Buffer>;
 		let stderrChunks = [] as Array<Buffer>;
 		childProcess.stdout.on("data", (chunk) => {
 			stdoutChunks.push(chunk);
-			if (env[REPORTER_KEY] !== "stdout") {
+			if (environment?.[REPORTER_KEY] !== "stdout") {
 				logger?.log(chunk);
 			}
 		});
 		childProcess.stderr.on("data", (chunk) => {
 			stderrChunks.push(chunk);
-			if (env[REPORTER_KEY] !== "stderr") {
+			if (environment?.[REPORTER_KEY] !== "stderr") {
 				logger?.log(chunk);
 			}
 		});
@@ -198,6 +194,7 @@ export async function run(options: Options): Promise<number> {
 		files.push(...scanPath(libpath.normalize(path), runners, logger));
 	}
 	let environment: Record<string, string | undefined> = {
+		...process.env,
 		[LOGGER_KEY]: options.logger,
 		[REPORTER_KEY]: options.reporter
 	};
