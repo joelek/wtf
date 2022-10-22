@@ -154,4 +154,3 @@ NB: This project targets TypeScript 4 in strict mode.
 * Log number of test cases executed.
 * Log output after spawning command.
 * Log a single line per spawned command on success.
-* Add colors to output.

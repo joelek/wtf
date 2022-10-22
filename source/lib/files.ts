@@ -3,6 +3,7 @@ import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { reporters } from ".";
 import { Logger } from "./loggers";
 import { Asserter } from "./asserters";
+import * as terminal from "./terminal";
 
 export type OptionallyAsync<A> = A | Promise<A>;
 
@@ -34,7 +35,7 @@ export class TestCase {
 				success
 			};
 		} catch (throwable) {
-			logger?.log(`Test case "${description}" raised an error!\n`);
+			logger?.log(`Test case ${terminal.stylize("\"" +  description + "\"", terminal.FG_RED)} raised an error!\n`);
 			let error: string | undefined;
 			if (throwable instanceof Error) {
 				logger?.log(`${throwable.stack ?? throwable.message}\n`);

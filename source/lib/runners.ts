@@ -7,6 +7,7 @@ import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
 import { PatternMatcher } from "./patterns";
+import * as terminal from "./terminal";
 
 export type SpawnResult = {
 	stdout: Buffer;
@@ -79,14 +80,14 @@ export const Runner = {
 	},
 	async run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
 		let command = runner.command;
-		logger?.log(`Spawning ${command} "${path}"...\n`);
+		logger?.log(`Spawning ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)}...\n`);
 		let result = await spawn(command, [path], logger, environment);
 		let stdout = parseIfPossible(result.stdout.toString());
 		let stderr = parseIfPossible(result.stderr.toString());
 		let error = result.error == null ? undefined : result.error.message;
 		let status = result.status;
 		let success = status === 0;
-		logger?.log(`Command ${command} "${path}" returned status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
+		logger?.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)} returned status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 		return {
 			command,
 			path,
@@ -135,7 +136,7 @@ export function scanDirectoryPath(parentPath: string, runners: Array<Runner>, lo
 
 export function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<File> {
 	if (libfs.existsSync(path)) {
-		logger?.log(`Scanning "${path}" for supported test files...\n`);
+		logger?.log(`Scanning ${terminal.stylize("\"" + path + "\"", terminal.FG_YELLOW)} for supported test files...\n`);
 		let stats = libfs.statSync(path);
 		if (stats.isDirectory()) {
 			return scanDirectoryPath(path, runners, logger);
@@ -201,9 +202,9 @@ export async function run(options: Options): Promise<number> {
 			success = false;
 		}
 	}
-	logger?.log(`A total of ${files.length} test files were run.\n`);
+	logger?.log(`A total of ${terminal.stylize(files.length, terminal.FG_CYAN)} test files were run.\n`);
 	let status = success ? 0 : 1;
-	logger?.log(`Completed with status ${status ?? ""} (${success ? "success" : "failure"}).\n`);
+	logger?.log(`Completed with status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 	let report: Report = {
 		reports,
 		success
