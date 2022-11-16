@@ -228,7 +228,7 @@ function run(options) {
                 counter.fail += report.counter.fail;
             }
         }
-        let total = typeof counter !== "undefined" ? counter.pass + counter.fail : undefined;
+        let total = typeof counter !== "undefined" ? counter.pass + counter.fail : files.length === 0 ? 0 : undefined;
         logger === null || logger === void 0 ? void 0 : logger.log(`A total of ${terminal.stylize(total !== null && total !== void 0 ? total : "?", terminal.FG_CYAN)} test cases across ${files.length} test files were run.\n`);
         let status = success ? 0 : 1;
         logger === null || logger === void 0 ? void 0 : logger.log(`Completed with status ${status !== null && status !== void 0 ? status : ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
