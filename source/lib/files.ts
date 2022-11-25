@@ -12,6 +12,7 @@ export type TestCaseCallback = (asserter: Asserter) => OptionallyAsync<void>;
 export type TestCaseReport = {
 	description: string;
 	success: boolean;
+	duration?: number;
 	error?: string;
 };
 
@@ -23,6 +24,10 @@ export const TestCaseReport = {
 		}
 		let success = subject?.success;
 		if (!(typeof success === "boolean")) {
+			return false;
+		}
+		let duration = subject?.duration;
+		if (!(typeof duration === "number" || typeof duration === "undefined")) {
 			return false;
 		}
 		let error = subject?.error;
@@ -37,12 +42,7 @@ export class TestCase {
 	private description: string;
 	private callback: TestCaseCallback;
 
-	constructor(description: string, callback: TestCaseCallback) {
-		this.description = description;
-		this.callback = callback;
-	}
-
-	async run(logger?: Logger): Promise<TestCaseReport> {
+	private async doRun(logger?: Logger): Promise<TestCaseReport> {
 		let description = this.description;
 		let asserter = new Asserter();
 		try {
@@ -67,6 +67,19 @@ export class TestCase {
 				error
 			};
 		}
+	}
+
+	constructor(description: string, callback: TestCaseCallback) {
+		this.description = description;
+		this.callback = callback;
+	}
+
+	async run(logger?: Logger): Promise<TestCaseReport> {
+		let start = process.hrtime.bigint();
+		let report = await this.doRun(logger);
+		let duration = Number(process.hrtime.bigint() - start) / 1000 / 1000;
+		report.duration = duration;
+		return report;
 	}
 };
 
