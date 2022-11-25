@@ -236,7 +236,7 @@ export type Report = {
 };
 
 export async function run(options: Options): Promise<number> {
-	let logger = loggers.getLogger(options.logger);
+	let logger = loggers.getLogger(options.logger ?? "stdout");
 	let paths = options.paths ?? createDefaultPaths();
 	let reporter = reporters.getReporter(options.reporter);
 	let runners = options.runners ?? createDefaultRunners();

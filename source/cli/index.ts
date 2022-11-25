@@ -4,10 +4,7 @@ import * as app from "../app.json";
 import * as lib from "../lib";
 
 async function run(): Promise<number> {
-	let options: lib.runners.Options = {
-		logger: "stdout",
-		reporter: undefined
-	};
+	let options: lib.runners.Options = {};
 	let unrecognizedArguments = [] as Array<string>;
 	for (let arg of process.argv.slice(2)) {
 		let parts: RegExpExecArray | null = null;
