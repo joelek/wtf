@@ -17,6 +17,19 @@ export type SpawnResult = {
 	status?: number;
 };
 
+export class SpawnSignalError extends Error {
+	private signal: NodeJS.Signals;
+
+	get message(): string {
+		return `Expected process not to exit with signal ${this.signal}!`;
+	}
+
+	constructor(signal: NodeJS.Signals) {
+		super();
+		this.signal = signal;
+	}
+};
+
 export async function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult> {
 	return new Promise((resolve, reject) => {
 		let childProcess = libcp.spawn(command, parameters, { shell: true, env: environment });
@@ -43,13 +56,15 @@ export async function spawn(command: string, parameters: Array<string>, logger?:
 				error
 			});
 		});
-		childProcess.on("exit", (code) => {
+		childProcess.on("exit", (code, signal) => {
 			let stdout = Buffer.concat(stdoutChunks);
 			let stderr = Buffer.concat(stderrChunks);
+			let error = signal == null ? undefined : new SpawnSignalError(signal);
 			let status = code == null ? undefined : code;
 			resolve({
 				stdout,
 				stderr,
+				error,
 				status
 			});
 		});
