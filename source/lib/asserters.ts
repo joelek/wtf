@@ -20,7 +20,7 @@ export class UnsupportedTypeError extends Error {
 		return `Expected type for expected${SerializablePath.serialize(this.path)}, ${getTypename(this.expected)}, to be supported by the asserter!`;
 	}
 
-	constructor(expected: SerializableData,path: SerializablePath) {
+	constructor(expected: SerializableData, path: SerializablePath) {
 		super();
 		this.expected = expected;
 		this.path = path;
@@ -36,7 +36,7 @@ export class IncorrectTypeError extends Error {
 		return `Expected type for observed${SerializablePath.serialize(this.path)}, ${getTypename(this.observed)}, to be ${getTypename(this.expected)}!`;
 	}
 
-	constructor(observed: SerializableData, expected: SerializableData,path: SerializablePath) {
+	constructor(observed: SerializableData, expected: SerializableData, path: SerializablePath) {
 		super();
 		this.observed = observed;
 		this.expected = expected;
