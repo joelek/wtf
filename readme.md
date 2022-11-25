@@ -170,4 +170,3 @@ NB: This project targets TypeScript 4 in strict mode.
 ## Roadmap
 
 * Write more unit tests.
-* Get rid of await requirement for assert.throws().
