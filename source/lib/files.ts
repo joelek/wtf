@@ -56,7 +56,8 @@ export class TestCase {
 			logger?.log(`Test case ${terminal.stylize("\"" +  description + "\"", terminal.FG_RED)} raised an error!\n`);
 			let error: string | undefined;
 			if (throwable instanceof Error) {
-				logger?.log(`${throwable.stack ?? throwable.message}\n`);
+				let message = throwable.stack ?? throwable.message;
+				logger?.log(`${terminal.stylize(message, terminal.FG_RED)}\n`);
 				error = throwable.message;
 			}
 			let success = false;
