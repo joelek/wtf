@@ -121,11 +121,11 @@ export const Runner = {
 		let matchers = PatternMatcher.parse(runner.pattern);
 		return PatternMatcher.matches(basename, matchers);
 	},
-	async run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
+	async run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>, timeout?: number): Promise<RunReport> {
 		let command = runner.command;
 		logger?.log(`Spawning ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)}...\n`);
 		let start = process.hrtime.bigint();
-		let result = await spawn(command, [path], logger, environment);
+		let result = await spawn(command, [path], logger, environment, timeout);
 		let duration = Number(process.hrtime.bigint() - start) / 1000 / 1000;
 		let stdout = parseIfPossible(result.stdout.toString());
 		let stderr = parseIfPossible(result.stderr.toString());
@@ -273,6 +273,7 @@ export type Report = {
 };
 
 export async function run(options: Options): Promise<number> {
+	let timeout: number | undefined;
 	let logger = loggers.getLogger(options.logger ?? "stdout");
 	let paths = options.paths ?? createDefaultPaths();
 	let reporter = reporters.getReporter(options.reporter);
@@ -290,7 +291,7 @@ export async function run(options: Options): Promise<number> {
 	let success = true;
 	let counter: Counter | undefined;
 	for (let file of files) {
-		let report = await Runner.run(file.runner, file.path, logger, environment);
+		let report = await Runner.run(file.runner, file.path, logger, environment, timeout);
 		reports.push(report);
 		if (!report.success) {
 			success = false;
