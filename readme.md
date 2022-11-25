@@ -149,5 +149,3 @@ NB: This project targets TypeScript 4 in strict mode.
 * Get rid of await requirement for assert.throws().
 * Add support for loading config files.
 * Add support for identity assertions.
-* Log a single line per spawned command on success.
-* Log output after spawning command.
