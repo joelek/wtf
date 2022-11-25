@@ -119,6 +119,10 @@ Equality is determined recursively for the composite data types Array and Object
 
 Equality for instances of classes implementing the `equals()` method will not be determined by the asserter itself. Instead, responsibility is delegated to the class which is expected to return a boolean indicating the outcome of the comparison.
 
+#### Instanceof
+
+The `assert` instance can be used to assert that values observed are instances of the expected types through its `instanceof(subject, ctor)` method.
+
 #### Throws
 
 The `assert` instance can be use to assert that operations throw errors through its `throws(callback)` method. Async callbacks are supported but not required but the method itself needs to be awaited.
@@ -167,4 +171,3 @@ NB: This project targets TypeScript 4 in strict mode.
 
 * Write more unit tests.
 * Get rid of await requirement for assert.throws().
-* Add support for identity assertions.

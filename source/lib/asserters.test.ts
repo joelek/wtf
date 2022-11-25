@@ -27,3 +27,13 @@ wtf.test(`Throws should assert that an operation throws an error.`, async (asser
 		assert.equals(1, 2);
 	});
 });
+
+wtf.test(`Instanceof should not throw an error when comparing Buffer and Uint8Array.`, async (assert) => {
+	assert.instanceof(Buffer.of(), Uint8Array);
+});
+
+wtf.test(`Instanceof should throw an error when comparing Buffer and ArrayBuffer.`, async (assert) => {
+	await assert.throws(() => {
+		assert.instanceof(Buffer.of(), ArrayBuffer);
+	});
+});

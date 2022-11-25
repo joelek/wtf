@@ -123,6 +123,21 @@ export class ExpectedThrowError extends Error {
 	}
 };
 
+export class WrongInstanceError extends Error {
+	private subject: any;
+	private ctor: Constructor<any>;
+
+	get message(): string {
+		return `Expected value with type ${getTypename(this.subject)} to be an instance of ${this.ctor.name}!`;
+	}
+
+	constructor(subject: any, ctor: Constructor<any>) {
+		super();
+		this.subject = subject;
+		this.ctor = ctor;
+	}
+};
+
 export type Constructor<A> = {
 	readonly prototype: A;
 	new(...args: Array<any>): A;
@@ -307,6 +322,12 @@ export class Asserter {
 
 	equals(observed: SerializableData, expected: SerializableData): void {
 		this.equalsAny(observed, expected, []);
+	}
+
+	instanceof(subject: any, ctor: Constructor<any>): void {
+		if (!(subject instanceof ctor)) {
+			throw new WrongInstanceError(subject, ctor);
+		}
 	}
 
 	async throws<A>(callback: () => OptionallyAsync<A>): Promise<void> {
