@@ -145,12 +145,10 @@ NB: This project targets TypeScript 4 in strict mode.
 
 ## Roadmap
 
-* Write more test cases.
-* Consider parallel execution of test files.
+* Write more unit tests.
 * Get rid of await requirement for assert.throws().
-* Implement support for logging and reporting to files.
 * Add support for loading config files.
 * Add support for identity assertions.
-* Log output after spawning command.
 * Log a single line per spawned command on success.
+* Log output after spawning command.
 * Add support for limiting test execution time.
