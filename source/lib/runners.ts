@@ -121,7 +121,7 @@ export const Runner = {
 			counter = getCounterFromReport(stdout.reports);
 		}
 		let total = typeof counter !== "undefined" ? counter.pass + counter.fail : undefined;
-		logger?.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)} ran ${terminal.stylize(total ?? "?", terminal.FG_CYAN)} test cases and returned status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
+		logger?.log(`Command ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)} ran ${terminal.stylize(total ?? "?", terminal.FG_CYAN)} test cases and returned status ${status ?? "?"} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 		return {
 			command,
 			path,
@@ -253,7 +253,7 @@ export async function run(options: Options): Promise<number> {
 	let total = typeof counter !== "undefined" ? counter.pass + counter.fail : files.length === 0 ? 0 : undefined;
 	logger?.log(`A total of ${terminal.stylize(total ?? "?", terminal.FG_CYAN)} test cases across ${files.length} test files were run.\n`);
 	let status = success ? 0 : 1;
-	logger?.log(`Completed with status ${status ?? ""} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
+	logger?.log(`Completed with status ${status} (${success ? terminal.stylize("success", terminal.FG_GREEN) : terminal.stylize("failure", terminal.FG_RED)}).\n`);
 	let report: Report = {
 		reports,
 		success,
