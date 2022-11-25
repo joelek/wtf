@@ -25,6 +25,10 @@ exports.TestCaseReport = {
         if (!(typeof success === "boolean")) {
             return false;
         }
+        let duration = subject === null || subject === void 0 ? void 0 : subject.duration;
+        if (!(typeof duration === "number" || typeof duration === "undefined")) {
+            return false;
+        }
         let error = subject === null || subject === void 0 ? void 0 : subject.error;
         if (!(typeof error === "string" || typeof error === "undefined")) {
             return false;
@@ -37,7 +41,7 @@ class TestCase {
         this.description = description;
         this.callback = callback;
     }
-    run(logger) {
+    doRun(logger) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let description = this.description;
@@ -54,7 +58,8 @@ class TestCase {
                 logger === null || logger === void 0 ? void 0 : logger.log(`Test case ${terminal.stylize("\"" + description + "\"", terminal.FG_RED)} raised an error!\n`);
                 let error;
                 if (throwable instanceof Error) {
-                    logger === null || logger === void 0 ? void 0 : logger.log(`${(_a = throwable.stack) !== null && _a !== void 0 ? _a : throwable.message}\n`);
+                    let message = (_a = throwable.stack) !== null && _a !== void 0 ? _a : throwable.message;
+                    logger === null || logger === void 0 ? void 0 : logger.log(`${terminal.stylize(message, terminal.FG_RED)}\n`);
                     error = throwable.message;
                 }
                 let success = false;
@@ -64,6 +69,15 @@ class TestCase {
                     error
                 };
             }
+        });
+    }
+    run(logger) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let start = process.hrtime.bigint();
+            let report = yield this.doRun(logger);
+            let duration = Number(process.hrtime.bigint() - start) / 1000 / 1000;
+            report.duration = duration;
+            return report;
         });
     }
 }

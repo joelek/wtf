@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Asserter = exports.ExpectedThrowError = exports.UnexpectedMemberError = exports.MissingMemberError = exports.UnexpectedElementError = exports.MissingElementError = exports.IncorrectValueError = exports.IncorrectTypeError = exports.UnsupportedTypeError = exports.getTypename = void 0;
+exports.Asserter = exports.WrongInstanceError = exports.ExpectedThrowError = exports.UnexpectedMemberError = exports.MissingMemberError = exports.UnexpectedElementError = exports.MissingElementError = exports.IncorrectValueError = exports.IncorrectTypeError = exports.UnsupportedTypeError = exports.getTypename = void 0;
 const data_1 = require("./data");
 function getTypename(subject) {
     var _a;
@@ -114,6 +114,18 @@ class ExpectedThrowError extends Error {
     }
 }
 exports.ExpectedThrowError = ExpectedThrowError;
+;
+class WrongInstanceError extends Error {
+    constructor(subject, ctor) {
+        super();
+        this.subject = subject;
+        this.ctor = ctor;
+    }
+    get message() {
+        return `Expected value with type ${getTypename(this.subject)} to be an instance of ${this.ctor.name}!`;
+    }
+}
+exports.WrongInstanceError = WrongInstanceError;
 ;
 class Asserter {
     equalsBinaryData(constructor, observed, expected, path) {
@@ -282,6 +294,11 @@ class Asserter {
     constructor() { }
     equals(observed, expected) {
         this.equalsAny(observed, expected, []);
+    }
+    instanceof(subject, constructor) {
+        if (!(subject instanceof constructor)) {
+            throw new WrongInstanceError(subject, constructor);
+        }
     }
     throws(callback) {
         return __awaiter(this, void 0, void 0, function* () {

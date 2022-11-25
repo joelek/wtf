@@ -1,4 +1,5 @@
 /// <reference types="node" />
+/// <reference types="node" />
 import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 import { TestCaseReport } from "./files";
@@ -8,7 +9,12 @@ export declare type SpawnResult = {
     error?: Error;
     status?: number;
 };
-export declare function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult>;
+export declare class SpawnSignalError extends Error {
+    private signal;
+    get message(): string;
+    constructor(signal: NodeJS.Signals);
+}
+export declare function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>, timeout?: number): Promise<SpawnResult>;
 export declare function parseIfPossible(string: string): SerializableData;
 export declare type Counter = {
     pass: number;
@@ -20,6 +26,7 @@ export declare type RunReport = {
     stdout: SerializableData;
     stderr: SerializableData;
     success: boolean;
+    duration: number;
     counter?: Counter;
     error?: string;
 };
@@ -45,6 +52,9 @@ export declare type Options = {
     reporter?: string;
     runners?: Array<Runner>;
 };
+export declare const Options: {
+    is(subject: any): subject is Options;
+};
 export declare function createDefaultPaths(): Array<string>;
 export declare function createDefaultRunners(): Array<Runner>;
 export declare type Report = {
@@ -53,3 +63,8 @@ export declare type Report = {
     counter?: Counter;
 };
 export declare function run(options: Options): Promise<number>;
+export declare class ConfigFormatError extends Error {
+    get message(): string;
+    constructor();
+}
+export declare function loadConfig(path: string): Options;

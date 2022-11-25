@@ -15,13 +15,14 @@ const lib = require("../lib");
 function run() {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        let options = {
-            logger: "stdout",
-            reporter: undefined
-        };
+        let options = {};
         let unrecognizedArguments = [];
         for (let arg of process.argv.slice(2)) {
             let parts = null;
+            if ((parts = /^--config=(.*)$/.exec(arg)) != null) {
+                options = lib.runners.loadConfig(parts[1]);
+                continue;
+            }
             if ((parts = /^--logger=(.*)$/.exec(arg)) != null) {
                 let target = parts[1];
                 options.logger = target;
@@ -65,6 +66,7 @@ function run() {
             }
             logger.log(`\n`);
             logger.log(`Arguments:\n`);
+            logger.log(`\t--config=<path> Load config file from the specified path.\n`);
             logger.log(`\t--logger=<target> Log events to the specified target ("stdout", "stderr" or "").\n`);
             logger.log(`\t--path=<path> Include the specified path when scanning for supported test files.\n`);
             logger.log(`\t--reporter=<target> Report to the specified target ("stdout", "stderr" or "").\n`);

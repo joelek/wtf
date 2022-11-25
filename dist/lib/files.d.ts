@@ -5,6 +5,7 @@ export declare type TestCaseCallback = (asserter: Asserter) => OptionallyAsync<v
 export declare type TestCaseReport = {
     description: string;
     success: boolean;
+    duration?: number;
     error?: string;
 };
 export declare const TestCaseReport: {
@@ -13,6 +14,7 @@ export declare const TestCaseReport: {
 export declare class TestCase {
     private description;
     private callback;
+    private doRun;
     constructor(description: string, callback: TestCaseCallback);
     run(logger?: Logger): Promise<TestCaseReport>;
 }

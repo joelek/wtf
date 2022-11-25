@@ -35,3 +35,11 @@ wtf.test(`Throws should assert that an operation throws an error.`, (assert) => 
         assert.equals(1, 2);
     });
 }));
+wtf.test(`Instanceof should not throw an error when comparing Buffer and Uint8Array.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    assert.instanceof(Buffer.of(), Uint8Array);
+}));
+wtf.test(`Instanceof should throw an error when comparing Buffer and ArrayBuffer.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
+    yield assert.throws(() => {
+        assert.instanceof(Buffer.of(), ArrayBuffer);
+    });
+}));

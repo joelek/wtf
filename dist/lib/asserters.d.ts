@@ -45,6 +45,12 @@ export declare class ExpectedThrowError extends Error {
     get message(): string;
     constructor();
 }
+export declare class WrongInstanceError extends Error {
+    private subject;
+    private ctor;
+    get message(): string;
+    constructor(subject: any, ctor: Constructor<any>);
+}
 export declare type Constructor<A> = {
     readonly prototype: A;
     new (...args: Array<any>): A;
@@ -63,5 +69,6 @@ export declare class Asserter {
     private equalsAny;
     constructor();
     equals(observed: SerializableData, expected: SerializableData): void;
+    instanceof(subject: any, constructor: Constructor<any>): void;
     throws<A>(callback: () => OptionallyAsync<A>): Promise<void>;
 }
