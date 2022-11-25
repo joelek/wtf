@@ -209,6 +209,43 @@ export type Options = {
 	runners?: Array<Runner>;
 };
 
+export const Options = {
+	is(subject: any): subject is Options {
+		let logger = subject?.logger;
+		if (!(typeof logger === "string" || typeof logger === "undefined")) {
+			return false;
+		}
+		let paths = subject?.paths;
+		if (!(Array.isArray(paths) || typeof paths === "undefined")) {
+			return false;
+		}
+		for (let path of paths ?? []) {
+			if (!(typeof path === "string")) {
+				return false;
+			}
+		}
+		let reporter = subject?.reporter;
+		if (!(typeof reporter === "string" || typeof reporter === "undefined")) {
+			return false;
+		}
+		let runners = subject?.runners;
+		if (!(Array.isArray(runners) || typeof runners === "undefined")) {
+			return false;
+		}
+		for (let runner of runners ?? []) {
+			let pattern = runner?.pattern;
+			if (!(typeof pattern === "string")) {
+				return false;
+			}
+			let command = runner?.command;
+			if (!(typeof command === "string")) {
+				return false;
+			}
+		}
+		return true;
+	}
+};
+
 export function createDefaultPaths(): Array<string> {
 	return [
 		"./source/",
@@ -280,4 +317,23 @@ export async function run(options: Options): Promise<number> {
 	};
 	reporter?.report(report);
 	return status;
+};
+
+export class ConfigFormatError extends Error {
+	get message(): string {
+		return `Expected a valid config file!`;
+	}
+
+	constructor() {
+		super();
+	}
+};
+
+export function loadConfig(path: string): Options {
+	let string = libfs.readFileSync(path, "utf-8");
+	let json = JSON.parse(string);
+	if (!Options.is(json)) {
+		throw new ConfigFormatError();
+	}
+	return json;
 };

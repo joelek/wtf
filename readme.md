@@ -45,6 +45,24 @@ The test runner can be configured to write log events to a specific target throu
 
 The test runner can be configured to write test reports to a specific target through the `--reporter=<target>` argument. The target may be set to `stdout`, `stderr` or empty if no reports should be written. By default, the target is set to empty.
 
+#### Configuration files
+
+The test runner can load configuration files stored using the JSON format shown below. A configuration file is loaded using the `--config=<path>` argument.
+
+{
+	"logger"?: string,
+	"paths"?: [
+		string
+	],
+	"reporter"?: string,
+	"runners"?: [
+		{
+			"pattern": string,
+			"command": string
+		}
+	]
+}
+
 ### Testing framework
 
 The package includes a testing framework for projects built using TypeScript or JavaScript. The framework may be used to create test files that conform to the conventions expected by the test runner.
@@ -147,5 +165,4 @@ NB: This project targets TypeScript 4 in strict mode.
 
 * Write more unit tests.
 * Get rid of await requirement for assert.throws().
-* Add support for loading config files.
 * Add support for identity assertions.
