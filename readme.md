@@ -49,6 +49,7 @@ The test runner can be configured to write test reports to a specific target thr
 
 The test runner can load configuration files stored using the JSON format shown below. A configuration file is loaded using the `--config=<path>` argument.
 
+```
 {
 	"logger"?: string,
 	"paths"?: [
@@ -62,6 +63,7 @@ The test runner can load configuration files stored using the JSON format shown 
 		}
 	]
 }
+```
 
 ### Testing framework
 
