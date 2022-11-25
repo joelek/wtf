@@ -74,6 +74,7 @@ export type RunReport = {
 	stdout: SerializableData;
 	stderr: SerializableData;
 	success: boolean;
+	duration: number;
 	counter?: Counter;
 	error?: string;
 };
@@ -108,7 +109,9 @@ export const Runner = {
 	async run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport> {
 		let command = runner.command;
 		logger?.log(`Spawning ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" +  path + "\"", terminal.FG_YELLOW)}...\n`);
+		let start = process.hrtime.bigint();
 		let result = await spawn(command, [path], logger, environment);
+		let duration = Number(process.hrtime.bigint() - start) / 1000 / 1000;
 		let stdout = parseIfPossible(result.stdout.toString());
 		let stderr = parseIfPossible(result.stderr.toString());
 		let error = result.error == null ? undefined : result.error.message;
@@ -128,6 +131,7 @@ export const Runner = {
 			stdout,
 			stderr,
 			success,
+			duration,
 			counter,
 			error
 		};
