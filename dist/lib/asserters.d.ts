@@ -69,6 +69,6 @@ export declare class Asserter {
     private equalsAny;
     constructor();
     equals(observed: SerializableData, expected: SerializableData): void;
-    instanceof(subject: any, constructor: Constructor<any>): void;
+    instanceof(subject: any, ctor: Constructor<any>): void;
     throws<A>(callback: () => OptionallyAsync<A>): Promise<void>;
 }

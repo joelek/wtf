@@ -109,12 +109,12 @@ exports.Runner = {
         let matchers = patterns_1.PatternMatcher.parse(runner.pattern);
         return patterns_1.PatternMatcher.matches(basename, matchers);
     },
-    run(runner, path, logger, environment) {
+    run(runner, path, logger, environment, timeout) {
         return __awaiter(this, void 0, void 0, function* () {
             let command = runner.command;
             logger === null || logger === void 0 ? void 0 : logger.log(`Spawning ${terminal.stylize(command, terminal.FG_MAGENTA)} ${terminal.stylize("\"" + path + "\"", terminal.FG_YELLOW)}...\n`);
             let start = process.hrtime.bigint();
-            let result = yield spawn(command, [path], logger, environment);
+            let result = yield spawn(command, [path], logger, environment, timeout);
             let duration = Number(process.hrtime.bigint() - start) / 1000 / 1000;
             let stdout = parseIfPossible(result.stdout.toString());
             let stderr = parseIfPossible(result.stderr.toString());
@@ -251,6 +251,7 @@ exports.createDefaultRunners = createDefaultRunners;
 function run(options) {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
+        let timeout;
         let logger = loggers.getLogger((_a = options.logger) !== null && _a !== void 0 ? _a : "stdout");
         let paths = (_b = options.paths) !== null && _b !== void 0 ? _b : createDefaultPaths();
         let reporter = reporters.getReporter(options.reporter);
@@ -264,7 +265,7 @@ function run(options) {
         let success = true;
         let counter;
         for (let file of files) {
-            let report = yield exports.Runner.run(file.runner, file.path, logger, environment);
+            let report = yield exports.Runner.run(file.runner, file.path, logger, environment, timeout);
             reports.push(report);
             if (!report.success) {
                 success = false;

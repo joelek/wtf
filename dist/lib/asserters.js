@@ -295,9 +295,9 @@ class Asserter {
     equals(observed, expected) {
         this.equalsAny(observed, expected, []);
     }
-    instanceof(subject, constructor) {
-        if (!(subject instanceof constructor)) {
-            throw new WrongInstanceError(subject, constructor);
+    instanceof(subject, ctor) {
+        if (!(subject instanceof ctor)) {
+            throw new WrongInstanceError(subject, ctor);
         }
     }
     throws(callback) {

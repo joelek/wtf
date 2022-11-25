@@ -37,7 +37,7 @@ export declare type Runner = {
 export declare function getCounterFromReport(reports: Array<TestCaseReport>): Counter;
 export declare const Runner: {
     matches(runner: Runner, path: string): boolean;
-    run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>): Promise<RunReport>;
+    run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>, timeout?: number): Promise<RunReport>;
 };
 export declare type File = {
     runner: Runner;
