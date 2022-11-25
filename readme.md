@@ -151,4 +151,3 @@ NB: This project targets TypeScript 4 in strict mode.
 * Add support for identity assertions.
 * Log a single line per spawned command on success.
 * Log output after spawning command.
-* Add support for limiting test execution time.

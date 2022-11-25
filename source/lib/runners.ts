@@ -30,9 +30,9 @@ export class SpawnSignalError extends Error {
 	}
 };
 
-export async function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>): Promise<SpawnResult> {
+export async function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>, timeout?: number): Promise<SpawnResult> {
 	return new Promise((resolve, reject) => {
-		let childProcess = libcp.spawn(command, parameters, { shell: true, env: environment });
+		let childProcess = libcp.spawn(command, parameters, { timeout: timeout, shell: true, env: environment });
 		let stdoutChunks = [] as Array<Buffer>;
 		let stderrChunks = [] as Array<Buffer>;
 		childProcess.stdout.on("data", (chunk) => {
