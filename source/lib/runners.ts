@@ -207,6 +207,7 @@ export type Options = {
 	paths?: Array<string>;
 	reporter?: string;
 	runners?: Array<Runner>;
+	timeout?: number;
 };
 
 export const Options = {
@@ -242,6 +243,10 @@ export const Options = {
 				return false;
 			}
 		}
+		let timeout = subject?.timeout;
+		if (!(typeof timeout === "number" || typeof timeout === "undefined")) {
+			return false;
+		}
 		return true;
 	}
 };
@@ -273,7 +278,7 @@ export type Report = {
 };
 
 export async function run(options: Options): Promise<number> {
-	let timeout: number | undefined;
+	let timeout = options.timeout;
 	let logger = loggers.getLogger(options.logger ?? "stdout");
 	let paths = options.paths ?? createDefaultPaths();
 	let reporter = reporters.getReporter(options.reporter);
