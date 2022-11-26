@@ -51,6 +51,11 @@ function run() {
                 options.runners = runners;
                 continue;
             }
+            if ((parts = /^--timeout=([0-9]+)$/.exec(arg)) != null) {
+                let ms = Number.parseInt(parts[1], 10);
+                options.timeout = ms;
+                continue;
+            }
             unrecognizedArguments.push(arg);
         }
         if (unrecognizedArguments.length === 0) {
@@ -71,6 +76,7 @@ function run() {
             logger.log(`\t--path=<path> Include the specified path when scanning for supported test files.\n`);
             logger.log(`\t--reporter=<target> Report to the specified target ("stdout", "stderr" or "").\n`);
             logger.log(`\t--runner=<pattern>:<command> Launch the specified command for every filename that matches the specified pattern.\n`);
+            logger.log(`\t--timeout=<ms> Configure the maximum time a test file is allowed to run.\n`);
             return 1;
         }
     });

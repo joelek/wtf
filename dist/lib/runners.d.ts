@@ -51,6 +51,7 @@ export declare type Options = {
     paths?: Array<string>;
     reporter?: string;
     runners?: Array<Runner>;
+    timeout?: number;
 };
 export declare const Options: {
     is(subject: any): subject is Options;

@@ -223,6 +223,10 @@ exports.Options = {
                 return false;
             }
         }
+        let timeout = subject === null || subject === void 0 ? void 0 : subject.timeout;
+        if (!(typeof timeout === "number" || typeof timeout === "undefined")) {
+            return false;
+        }
         return true;
     }
 };
@@ -251,7 +255,7 @@ exports.createDefaultRunners = createDefaultRunners;
 function run(options) {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
-        let timeout;
+        let timeout = options.timeout;
         let logger = loggers.getLogger((_a = options.logger) !== null && _a !== void 0 ? _a : "stdout");
         let paths = (_b = options.paths) !== null && _b !== void 0 ? _b : createDefaultPaths();
         let reporter = reporters.getReporter(options.reporter);
