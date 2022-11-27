@@ -1,6 +1,6 @@
 import * as loggers from "./loggers";
 import { LOGGER_KEY, REPORTER_KEY } from "./env";
-import { reporters } from ".";
+import * as reporters from "./reporters";
 import { Logger } from "./loggers";
 import { Asserter } from "./asserters";
 import * as terminal from "./terminal";

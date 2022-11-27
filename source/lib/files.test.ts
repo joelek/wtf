@@ -1,4 +1,4 @@
-import * as wtf from ".";
+import * as wtf from "./";
 import * as files from "./files";
 
 wtf.test(`It should not capture an error when a test runs successfully.`, async (assert) => {
