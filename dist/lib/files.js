@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.test = exports.TestCollection = exports.TestCollectionReport = exports.TestCase = exports.TestCaseReport = void 0;
 const loggers = require("./loggers");
 const env_1 = require("./env");
-const _1 = require(".");
+const reporters = require("./reporters");
 const asserters_1 = require("./asserters");
 const terminal = require("./terminal");
 exports.TestCaseReport = {
@@ -132,7 +132,7 @@ exports.TestCollection = TestCollection;
 exports.test = (() => {
     var _a, _b;
     let logger = loggers.getLogger((_a = process.env[env_1.LOGGER_KEY]) !== null && _a !== void 0 ? _a : "stdout");
-    let reporter = _1.reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
+    let reporter = reporters.getReporter((_b = process.env[env_1.REPORTER_KEY]) !== null && _b !== void 0 ? _b : undefined);
     let collection = new TestCollection();
     process.on("beforeExit", () => __awaiter(void 0, void 0, void 0, function* () {
         let report = yield collection.run(logger);

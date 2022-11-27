@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const wtf = require(".");
+const wtf = require("./");
 const files = require("./files");
 wtf.test(`It should not capture an error when a test runs successfully.`, (assert) => __awaiter(void 0, void 0, void 0, function* () {
     let testCase = new files.TestCase("", () => __awaiter(void 0, void 0, void 0, function* () { }));
