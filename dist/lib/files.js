@@ -37,10 +37,6 @@ exports.TestCaseReport = {
     }
 };
 class TestCase {
-    constructor(description, callback) {
-        this.description = description;
-        this.callback = callback;
-    }
     doRun(logger) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -70,6 +66,10 @@ class TestCase {
                 };
             }
         });
+    }
+    constructor(description, callback) {
+        this.description = description;
+        this.callback = callback;
     }
     run(logger) {
         return __awaiter(this, void 0, void 0, function* () {

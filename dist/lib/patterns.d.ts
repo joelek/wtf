@@ -1,5 +1,5 @@
 import { Comparable } from "./data";
-export declare type PatternMatcher = Comparable & {
+export type PatternMatcher = Comparable & {
     acceptsPart(part: string): boolean;
     getParts(): Array<string>;
     isSatisfied(): boolean;

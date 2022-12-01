@@ -21,12 +21,12 @@ const patterns_1 = require("./patterns");
 const terminal = require("./terminal");
 const files_1 = require("./files");
 class SpawnSignalError extends Error {
+    get message() {
+        return `Expected process not to exit with signal ${this.signal}!`;
+    }
     constructor(signal) {
         super();
         this.signal = signal;
-    }
-    get message() {
-        return `Expected process not to exit with signal ${this.signal}!`;
     }
 }
 exports.SpawnSignalError = SpawnSignalError;

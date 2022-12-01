@@ -3,7 +3,7 @@
 import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 import { TestCaseReport } from "./files";
-export declare type SpawnResult = {
+export type SpawnResult = {
     stdout: Buffer;
     stderr: Buffer;
     error?: Error;
@@ -16,11 +16,11 @@ export declare class SpawnSignalError extends Error {
 }
 export declare function spawn(command: string, parameters: Array<string>, logger?: Logger, environment?: Record<string, string | undefined>, timeout?: number): Promise<SpawnResult>;
 export declare function parseIfPossible(string: string): SerializableData;
-export declare type Counter = {
+export type Counter = {
     pass: number;
     fail: number;
 };
-export declare type RunReport = {
+export type RunReport = {
     command: string;
     path: string;
     stdout: SerializableData;
@@ -30,7 +30,7 @@ export declare type RunReport = {
     counter?: Counter;
     error?: string;
 };
-export declare type Runner = {
+export type Runner = {
     pattern: string;
     command: string;
 };
@@ -39,14 +39,14 @@ export declare const Runner: {
     matches(runner: Runner, path: string): boolean;
     run(runner: Runner, path: string, logger?: Logger, environment?: Record<string, string | undefined>, timeout?: number): Promise<RunReport>;
 };
-export declare type File = {
+export type File = {
     runner: Runner;
     path: string;
 };
 export declare function scanFilePath(path: string, runners: Array<Runner>, logger?: Logger): Array<File>;
 export declare function scanDirectoryPath(parentPath: string, runners: Array<Runner>, logger?: Logger): Array<File>;
 export declare function scanPath(path: string, runners: Array<Runner>, logger?: Logger): Array<File>;
-export declare type Options = {
+export type Options = {
     logger?: string;
     paths?: Array<string>;
     reporter?: string;
@@ -58,7 +58,7 @@ export declare const Options: {
 };
 export declare function createDefaultPaths(): Array<string>;
 export declare function createDefaultRunners(): Array<Runner>;
-export declare type Report = {
+export type Report = {
     reports: Array<RunReport>;
     success: boolean;
     counter?: Counter;

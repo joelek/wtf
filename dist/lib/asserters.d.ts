@@ -1,5 +1,5 @@
 import { SerializableData, SerializablePath } from "./data";
-export declare type OptionallyAsync<A> = A | Promise<A>;
+export type OptionallyAsync<A> = A | Promise<A>;
 export declare function getTypename(subject: any): string;
 export declare class UnsupportedTypeError extends Error {
     private expected;
@@ -51,7 +51,7 @@ export declare class WrongInstanceError extends Error {
     get message(): string;
     constructor(subject: any, ctor: Constructor<any>);
 }
-export declare type Constructor<A> = {
+export type Constructor<A> = {
     readonly prototype: A;
     new (...args: Array<any>): A;
 };

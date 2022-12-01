@@ -24,83 +24,83 @@ function getTypename(subject) {
 exports.getTypename = getTypename;
 ;
 class UnsupportedTypeError extends Error {
+    get message() {
+        return `Expected type for expected${data_1.SerializablePath.serialize(this.path)}, ${getTypename(this.expected)}, to be supported by the asserter!`;
+    }
     constructor(expected, path) {
         super();
         this.expected = expected;
         this.path = path;
     }
-    get message() {
-        return `Expected type for expected${data_1.SerializablePath.serialize(this.path)}, ${getTypename(this.expected)}, to be supported by the asserter!`;
-    }
 }
 exports.UnsupportedTypeError = UnsupportedTypeError;
 ;
 class IncorrectTypeError extends Error {
+    get message() {
+        return `Expected type for observed${data_1.SerializablePath.serialize(this.path)}, ${getTypename(this.observed)}, to be ${getTypename(this.expected)}!`;
+    }
     constructor(observed, expected, path) {
         super();
         this.observed = observed;
         this.expected = expected;
         this.path = path;
-    }
-    get message() {
-        return `Expected type for observed${data_1.SerializablePath.serialize(this.path)}, ${getTypename(this.observed)}, to be ${getTypename(this.expected)}!`;
     }
 }
 exports.IncorrectTypeError = IncorrectTypeError;
 ;
 class IncorrectValueError extends Error {
+    get message() {
+        return `Expected value for observed${data_1.SerializablePath.serialize(this.path)}, ${data_1.SerializableData.serialize(this.observed, true)}, to be ${data_1.SerializableData.serialize(this.expected, true)}!`;
+    }
     constructor(observed, expected, path) {
         super();
         this.observed = observed;
         this.expected = expected;
         this.path = path;
     }
-    get message() {
-        return `Expected value for observed${data_1.SerializablePath.serialize(this.path)}, ${data_1.SerializableData.serialize(this.observed, true)}, to be ${data_1.SerializableData.serialize(this.expected, true)}!`;
-    }
 }
 exports.IncorrectValueError = IncorrectValueError;
 ;
 class MissingElementError extends Error {
+    get message() {
+        return `Expected element observed${data_1.SerializablePath.serialize(this.path)} to be present!`;
+    }
     constructor(path) {
         super();
         this.path = path;
-    }
-    get message() {
-        return `Expected element observed${data_1.SerializablePath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingElementError = MissingElementError;
 ;
 class UnexpectedElementError extends Error {
+    get message() {
+        return `Expected element observed${data_1.SerializablePath.serialize(this.path)} to be absent!`;
+    }
     constructor(path) {
         super();
         this.path = path;
-    }
-    get message() {
-        return `Expected element observed${data_1.SerializablePath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedElementError = UnexpectedElementError;
 ;
 class MissingMemberError extends Error {
+    get message() {
+        return `Expected member observed${data_1.SerializablePath.serialize(this.path)} to be present!`;
+    }
     constructor(path) {
         super();
         this.path = path;
-    }
-    get message() {
-        return `Expected member observed${data_1.SerializablePath.serialize(this.path)} to be present!`;
     }
 }
 exports.MissingMemberError = MissingMemberError;
 ;
 class UnexpectedMemberError extends Error {
+    get message() {
+        return `Expected member observed${data_1.SerializablePath.serialize(this.path)} to be absent!`;
+    }
     constructor(path) {
         super();
         this.path = path;
-    }
-    get message() {
-        return `Expected member observed${data_1.SerializablePath.serialize(this.path)} to be absent!`;
     }
 }
 exports.UnexpectedMemberError = UnexpectedMemberError;
@@ -116,13 +116,13 @@ class ExpectedThrowError extends Error {
 exports.ExpectedThrowError = ExpectedThrowError;
 ;
 class WrongInstanceError extends Error {
+    get message() {
+        return `Expected value with type ${getTypename(this.subject)} to be an instance of ${this.ctor.name}!`;
+    }
     constructor(subject, ctor) {
         super();
         this.subject = subject;
         this.ctor = ctor;
-    }
-    get message() {
-        return `Expected value with type ${getTypename(this.subject)} to be an instance of ${this.ctor.name}!`;
     }
 }
 exports.WrongInstanceError = WrongInstanceError;

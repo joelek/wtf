@@ -1,8 +1,8 @@
 import { Logger } from "./loggers";
 import { Asserter } from "./asserters";
-export declare type OptionallyAsync<A> = A | Promise<A>;
-export declare type TestCaseCallback = (asserter: Asserter) => OptionallyAsync<void>;
-export declare type TestCaseReport = {
+export type OptionallyAsync<A> = A | Promise<A>;
+export type TestCaseCallback = (asserter: Asserter) => OptionallyAsync<void>;
+export type TestCaseReport = {
     description: string;
     success: boolean;
     duration?: number;
@@ -18,7 +18,7 @@ export declare class TestCase {
     constructor(description: string, callback: TestCaseCallback);
     run(logger?: Logger): Promise<TestCaseReport>;
 }
-export declare type TestCollectionReport = {
+export type TestCollectionReport = {
     reports: Array<TestCaseReport>;
     success: boolean;
 };
