@@ -170,3 +170,4 @@ NB: This project targets TypeScript 4 in strict mode.
 ## Roadmap
 
 * Write more unit tests.
+* Add convenient way to disable all but one test.
