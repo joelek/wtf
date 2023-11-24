@@ -172,3 +172,4 @@ NB: This project targets TypeScript 4 in strict mode.
 * Write more unit tests.
 * Add convenient way to disable all but one test.
 * Add support for Date assertions.
+* Provide means of asserting type of error thrown.
