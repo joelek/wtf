@@ -173,3 +173,4 @@ NB: This project targets TypeScript 4 in strict mode.
 * Add convenient way to disable all but one test.
 * Add support for Date assertions.
 * Provide means of asserting type of error thrown.
+* Add option for controlling stack trace output.
