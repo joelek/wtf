@@ -261,11 +261,11 @@ export function createDefaultPaths(): Array<string> {
 export function createDefaultRunners(): Array<Runner> {
 	return [
 		{
-			pattern: "*.test.js",
+			pattern: "**.test.js",
 			command: "node"
 		},
 		{
-			pattern: "*.test.ts",
+			pattern: "**.test.ts",
 			command: "ts-node"
 		}
 	];
