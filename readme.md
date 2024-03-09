@@ -175,3 +175,4 @@ NB: This project targets TypeScript 4 in strict mode.
 * Provide means of asserting type of error thrown.
 * Add option for controlling stack trace output.
 * Make wildcards match multiple filename parts.
+* Add support for intermixed value and reference assertions.
