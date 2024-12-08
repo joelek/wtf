@@ -241,11 +241,11 @@ exports.createDefaultPaths = createDefaultPaths;
 function createDefaultRunners() {
     return [
         {
-            pattern: "*.test.js",
+            pattern: "**.test.js",
             command: "node"
         },
         {
-            pattern: "*.test.ts",
+            pattern: "**.test.ts",
             command: "ts-node"
         }
     ];

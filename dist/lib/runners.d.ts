@@ -1,5 +1,6 @@
 /// <reference types="node" />
 /// <reference types="node" />
+/// <reference types="node" />
 import { SerializableData } from "./data";
 import { Logger } from "./loggers";
 import { TestCaseReport } from "./files";
