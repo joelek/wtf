@@ -297,7 +297,7 @@ class Asserter {
         if (expected instanceof BigUint64Array) {
             return this.equalsBinaryData(BigUint64Array, observed, expected, path);
         }
-        if (expected instanceof Date) {
+        if (data_1.SerializableDate.is(expected)) {
             return this.equalsDate(observed, expected, path);
         }
         throw new UnsupportedTypeError(expected, path);
