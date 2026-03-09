@@ -106,6 +106,7 @@ The `assert` instance can be used to assert that values observed equal values ex
 * undefined
 * Array
 * Object
+* Date
 
 ```ts
 import * as wtf from "@joelek/wtf";
