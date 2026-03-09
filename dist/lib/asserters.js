@@ -228,6 +228,14 @@ class Asserter {
             throw new IncorrectTypeError(observed, expected, path);
         }
     }
+    equalsDate(observed, expected, path) {
+        if (!data_1.SerializableDate.is(observed)) {
+            throw new IncorrectTypeError(observed, expected, path);
+        }
+        if (expected !== observed) {
+            throw new IncorrectValueError(observed, expected, path);
+        }
+    }
     equalsAny(observed, expected, path) {
         if (data_1.Comparable.is(expected)) {
             return this.equalsComparable(observed, expected, path);
@@ -288,6 +296,9 @@ class Asserter {
         }
         if (expected instanceof BigUint64Array) {
             return this.equalsBinaryData(BigUint64Array, observed, expected, path);
+        }
+        if (expected instanceof Date) {
+            return this.equalsDate(observed, expected, path);
         }
         throw new UnsupportedTypeError(expected, path);
     }

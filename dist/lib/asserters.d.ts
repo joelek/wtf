@@ -66,6 +66,7 @@ export declare class Asserter {
     private equalsObject;
     private equalsString;
     private equalsUndefined;
+    private equalsDate;
     private equalsAny;
     constructor();
     equals(observed: SerializableData, expected: SerializableData): void;

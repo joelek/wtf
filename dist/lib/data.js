@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SerializablePath = exports.SerializableData = exports.SerializableDataWrapper = exports.SerializableDataObject = exports.SerializableDataArray = exports.Comparable = void 0;
+exports.SerializablePath = exports.SerializableData = exports.SerializableDataWrapper = exports.SerializableDate = exports.SerializableDataObject = exports.SerializableDataArray = exports.Comparable = void 0;
 exports.Comparable = {
     is(subject) {
         return subject != null && typeof subject["equals"] === "function";
@@ -14,6 +14,11 @@ exports.SerializableDataArray = {
 exports.SerializableDataObject = {
     is(subject) {
         return subject != null && subject.constructor === Object;
+    }
+};
+exports.SerializableDate = {
+    is(subject) {
+        return subject != null && subject.constructor === Date;
     }
 };
 exports.SerializableDataWrapper = {
@@ -90,6 +95,12 @@ exports.SerializableDataWrapper = {
                 data: Array.from(value)
             };
         }
+        if (value instanceof Date) {
+            return {
+                type: "Date",
+                data: value.toISOString()
+            };
+        }
         return value;
     },
     unwrap(value) {
@@ -132,6 +143,9 @@ exports.SerializableDataWrapper = {
                 }
                 if (type === "BigUint64Array") {
                     return BigUint64Array.from(data);
+                }
+                if (type === "Date") {
+                    return new Date(data);
                 }
             }
         }

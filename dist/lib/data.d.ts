@@ -5,7 +5,7 @@ export type Comparable = {
 export declare const Comparable: {
     is(subject: SerializableData): subject is Comparable;
 };
-export type SerializableData = BinaryData | Comparable | bigint | boolean | null | number | string | undefined | SerializableData[] | {
+export type SerializableData = BinaryData | Comparable | bigint | boolean | null | number | string | undefined | Date | SerializableData[] | {
     [key: string]: SerializableData;
 };
 export type SerializableDataArray = Array<SerializableData>;
@@ -15,6 +15,10 @@ export declare const SerializableDataArray: {
 export type SerializableDataObject = Record<string, SerializableData>;
 export declare const SerializableDataObject: {
     is(subject: SerializableData): subject is SerializableDataObject;
+};
+export type SerializableDate = Date;
+export declare const SerializableDate: {
+    is(subject: SerializableData): subject is Date;
 };
 export declare const SerializableDataWrapper: {
     wrap(value: SerializableData): SerializableData;
