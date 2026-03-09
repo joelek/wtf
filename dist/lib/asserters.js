@@ -232,7 +232,7 @@ class Asserter {
         if (!data_1.SerializableDate.is(observed)) {
             throw new IncorrectTypeError(observed, expected, path);
         }
-        if (expected !== observed) {
+        if (expected.getTime() !== observed.getTime()) {
             throw new IncorrectValueError(observed, expected, path);
         }
     }
