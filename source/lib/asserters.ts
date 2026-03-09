@@ -1,4 +1,4 @@
-import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath, BinaryData, Comparable } from "./data";
+import { SerializableDataArray, SerializableData, SerializableDataObject, SerializablePath, BinaryData, Comparable, SerializableDate } from "./data";
 
 export type OptionallyAsync<A> = A | Promise<A>;
 
@@ -254,6 +254,15 @@ export class Asserter {
 		}
 	}
 
+	private equalsDate(observed: SerializableData, expected: SerializableData & Date, path: SerializablePath): void {
+		if (!SerializableDate.is(observed)) {
+			throw new IncorrectTypeError(observed, expected, path);
+		}
+		if (expected !== observed) {
+			throw new IncorrectValueError(observed, expected, path);
+		}
+	}
+
 	private equalsAny(observed: SerializableData, expected: SerializableData, path: SerializablePath): void {
 		if (Comparable.is(expected)) {
 			return this.equalsComparable(observed, expected, path);
@@ -314,6 +323,9 @@ export class Asserter {
 		}
 		if (expected instanceof BigUint64Array) {
 			return this.equalsBinaryData(BigUint64Array, observed, expected, path);
+		}
+		if (expected instanceof Date) {
+			return this.equalsDate(observed, expected, path);
 		}
 		throw new UnsupportedTypeError(expected, path);
 	}

@@ -21,7 +21,7 @@ export const Comparable = {
 	}
 };
 
-export type SerializableData = BinaryData | Comparable | bigint | boolean | null | number | string | undefined | SerializableData[] | {
+export type SerializableData = BinaryData | Comparable | bigint | boolean | null | number | string | undefined | Date | SerializableData[] | {
 	[key: string]: SerializableData;
 };
 
@@ -38,6 +38,14 @@ export type SerializableDataObject = Record<string, SerializableData>;
 export const SerializableDataObject = {
 	is(subject: SerializableData): subject is SerializableDataObject {
 		return subject != null && subject.constructor === Object;
+	}
+};
+
+export type SerializableDate = Date;
+
+export const SerializableDate = {
+	is(subject: SerializableData): subject is SerializableDate {
+		return subject != null && subject.constructor === Date;
 	}
 };
 
@@ -115,6 +123,12 @@ export const SerializableDataWrapper = {
 				data: Array.from(value)
 			};
 		}
+		if (value instanceof Date) {
+			return {
+				type: "Date",
+				data: value.toISOString()
+			};
+		}
 		return value;
 	},
 	unwrap(value: SerializableData): SerializableData {
@@ -157,6 +171,9 @@ export const SerializableDataWrapper = {
 				}
 				if (type === "BigUint64Array") {
 					return BigUint64Array.from(data as any);
+				}
+				if (type === "Date") {
+					return new Date(data as any);
 				}
 			}
 		}
